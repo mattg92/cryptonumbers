@@ -1,0 +1,305 @@
+
+    <!DOCTYPE html>
+    <html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <title>Crypto Data Table</title>
+        
+    <style>
+        .crypto-table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        .crypto-table th, .crypto-table td {
+            border: 1px solid #ddd;
+            padding: 8px;
+            text-align: center;
+        }
+        .crypto-table th {
+            background-color: #f2f2f2;
+        }
+        .blurred-row {
+            filter: blur(5px);
+            transition: filter 0.3s ease;
+        }
+        /* Password section styles */
+        .password-section {
+            margin-top: 20px;
+            text-align: center;
+        }
+        .password-section input {
+            padding: 8px;
+            width: 200px;
+        }
+        .password-section button {
+            padding: 8px 16px;
+        }
+    </style>
+    
+    </head>
+    <body>
+        <h2 style="text-align:center;">Cryptocurrency Data (Top 20)</h2>
+        <table class="dataframe crypto-table">
+  <thead>
+    <tr style="text-align: right;">
+      <th>Coin ID</th>
+      <th>Name</th>
+      <th>Current Price (USD)</th>
+      <th>ATH Price (USD)</th>
+      <th>ATH Date</th>
+      <th>Market Cap (USD)</th>
+      <th>ATH Market Cap (USD)</th>
+      <th>ATH Market Cap Date</th>
+      <th>Last Updated</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>bitcoin</td>
+      <td>Bitcoin</td>
+      <td>100096.000000</td>
+      <td>108135.000000</td>
+      <td>12/17/2024</td>
+      <td>1985380854458</td>
+      <td>2.142266e+12</td>
+      <td>12/17/2024</td>
+      <td>1/16/2025</td>
+    </tr>
+    <tr>
+      <td>ethereum</td>
+      <td>Ethereum</td>
+      <td>3329.580000</td>
+      <td>4878.260000</td>
+      <td>11/10/2021</td>
+      <td>401273689299</td>
+      <td>5.878242e+11</td>
+      <td>11/10/2021</td>
+      <td>1/16/2025</td>
+    </tr>
+    <tr>
+      <td>ripple</td>
+      <td>XRP</td>
+      <td>3.290000</td>
+      <td>3.400000</td>
+      <td>1/7/2018</td>
+      <td>189317575392</td>
+      <td>1.954766e+11</td>
+      <td>1/7/2018</td>
+      <td>1/16/2025</td>
+    </tr>
+    <tr>
+      <td>tether</td>
+      <td>Tether</td>
+      <td>0.999817</td>
+      <td>1.320000</td>
+      <td>7/24/2018</td>
+      <td>137434070267</td>
+      <td>1.814347e+11</td>
+      <td>7/24/2018</td>
+      <td>1/16/2025</td>
+    </tr>
+    <tr>
+      <td>binancecoin</td>
+      <td>BNB</td>
+      <td>715.070000</td>
+      <td>788.840000</td>
+      <td>12/4/2024</td>
+      <td>104365391660</td>
+      <td>1.150820e+11</td>
+      <td>12/4/2024</td>
+      <td>1/16/2025</td>
+    </tr>
+    <tr>
+      <td>solana</td>
+      <td>Solana</td>
+      <td>212.370000</td>
+      <td>263.210000</td>
+      <td>11/23/2024</td>
+      <td>103371544310</td>
+      <td>1.280513e+11</td>
+      <td>11/23/2024</td>
+      <td>1/16/2025</td>
+    </tr>
+    <tr>
+      <td>dogecoin</td>
+      <td>Dogecoin</td>
+      <td>0.382244</td>
+      <td>0.731578</td>
+      <td>5/8/2021</td>
+      <td>56499737327</td>
+      <td>1.079872e+11</td>
+      <td>5/8/2021</td>
+      <td>1/16/2025</td>
+    </tr>
+    <tr>
+      <td>usd-coin</td>
+      <td>USDC</td>
+      <td>0.999993</td>
+      <td>1.170000</td>
+      <td>5/8/2019</td>
+      <td>46308920663</td>
+      <td>5.418173e+10</td>
+      <td>5/8/2019</td>
+      <td>1/16/2025</td>
+    </tr>
+    <tr>
+      <td>cardano</td>
+      <td>Cardano</td>
+      <td>1.120000</td>
+      <td>3.090000</td>
+      <td>9/2/2021</td>
+      <td>40237930808</td>
+      <td>1.108399e+11</td>
+      <td>9/2/2021</td>
+      <td>1/16/2025</td>
+    </tr>
+    <tr>
+      <td>staked-ether</td>
+      <td>Lido Staked Ether</td>
+      <td>3322.180000</td>
+      <td>4829.570000</td>
+      <td>11/10/2021</td>
+      <td>31931544931</td>
+      <td>4.638787e+10</td>
+      <td>11/10/2021</td>
+      <td>1/16/2025</td>
+    </tr>
+    <tr>
+      <td>tron</td>
+      <td>TRON</td>
+      <td>0.239740</td>
+      <td>0.431288</td>
+      <td>12/4/2024</td>
+      <td>20673754565</td>
+      <td>3.715988e+10</td>
+      <td>12/4/2024</td>
+      <td>1/16/2025</td>
+    </tr>
+    <tr>
+      <td>avalanche-2</td>
+      <td>Avalanche</td>
+      <td>40.030000</td>
+      <td>144.960000</td>
+      <td>11/21/2021</td>
+      <td>16467153259</td>
+      <td>5.963412e+10</td>
+      <td>11/21/2021</td>
+      <td>1/16/2025</td>
+    </tr>
+    <tr>
+      <td>stellar</td>
+      <td>Stellar</td>
+      <td>0.497659</td>
+      <td>0.875563</td>
+      <td>1/3/2018</td>
+      <td>15166515650</td>
+      <td>2.665809e+10</td>
+      <td>1/3/2018</td>
+      <td>1/16/2025</td>
+    </tr>
+    <tr>
+      <td>sui</td>
+      <td>Sui</td>
+      <td>4.920000</td>
+      <td>5.350000</td>
+      <td>1/4/2025</td>
+      <td>14823493137</td>
+      <td>1.610120e+10</td>
+      <td>1/4/2025</td>
+      <td>1/16/2025</td>
+    </tr>
+    <tr>
+      <td>chainlink</td>
+      <td>Chainlink</td>
+      <td>23.390000</td>
+      <td>52.700000</td>
+      <td>5/10/2021</td>
+      <td>14770970064</td>
+      <td>3.325897e+10</td>
+      <td>5/10/2021</td>
+      <td>1/16/2025</td>
+    </tr>
+    <tr>
+      <td>hedera-hashgraph</td>
+      <td>Hedera</td>
+      <td>0.377879</td>
+      <td>0.569229</td>
+      <td>9/15/2021</td>
+      <td>14460193903</td>
+      <td>2.177787e+10</td>
+      <td>9/15/2021</td>
+      <td>1/16/2025</td>
+    </tr>
+    <tr>
+      <td>the-open-network</td>
+      <td>Toncoin</td>
+      <td>5.500000</td>
+      <td>8.250000</td>
+      <td>6/15/2024</td>
+      <td>13678751627</td>
+      <td>2.050408e+10</td>
+      <td>6/15/2024</td>
+      <td>1/16/2025</td>
+    </tr>
+    <tr>
+      <td>wrapped-steth</td>
+      <td>Wrapped stETH</td>
+      <td>3936.220000</td>
+      <td>7256.020000</td>
+      <td>5/13/2022</td>
+      <td>13651435042</td>
+      <td>2.515530e+10</td>
+      <td>5/13/2022</td>
+      <td>1/16/2025</td>
+    </tr>
+    <tr>
+      <td>wrapped-bitcoin</td>
+      <td>Wrapped Bitcoin</td>
+      <td>99812.000000</td>
+      <td>107645.000000</td>
+      <td>12/17/2024</td>
+      <td>13104695254</td>
+      <td>1.412070e+10</td>
+      <td>12/17/2024</td>
+      <td>1/16/2025</td>
+    </tr>
+    <tr>
+      <td>shiba-inu</td>
+      <td>Shiba Inu</td>
+      <td>0.000022</td>
+      <td>0.000086</td>
+      <td>10/28/2021</td>
+      <td>13102821311</td>
+      <td>5.077023e+10</td>
+      <td>10/28/2021</td>
+      <td>1/16/2025</td>
+    </tr>
+  </tbody>
+</table>
+        
+        <!-- Password Protection Section -->
+        <div class="password-section">
+            <label for="crypto-password">Enter Password to View All Rows:</label><br>
+            <input type="password" id="crypto-password" placeholder="Enter password">
+            <button onclick="unlockRows()">Unlock</button>
+        </div>
+        
+        <script>
+            function unlockRows() {
+                var password = document.getElementById('crypto-password').value;
+                var correctPassword = ''; // Replace with your desired password
+                
+                if(password === correctPassword) {
+                    var blurredRows = document.querySelectorAll('.blurred-row');
+                    blurredRows.forEach(function(row) {
+                        row.classList.remove('blurred-row');
+                    });
+                    alert('Access Granted!');
+                } else {
+                    alert('Incorrect Password. Please try again.');
+                }
+            }
+        </script>
+    </body>
+    </html>
+    
