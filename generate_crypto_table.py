@@ -53,69 +53,30 @@ def format_values(df):
     
     return df
 
-def generate_html_table_tab1(df):
+def generate_html_table(df, columns):
     """
-    Generates HTML for the first table tab:
-    Columns: Name, Current Price (USD), ATH Price (USD), ATH Date, Last Updated
-    """
-    # Sort DataFrame by Market Cap to get the top 20 coins
-    df = df.sort_values(by='Market Cap (USD)', ascending=False).reset_index(drop=True)
-    
-    # Select required columns
-    required_columns = ['Name', 'Current Price (USD)', 'ATH Price (USD)', 'ATH Date', 'Last Updated']
-    df_tab1 = df[required_columns].copy()
-    
-    # Format DataFrame
-    df_tab1 = format_values(df_tab1)
-    
-    # Apply blurring logic
-    df_tab1['blurred'] = False
-    df_tab1.loc[20:, 'blurred'] = True
-    
-    # Convert to HTML
-    html_table = df_tab1.to_html(index=False, classes='crypto-table', border=0, escape=False)
-    
-    # Process with BeautifulSoup to add 'blurred-row' class beyond first 20 rows
-    soup = BeautifulSoup(html_table, 'html.parser')
-    rows = soup.find_all('tr')[21:]  # +1 for header, first 20 data rows
-    for row in rows:
-        row['class'] = row.get('class', []) + ['blurred-row']
-    
-    return str(soup)
-
-def generate_html_table_tab2(df):
-    """
-    Generates HTML for the second table tab:
-    Columns: Name, Current Price (USD), Market Cap (USD) (M), ATH Market Cap (USD) (M), ATH Market Cap Date, Last Updated
+    Generates HTML for the table with specified columns.
     """
     # Sort DataFrame by Market Cap to get the top 20 coins
     df = df.sort_values(by='Market Cap (USD)', ascending=False).reset_index(drop=True)
     
     # Select required columns
-    required_columns = ['Name', 'Current Price (USD)', 'Market Cap (USD)', 'ATH Market Cap (USD)', 'ATH Market Cap Date', 'Last Updated']
-    df_tab2 = df[required_columns].copy()
+    df = df[columns].copy()
     
     # Format DataFrame
-    df_tab2 = format_values(df_tab2)
-    
-    # Apply blurring logic
-    df_tab2['blurred'] = False
-    df_tab2.loc[20:, 'blurred'] = True
+    df = format_values(df)
     
     # Convert to HTML
-    html_table = df_tab2.to_html(index=False, classes='crypto-table', border=0, escape=False)
+    html_table = df.to_html(index=False, classes='crypto-table', border=0, escape=False)
     
-    # Process with BeautifulSoup to add 'blurred-row' class beyond first 20 rows
+    # Process with BeautifulSoup
     soup = BeautifulSoup(html_table, 'html.parser')
-    rows = soup.find_all('tr')[21:]  # +1 for header, first 20 data rows
-    for row in rows:
-        row['class'] = row.get('class', []) + ['blurred-row']
     
     return str(soup)
 
 def generate_html_content(tab1_html, tab2_html):
     """
-    Generates the complete HTML content with two tabs and password protection
+    Generates the complete HTML content with two tabs.
     """
     styles = """
     <style>
@@ -155,6 +116,8 @@ def generate_html_content(tab1_html, tab2_html):
             overflow-x: auto;
             margin-left: 10%;
             margin-right: 10%;
+            overflow-y: auto;
+            max-height: 600px;
         }
 
         /* Table styling */
@@ -182,36 +145,7 @@ def generate_html_content(tab1_html, tab2_html):
         .crypto-table tr:hover {
             background-color: #555;
         }
-        /* Blurred rows */
-        .blurred-row {
-            filter: blur(5px);
-            transition: filter 0.3s ease;
-        }
-        /* Password section styles */
-        .password-section {
-            margin-top: 20px;
-            text-align: center;
-        }
-        .password-section input {
-            padding: 10px;
-            width: 220px;
-            border: 1px solid #444;
-            border-radius: 4px;
-            background-color: #333;
-            color: #f2f2f2;
-        }
-        .password-section button {
-            padding: 10px 20px;
-            margin-left: 10px;
-            border: none;
-            border-radius: 4px;
-            background-color: #555;
-            color: #f2f2f2;
-            cursor: pointer;
-        }
-        .password-section button:hover {
-            background-color: #777;
-        }
+
         /* Responsive Font Sizes */
         @media (max-width: 768px) {
             .crypto-table th, .crypto-table td {
@@ -234,117 +168,31 @@ def generate_html_content(tab1_html, tab2_html):
             }
         }
 
-        /* DataTables CSS */
-        @import url('https://cdn.datatables.net/1.13.4/css/jquery.dataTables.min.css');
-        @import url('https://cdn.datatables.net/responsive/2.4.1/css/responsive.dataTables.min.css');
-    
-        /* Adjust DataTables elements to match the dark theme */
-        table.dataTable thead {
-            background-color: #333;
-            color: #f2f2f2;
-        }
-        table.dataTable tbody tr {
-            background-color: #1a1a1a;
-        }
-        table.dataTable tbody tr:nth-child(even) {
-            background-color: #2a2a2a;
-        }
-        table.dataTable tbody tr:hover {
-            background-color: #555;
-        }
-        table.dataTable.no-footer {
-            border-bottom: 1px solid #444;
-        }
-        /* Adjust pagination and search input */
-        .dataTables_wrapper .dataTables_paginate .paginate_button {
-            color: #f2f2f2 !important;
-            background-color: #333 !important;
-            border: 1px solid #444 !important;
-            border-radius: 4px;
-            padding: 5px 10px;
-            margin: 2px;
-        }
-        .dataTables_wrapper .dataTables_paginate .paginate_button:hover {
-            background-color: #555 !important;
-        }
-        .dataTables_wrapper .dataTables_filter input {
-            background-color: #333 !important;
-            color: #f2f2f2 !important;
-            border: 1px solid #444 !important;
-            border-radius: 4px;
-            padding: 5px;
-        }
-        .dataTables_wrapper .dataTables_length select {
-            background-color: #333 !important;
-            color: #f2f2f2 !important;
-            border: 1px solid #444 !important;
-            border-radius: 4px;
-            padding: 5px;
-        }
-    
     </style>
     """
 
-    # JavaScript for tabs and password functionality
-    scripts = f"""
-    <script src="https://code.jquery.com/jquery-3.5.1.js"></script>
-    <script src="https://cdn.datatables.net/1.13.4/js/jquery.dataTables.min.js"></script>
-    <script src="https://cdn.datatables.net/responsive/2.4.1/js/dataTables.responsive.min.js"></script>
+    # JavaScript for tabs
+    scripts = """
     <script>
         // Tab functionality
-        function openTab(evt, tabName) {{
+        function openTab(evt, tabName) {
             var i, tabcontent, tablinks;
             tabcontent = document.getElementsByClassName("tabcontent");
-            for (i = 0; i < tabcontent.length; i++) {{
+            for (i = 0; i < tabcontent.length; i++) {
                 tabcontent[i].style.display = "none";
-            }}
+            }
             tablinks = document.getElementsByClassName("tablinks");
-            for (i = 0; i < tablinks.length; i++) {{
+            for (i = 0; i < tablinks.length; i++) {
                 tablinks[i].className = tablinks[i].className.replace(" active", "");
-            }}
+            }
             document.getElementById(tabName).style.display = "block";
             evt.currentTarget.className += " active";
-        }}
+        }
 
         // Set default tab
-        document.addEventListener("DOMContentLoaded", function() {{
+        document.addEventListener("DOMContentLoaded", function() {
             document.getElementsByClassName("tablinks")[0].click();
-        }});
-
-        // Initialize DataTables on both tables
-        document.addEventListener("DOMContentLoaded", function() {{
-            var table = $('.crypto-table').DataTable({{
-                responsive: true,
-                paging: true,
-                pageLength: 20,
-                lengthChange: false,
-                searching: true,
-                ordering: true,
-                info: false
-            }});
-
-            // Keep rows unlocked after ordering
-            table.on('order.dt', function() {{
-                setTimeout(function() {{
-                    unlockRows();
-                }}, 10);
-            }});
-        }});
-
-        // Password functionality
-        function unlockRows() {{
-            var password = document.getElementById('crypto-password').value;
-            var correctPassword = 'unlock';
-            
-            if(password === correctPassword) {{
-                var blurredRows = document.querySelectorAll('.blurred-row');
-                blurredRows.forEach(function(row) {{
-                    row.classList.remove('blurred-row');
-                }});
-            }} else {{
-                alert('Incorrect Password. Please try again.');
-            }}
-        }}
+        });
     </script>
     """
 
@@ -358,12 +206,7 @@ def generate_html_content(tab1_html, tab2_html):
         {styles}
     </head>
     <body>
-                <!-- Password Section -->
-        <div class="password-section">
-            <label for="crypto-password">Enter Password to View All Rows:</label><br>
-            <input type="password" id="crypto-password" placeholder="Enter password">
-            <button onclick="unlockRows()">Unlock</button>
-        </div>
+        <h2 style="text-align:center;">Cryptocurrency Data</h2>
         
         <!-- Tab buttons -->
         <div class="tab">
@@ -400,8 +243,8 @@ def generate_crypto_table_html():
     df = df.sort_values(by='Market Cap (USD)', ascending=False).reset_index(drop=True)
     
     # Generate HTML tables for both tabs
-    tab1_html = generate_html_table_tab1(df)
-    tab2_html = generate_html_table_tab2(df)
+    tab1_html = generate_html_table(df, ['Name', 'Current Price (USD)', 'ATH Price (USD)', 'ATH Date', 'Last Updated'])
+    tab2_html = generate_html_table(df, ['Name', 'Current Price (USD)', 'Market Cap (USD)', 'ATH Market Cap (USD)', 'ATH Market Cap Date', 'Last Updated'])
     
     # Generate complete HTML content
     full_html = generate_html_content(tab1_html, tab2_html)
