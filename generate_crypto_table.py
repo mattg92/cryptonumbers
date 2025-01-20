@@ -340,9 +340,7 @@ def generate_html_content(tab1_html, tab2_html):
                 blurredRows.forEach(function(row) {{
                     row.classList.remove('blurred-row');
                 }});
-                alert('Access Granted! All rows are now visible.');
             }} else {{
-                alert('Incorrect Password. Please try again.');
             }}
         }}
     </script>
