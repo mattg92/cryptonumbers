@@ -42,6 +42,8 @@
             overflow-x: auto;
             margin-left: 10%;
             margin-right: 10%;
+            overflow-y: auto;
+            max-height: 600px;
         }
 
         /* Table styling */
@@ -69,36 +71,7 @@
         .crypto-table tr:hover {
             background-color: #555;
         }
-        /* Blurred rows */
-        .blurred-row {
-            filter: blur(5px);
-            transition: filter 0.3s ease;
-        }
-        /* Password section styles */
-        .password-section {
-            margin-top: 20px;
-            text-align: center;
-        }
-        .password-section input {
-            padding: 10px;
-            width: 220px;
-            border: 1px solid #444;
-            border-radius: 4px;
-            background-color: #333;
-            color: #f2f2f2;
-        }
-        .password-section button {
-            padding: 10px 20px;
-            margin-left: 10px;
-            border: none;
-            border-radius: 4px;
-            background-color: #555;
-            color: #f2f2f2;
-            cursor: pointer;
-        }
-        .password-section button:hover {
-            background-color: #777;
-        }
+
         /* Responsive Font Sizes */
         @media (max-width: 768px) {
             .crypto-table th, .crypto-table td {
@@ -121,66 +94,11 @@
             }
         }
 
-        /* DataTables CSS */
-        @import url('https://cdn.datatables.net/1.13.4/css/jquery.dataTables.min.css');
-        @import url('https://cdn.datatables.net/responsive/2.4.1/css/responsive.dataTables.min.css');
-    
-        /* Adjust DataTables elements to match the dark theme */
-        table.dataTable thead {
-            background-color: #333;
-            color: #f2f2f2;
-        }
-        table.dataTable tbody tr {
-            background-color: #1a1a1a;
-        }
-        table.dataTable tbody tr:nth-child(even) {
-            background-color: #2a2a2a;
-        }
-        table.dataTable tbody tr:hover {
-            background-color: #555;
-        }
-        table.dataTable.no-footer {
-            border-bottom: 1px solid #444;
-        }
-        /* Adjust pagination and search input */
-        .dataTables_wrapper .dataTables_paginate .paginate_button {
-            color: #f2f2f2 !important;
-            background-color: #333 !important;
-            border: 1px solid #444 !important;
-            border-radius: 4px;
-            padding: 5px 10px;
-            margin: 2px;
-        }
-        .dataTables_wrapper .dataTables_paginate .paginate_button:hover {
-            background-color: #555 !important;
-        }
-        .dataTables_wrapper .dataTables_filter input {
-            background-color: #333 !important;
-            color: #f2f2f2 !important;
-            border: 1px solid #444 !important;
-            border-radius: 4px;
-            padding: 5px;
-        }
-        .dataTables_wrapper .dataTables_length select {
-            background-color: #333 !important;
-            color: #f2f2f2 !important;
-            border: 1px solid #444 !important;
-            border-radius: 4px;
-            padding: 5px;
-        }
-    
     </style>
     
     </head>
     <body>
         <h2 style="text-align:center;">Cryptocurrency Data</h2>
-
-                <!-- Password Section -->
-        <div class="password-section">
-            <label for="crypto-password">Enter Password to View All Rows:</label><br>
-            <input type="password" id="crypto-password" placeholder="Enter password">
-            <button onclick="unlockRows()">Unlock</button>
-        </div>
         
         <!-- Tab buttons -->
         <div class="tab">
@@ -199,7 +117,6 @@
 <th>ATH Price (USD)</th>
 <th>ATH Date</th>
 <th>Last Updated</th>
-<th>blurred</th>
 </tr>
 </thead>
 <tbody>
@@ -209,7 +126,6 @@
 <td>$108,135.00000</td>
 <td>12/17/2024</td>
 <td>1/16/2025</td>
-<td>False</td>
 </tr>
 <tr>
 <td>Ethereum</td>
@@ -217,7 +133,6 @@
 <td>$4,878.26000</td>
 <td>11/10/2021</td>
 <td>1/16/2025</td>
-<td>False</td>
 </tr>
 <tr>
 <td>XRP</td>
@@ -225,7 +140,6 @@
 <td>$3.40000</td>
 <td>1/7/2018</td>
 <td>1/16/2025</td>
-<td>False</td>
 </tr>
 <tr>
 <td>Tether</td>
@@ -233,7 +147,6 @@
 <td>$1.32000</td>
 <td>7/24/2018</td>
 <td>1/16/2025</td>
-<td>False</td>
 </tr>
 <tr>
 <td>BNB</td>
@@ -241,7 +154,6 @@
 <td>$788.84000</td>
 <td>12/4/2024</td>
 <td>1/16/2025</td>
-<td>False</td>
 </tr>
 <tr>
 <td>Solana</td>
@@ -249,7 +161,6 @@
 <td>$263.21000</td>
 <td>11/23/2024</td>
 <td>1/16/2025</td>
-<td>False</td>
 </tr>
 <tr>
 <td>Dogecoin</td>
@@ -257,7 +168,6 @@
 <td>$0.73158</td>
 <td>5/8/2021</td>
 <td>1/16/2025</td>
-<td>False</td>
 </tr>
 <tr>
 <td>USDC</td>
@@ -265,7 +175,6 @@
 <td>$1.17000</td>
 <td>5/8/2019</td>
 <td>1/16/2025</td>
-<td>False</td>
 </tr>
 <tr>
 <td>Cardano</td>
@@ -273,7 +182,6 @@
 <td>$3.09000</td>
 <td>9/2/2021</td>
 <td>1/16/2025</td>
-<td>False</td>
 </tr>
 <tr>
 <td>Lido Staked Ether</td>
@@ -281,7 +189,6 @@
 <td>$4,829.57000</td>
 <td>11/10/2021</td>
 <td>1/16/2025</td>
-<td>False</td>
 </tr>
 <tr>
 <td>TRON</td>
@@ -289,7 +196,6 @@
 <td>$0.43129</td>
 <td>12/4/2024</td>
 <td>1/16/2025</td>
-<td>False</td>
 </tr>
 <tr>
 <td>Avalanche</td>
@@ -297,7 +203,6 @@
 <td>$144.96000</td>
 <td>11/21/2021</td>
 <td>1/16/2025</td>
-<td>False</td>
 </tr>
 <tr>
 <td>Stellar</td>
@@ -305,7 +210,6 @@
 <td>$0.87556</td>
 <td>1/3/2018</td>
 <td>1/16/2025</td>
-<td>False</td>
 </tr>
 <tr>
 <td>Sui</td>
@@ -313,7 +217,6 @@
 <td>$5.35000</td>
 <td>1/4/2025</td>
 <td>1/16/2025</td>
-<td>False</td>
 </tr>
 <tr>
 <td>Chainlink</td>
@@ -321,7 +224,6 @@
 <td>$52.70000</td>
 <td>5/10/2021</td>
 <td>1/16/2025</td>
-<td>False</td>
 </tr>
 <tr>
 <td>Hedera</td>
@@ -329,7 +231,6 @@
 <td>$0.56923</td>
 <td>9/15/2021</td>
 <td>1/16/2025</td>
-<td>False</td>
 </tr>
 <tr>
 <td>Toncoin</td>
@@ -337,7 +238,6 @@
 <td>$8.25000</td>
 <td>6/15/2024</td>
 <td>1/16/2025</td>
-<td>False</td>
 </tr>
 <tr>
 <td>Wrapped stETH</td>
@@ -345,7 +245,6 @@
 <td>$7,256.02000</td>
 <td>5/13/2022</td>
 <td>1/16/2025</td>
-<td>False</td>
 </tr>
 <tr>
 <td>Wrapped Bitcoin</td>
@@ -353,7 +252,6 @@
 <td>$107,645.00000</td>
 <td>12/17/2024</td>
 <td>1/16/2025</td>
-<td>False</td>
 </tr>
 <tr>
 <td>Shiba Inu</td>
@@ -361,1847 +259,1616 @@
 <td>$0.00009</td>
 <td>10/28/2021</td>
 <td>1/16/2025</td>
-<td>False</td>
 </tr>
-<tr class="blurred-row">
+<tr>
 <td>Polkadot</td>
 <td>$7.28000</td>
 <td>$54.98000</td>
 <td>11/4/2021</td>
 <td>1/16/2025</td>
-<td>True</td>
 </tr>
-<tr class="blurred-row">
+<tr>
 <td>WETH</td>
 <td>$3,325.44000</td>
 <td>$4,799.89000</td>
 <td>11/9/2021</td>
 <td>1/16/2025</td>
-<td>True</td>
 </tr>
-<tr class="blurred-row">
+<tr>
 <td>Litecoin</td>
 <td>$127.86000</td>
 <td>$410.26000</td>
 <td>5/10/2021</td>
 <td>1/16/2025</td>
-<td>True</td>
 </tr>
-<tr class="blurred-row">
+<tr>
 <td>Bitcoin Cash</td>
 <td>$466.08000</td>
 <td>$3,785.82000</td>
 <td>12/20/2017</td>
 <td>1/16/2025</td>
-<td>True</td>
 </tr>
-<tr class="blurred-row">
+<tr>
 <td>LEO Token</td>
 <td>$9.67000</td>
 <td>$9.79000</td>
 <td>12/18/2024</td>
 <td>1/16/2025</td>
-<td>True</td>
 </tr>
-<tr class="blurred-row">
+<tr>
 <td>Uniswap</td>
 <td>$14.29000</td>
 <td>$44.92000</td>
 <td>5/3/2021</td>
 <td>1/16/2025</td>
-<td>True</td>
 </tr>
-<tr class="blurred-row">
+<tr>
 <td>Bitget Token</td>
 <td>$6.67000</td>
 <td>$8.45000</td>
 <td>12/27/2024</td>
 <td>1/16/2025</td>
-<td>True</td>
 </tr>
-<tr class="blurred-row">
+<tr>
 <td>Hyperliquid</td>
 <td>$23.58000</td>
 <td>$34.96000</td>
 <td>12/22/2024</td>
 <td>1/16/2025</td>
-<td>True</td>
 </tr>
-<tr class="blurred-row">
+<tr>
 <td>Pepe</td>
 <td>$0.00002</td>
 <td>$0.00003</td>
 <td>12/9/2024</td>
 <td>1/16/2025</td>
-<td>True</td>
 </tr>
-<tr class="blurred-row">
+<tr>
 <td>Wrapped eETH</td>
 <td>$3,516.68000</td>
 <td>$4,311.81000</td>
 <td>12/6/2024</td>
 <td>1/16/2025</td>
-<td>True</td>
 </tr>
-<tr class="blurred-row">
+<tr>
 <td>USDS</td>
 <td>$0.99933</td>
 <td>$1.05700</td>
 <td>10/29/2024</td>
 <td>1/16/2025</td>
-<td>True</td>
 </tr>
-<tr class="blurred-row">
+<tr>
 <td>NEAR Protocol</td>
 <td>$5.24000</td>
 <td>$20.44000</td>
 <td>1/16/2022</td>
 <td>1/16/2025</td>
-<td>True</td>
 </tr>
-<tr class="blurred-row">
+<tr>
 <td>Ethena USDe</td>
 <td>$0.99836</td>
 <td>$1.03200</td>
 <td>12/20/2023</td>
 <td>1/16/2025</td>
-<td>True</td>
 </tr>
-<tr class="blurred-row">
+<tr>
 <td>Aptos</td>
 <td>$9.34000</td>
 <td>$19.92000</td>
 <td>1/26/2023</td>
 <td>1/16/2025</td>
-<td>True</td>
 </tr>
-<tr class="blurred-row">
+<tr>
 <td>Internet Computer</td>
 <td>$10.96000</td>
 <td>$700.65000</td>
 <td>5/10/2021</td>
 <td>1/16/2025</td>
-<td>True</td>
 </tr>
-<tr class="blurred-row">
+<tr>
 <td>Aave</td>
 <td>$315.82000</td>
 <td>$661.69000</td>
 <td>5/18/2021</td>
 <td>1/16/2025</td>
-<td>True</td>
 </tr>
-<tr class="blurred-row">
+<tr>
 <td>VeChain</td>
 <td>$0.05201</td>
 <td>$0.28099</td>
 <td>4/19/2021</td>
 <td>1/16/2025</td>
-<td>True</td>
 </tr>
-<tr class="blurred-row">
+<tr>
 <td>Ethereum Classic</td>
 <td>$26.93000</td>
 <td>$167.09000</td>
 <td>5/6/2021</td>
 <td>1/16/2025</td>
-<td>True</td>
 </tr>
-<tr class="blurred-row">
+<tr>
 <td>Monero</td>
 <td>$219.36000</td>
 <td>$542.33000</td>
 <td>1/9/2018</td>
 <td>1/16/2025</td>
-<td>True</td>
 </tr>
-<tr class="blurred-row">
+<tr>
 <td>POL (ex-MATIC)</td>
 <td>$0.47843</td>
 <td>$1.29000</td>
 <td>3/13/2024</td>
 <td>1/16/2025</td>
-<td>True</td>
 </tr>
-<tr class="blurred-row">
+<tr>
 <td>Cronos</td>
 <td>$0.14521</td>
 <td>$0.96541</td>
 <td>11/24/2021</td>
 <td>1/16/2025</td>
-<td>True</td>
 </tr>
-<tr class="blurred-row">
+<tr>
 <td>Algorand</td>
 <td>$0.47230</td>
 <td>$3.56000</td>
 <td>6/20/2019</td>
 <td>1/16/2025</td>
-<td>True</td>
 </tr>
-<tr class="blurred-row">
+<tr>
 <td>Render</td>
 <td>$7.56000</td>
 <td>$13.53000</td>
 <td>3/17/2024</td>
 <td>1/16/2025</td>
-<td>True</td>
 </tr>
-<tr class="blurred-row">
+<tr>
 <td>Mantle</td>
 <td>$1.13000</td>
 <td>$1.54000</td>
 <td>4/8/2024</td>
 <td>1/16/2025</td>
-<td>True</td>
 </tr>
-<tr class="blurred-row">
+<tr>
 <td>Kaspa</td>
 <td>$0.14853</td>
 <td>$0.20741</td>
 <td>8/1/2024</td>
 <td>1/16/2025</td>
-<td>True</td>
 </tr>
-<tr class="blurred-row">
+<tr>
 <td>Bittensor</td>
 <td>$452.36000</td>
 <td>$757.60000</td>
 <td>3/7/2024</td>
 <td>1/16/2025</td>
-<td>True</td>
 </tr>
-<tr class="blurred-row">
+<tr>
 <td>MANTRA</td>
 <td>$3.84000</td>
 <td>$4.55000</td>
 <td>12/11/2024</td>
 <td>1/16/2025</td>
-<td>True</td>
 </tr>
-<tr class="blurred-row">
+<tr>
 <td>Filecoin</td>
 <td>$5.71000</td>
 <td>$236.84000</td>
 <td>4/1/2021</td>
 <td>1/16/2025</td>
-<td>True</td>
 </tr>
-<tr class="blurred-row">
+<tr>
 <td>Artificial Superintelligence Alliance</td>
 <td>$1.35000</td>
 <td>$3.45000</td>
 <td>3/28/2024</td>
 <td>1/16/2025</td>
-<td>True</td>
 </tr>
-<tr class="blurred-row">
+<tr>
 <td>Dai</td>
 <td>$0.99997</td>
 <td>$1.22000</td>
 <td>3/13/2020</td>
 <td>1/16/2025</td>
-<td>True</td>
 </tr>
-<tr class="blurred-row">
+<tr>
 <td>Virtuals Protocol</td>
 <td>$3.48000</td>
 <td>$5.07000</td>
 <td>1/2/2025</td>
 <td>1/16/2025</td>
-<td>True</td>
 </tr>
-<tr class="blurred-row">
+<tr>
 <td>Arbitrum</td>
 <td>$0.76475</td>
 <td>$2.39000</td>
 <td>1/12/2024</td>
 <td>1/16/2025</td>
-<td>True</td>
 </tr>
-<tr class="blurred-row">
+<tr>
 <td>OKB</td>
 <td>$49.62000</td>
 <td>$73.80000</td>
 <td>3/14/2024</td>
 <td>1/16/2025</td>
-<td>True</td>
 </tr>
-<tr class="blurred-row">
+<tr>
 <td>Cosmos Hub</td>
 <td>$6.68000</td>
 <td>$44.45000</td>
 <td>1/17/2022</td>
 <td>1/16/2025</td>
-<td>True</td>
 </tr>
-<tr class="blurred-row">
+<tr>
 <td>Ethena</td>
 <td>$0.91755</td>
 <td>$1.52000</td>
 <td>4/11/2024</td>
 <td>1/16/2025</td>
-<td>True</td>
 </tr>
-<tr class="blurred-row">
+<tr>
 <td>Tokenize Xchange</td>
 <td>$33.52000</td>
 <td>$50.43000</td>
 <td>1/3/2025</td>
 <td>1/16/2025</td>
-<td>True</td>
 </tr>
-<tr class="blurred-row">
+<tr>
 <td>Sonic (prev. FTM)</td>
 <td>$0.79301</td>
 <td>$1.02900</td>
 <td>1/4/2025</td>
 <td>1/16/2025</td>
-<td>True</td>
 </tr>
-<tr class="blurred-row">
+<tr>
 <td>Optimism</td>
 <td>$1.86000</td>
 <td>$4.84000</td>
 <td>3/6/2024</td>
 <td>1/16/2025</td>
-<td>True</td>
 </tr>
-<tr class="blurred-row">
+<tr>
 <td>Celestia</td>
 <td>$5.04000</td>
 <td>$20.85000</td>
 <td>2/10/2024</td>
 <td>1/16/2025</td>
-<td>True</td>
 </tr>
-<tr class="blurred-row">
+<tr>
 <td>Theta Network</td>
 <td>$2.44000</td>
 <td>$15.72000</td>
 <td>4/16/2021</td>
 <td>1/16/2025</td>
-<td>True</td>
 </tr>
-<tr class="blurred-row">
+<tr>
 <td>Gate</td>
 <td>$19.35000</td>
 <td>$19.74000</td>
 <td>1/16/2025</td>
 <td>1/16/2025</td>
-<td>True</td>
 </tr>
-<tr class="blurred-row">
+<tr>
 <td>Stacks</td>
 <td>$1.58000</td>
 <td>$3.86000</td>
 <td>4/1/2024</td>
 <td>1/16/2025</td>
-<td>True</td>
 </tr>
-<tr class="blurred-row">
+<tr>
 <td>Immutable</td>
 <td>$1.36000</td>
 <td>$9.52000</td>
 <td>11/26/2021</td>
 <td>1/16/2025</td>
-<td>True</td>
 </tr>
-<tr class="blurred-row">
+<tr>
 <td>Injective</td>
 <td>$22.96000</td>
 <td>$52.62000</td>
 <td>3/14/2024</td>
 <td>1/16/2025</td>
-<td>True</td>
 </tr>
-<tr class="blurred-row">
+<tr>
 <td>XDC Network</td>
 <td>$0.14921</td>
 <td>$0.19275</td>
 <td>8/21/2021</td>
 <td>1/16/2025</td>
-<td>True</td>
 </tr>
-<tr class="blurred-row">
+<tr>
 <td>Bonk</td>
 <td>$0.00003</td>
 <td>$0.00006</td>
 <td>11/20/2024</td>
 <td>1/16/2025</td>
-<td>True</td>
 </tr>
-<tr class="blurred-row">
+<tr>
 <td>Coinbase Wrapped BTC</td>
 <td>$99,973.00000</td>
 <td>$108,259.00000</td>
 <td>12/17/2024</td>
 <td>1/16/2025</td>
-<td>True</td>
 </tr>
-<tr class="blurred-row">
+<tr>
 <td>Pudgy Penguins</td>
 <td>$0.03306</td>
 <td>$0.06845</td>
 <td>12/17/2024</td>
 <td>1/16/2025</td>
-<td>True</td>
 </tr>
-<tr class="blurred-row">
+<tr>
 <td>The Graph</td>
 <td>$0.21638</td>
 <td>$2.84000</td>
 <td>2/12/2021</td>
 <td>1/16/2025</td>
-<td>True</td>
 </tr>
-<tr class="blurred-row">
+<tr>
 <td>Binance-Peg WETH</td>
 <td>$3,327.37000</td>
 <td>$4,098.26000</td>
 <td>12/6/2024</td>
 <td>1/16/2025</td>
-<td>True</td>
 </tr>
-<tr class="blurred-row">
+<tr>
 <td>Worldcoin</td>
 <td>$2.19000</td>
 <td>$11.74000</td>
 <td>3/10/2024</td>
 <td>1/16/2025</td>
-<td>True</td>
 </tr>
-<tr class="blurred-row">
+<tr>
 <td>Movement</td>
 <td>$0.82257</td>
 <td>$1.45000</td>
 <td>12/10/2024</td>
 <td>1/16/2025</td>
-<td>True</td>
 </tr>
-<tr class="blurred-row">
+<tr>
 <td>Kelp DAO Restaked ETH</td>
 <td>$3,436.46000</td>
 <td>$4,216.20000</td>
 <td>12/6/2024</td>
 <td>1/16/2025</td>
-<td>True</td>
 </tr>
-<tr class="blurred-row">
+<tr>
 <td>First Digital USD</td>
 <td>$0.99781</td>
 <td>$1.08900</td>
 <td>5/20/2024</td>
 <td>1/16/2025</td>
-<td>True</td>
 </tr>
-<tr class="blurred-row">
+<tr>
 <td>Sei</td>
 <td>$0.41002</td>
 <td>$1.14000</td>
 <td>3/16/2024</td>
 <td>1/16/2025</td>
-<td>True</td>
 </tr>
-<tr class="blurred-row">
+<tr>
 <td>dogwifhat</td>
 <td>$1.80000</td>
 <td>$4.83000</td>
 <td>3/31/2024</td>
 <td>1/16/2025</td>
-<td>True</td>
 </tr>
-<tr class="blurred-row">
+<tr>
 <td>Ondo</td>
 <td>$1.24000</td>
 <td>$2.14000</td>
 <td>12/16/2024</td>
 <td>1/16/2025</td>
-<td>True</td>
 </tr>
-<tr class="blurred-row">
+<tr>
 <td>Lido DAO</td>
 <td>$1.99000</td>
 <td>$7.30000</td>
 <td>8/20/2021</td>
 <td>1/16/2025</td>
-<td>True</td>
 </tr>
-<tr class="blurred-row">
+<tr>
 <td>Quant</td>
 <td>$120.42000</td>
 <td>$427.42000</td>
 <td>9/11/2021</td>
 <td>1/16/2025</td>
-<td>True</td>
 </tr>
-<tr class="blurred-row">
+<tr>
 <td>Lombard Staked BTC</td>
 <td>$100,183.00000</td>
 <td>$108,188.00000</td>
 <td>12/16/2024</td>
 <td>1/16/2025</td>
-<td>True</td>
 </tr>
-<tr class="blurred-row">
+<tr>
 <td>Rocket Pool ETH</td>
 <td>$3,718.44000</td>
 <td>$4,814.31000</td>
 <td>12/1/2021</td>
 <td>1/16/2025</td>
-<td>True</td>
 </tr>
-<tr class="blurred-row">
+<tr>
 <td>Binance Staked SOL</td>
 <td>$218.16000</td>
 <td>$267.89000</td>
 <td>11/23/2024</td>
 <td>1/16/2025</td>
-<td>True</td>
 </tr>
-<tr class="blurred-row">
+<tr>
 <td>GALA</td>
 <td>$0.03949</td>
 <td>$0.82484</td>
 <td>11/26/2021</td>
 <td>1/16/2025</td>
-<td>True</td>
 </tr>
-<tr class="blurred-row">
+<tr>
 <td>FLOKI</td>
 <td>$0.00017</td>
 <td>$0.00034</td>
 <td>6/5/2024</td>
 <td>1/16/2025</td>
-<td>True</td>
 </tr>
-<tr class="blurred-row">
+<tr>
 <td>Flare</td>
 <td>$0.02877</td>
 <td>$0.15007</td>
 <td>1/10/2023</td>
 <td>1/16/2025</td>
-<td>True</td>
 </tr>
-<tr class="blurred-row">
+<tr>
 <td>Fasttoken</td>
 <td>$3.82000</td>
 <td>$3.85000</td>
 <td>1/14/2025</td>
 <td>1/16/2025</td>
-<td>True</td>
 </tr>
-<tr class="blurred-row">
+<tr>
 <td>Raydium</td>
 <td>$5.53000</td>
 <td>$16.83000</td>
 <td>9/12/2021</td>
 <td>1/16/2025</td>
-<td>True</td>
 </tr>
-<tr class="blurred-row">
+<tr>
 <td>Mantle Staked Ether</td>
 <td>$3,511.48000</td>
 <td>$4,729.53000</td>
 <td>3/27/2024</td>
 <td>1/16/2025</td>
-<td>True</td>
 </tr>
-<tr class="blurred-row">
+<tr>
 <td>JasmyCoin</td>
 <td>$0.03179</td>
 <td>$4.79000</td>
 <td>2/16/2021</td>
 <td>1/16/2025</td>
-<td>True</td>
 </tr>
-<tr class="blurred-row">
+<tr>
 <td>The Sandbox</td>
 <td>$0.62801</td>
 <td>$8.40000</td>
 <td>11/25/2021</td>
 <td>1/16/2025</td>
-<td>True</td>
 </tr>
-<tr class="blurred-row">
+<tr>
 <td>ai16z</td>
 <td>$1.37000</td>
 <td>$2.47000</td>
 <td>1/2/2025</td>
 <td>1/16/2025</td>
-<td>True</td>
 </tr>
-<tr class="blurred-row">
+<tr>
 <td>Usual USD</td>
 <td>$0.99905</td>
 <td>$1.33000</td>
 <td>7/12/2024</td>
 <td>1/16/2025</td>
-<td>True</td>
 </tr>
-<tr class="blurred-row">
+<tr>
 <td>IOTA</td>
 <td>$0.40070</td>
 <td>$5.25000</td>
 <td>12/19/2017</td>
 <td>1/16/2025</td>
-<td>True</td>
 </tr>
-<tr class="blurred-row">
+<tr>
 <td>EOS</td>
 <td>$0.94443</td>
 <td>$22.71000</td>
 <td>4/29/2018</td>
 <td>1/16/2025</td>
-<td>True</td>
 </tr>
-<tr class="blurred-row">
+<tr>
 <td>Tezos</td>
 <td>$1.37000</td>
 <td>$9.12000</td>
 <td>10/4/2021</td>
 <td>1/16/2025</td>
-<td>True</td>
 </tr>
-<tr class="blurred-row">
+<tr>
 <td>NEXO</td>
 <td>$1.38000</td>
 <td>$4.07000</td>
 <td>5/12/2021</td>
 <td>1/16/2025</td>
-<td>True</td>
 </tr>
-<tr class="blurred-row">
+<tr>
 <td>Fartcoin</td>
 <td>$1.37000</td>
 <td>$1.59000</td>
 <td>1/3/2025</td>
 <td>1/16/2025</td>
-<td>True</td>
 </tr>
-<tr class="blurred-row">
+<tr>
 <td>KuCoin</td>
 <td>$11.14000</td>
 <td>$28.83000</td>
 <td>12/1/2021</td>
 <td>1/16/2025</td>
-<td>True</td>
 </tr>
-<tr class="blurred-row">
+<tr>
 <td>Jupiter</td>
 <td>$0.79739</td>
 <td>$2.00000</td>
 <td>1/31/2024</td>
 <td>1/16/2025</td>
-<td>True</td>
 </tr>
-<tr class="blurred-row">
+<tr>
 <td>Kaia</td>
 <td>$0.22875</td>
 <td>$0.40670</td>
 <td>12/3/2024</td>
 <td>1/16/2025</td>
-<td>True</td>
 </tr>
-<tr class="blurred-row">
+<tr>
 <td>Solv Protocol SolvBTC</td>
 <td>$99,662.00000</td>
 <td>$107,779.00000</td>
 <td>12/17/2024</td>
 <td>1/16/2025</td>
-<td>True</td>
 </tr>
-<tr class="blurred-row">
+<tr>
 <td>sUSDS</td>
 <td>$1.02700</td>
 <td>$1.06100</td>
 <td>1/3/2025</td>
 <td>1/16/2025</td>
-<td>True</td>
 </tr>
-<tr class="blurred-row">
+<tr>
 <td>Maker</td>
 <td>$1,422.43000</td>
 <td>$6,292.31000</td>
 <td>5/3/2021</td>
 <td>1/16/2025</td>
-<td>True</td>
 </tr>
-<tr class="blurred-row">
+<tr>
 <td>Brett</td>
 <td>$0.12667</td>
 <td>$0.23420</td>
 <td>12/1/2024</td>
 <td>1/16/2025</td>
-<td>True</td>
 </tr>
-<tr class="blurred-row">
+<tr>
 <td>THORChain</td>
 <td>$3.54000</td>
 <td>$20.87000</td>
 <td>5/19/2021</td>
 <td>1/16/2025</td>
-<td>True</td>
 </tr>
-<tr class="blurred-row">
+<tr>
 <td>Pyth Network</td>
 <td>$0.33972</td>
 <td>$1.20000</td>
 <td>3/16/2024</td>
 <td>1/16/2025</td>
-<td>True</td>
 </tr>
-<tr class="blurred-row">
+<tr>
 <td>Beam</td>
 <td>$0.02336</td>
 <td>$0.04416</td>
 <td>3/10/2024</td>
 <td>1/16/2025</td>
-<td>True</td>
 </tr>
-<tr class="blurred-row">
+<tr>
 <td>Curve DAO</td>
 <td>$0.95393</td>
 <td>$15.37000</td>
 <td>8/14/2020</td>
 <td>1/16/2025</td>
-<td>True</td>
 </tr>
-<tr class="blurred-row">
+<tr>
 <td>Flow</td>
 <td>$0.77658</td>
 <td>$42.40000</td>
 <td>4/5/2021</td>
 <td>1/16/2025</td>
-<td>True</td>
 </tr>
-<tr class="blurred-row">
+<tr>
 <td>NEO</td>
 <td>$16.35000</td>
 <td>$198.38000</td>
 <td>1/15/2018</td>
 <td>1/16/2025</td>
-<td>True</td>
 </tr>
-<tr class="blurred-row">
+<tr>
 <td>Marinade Staked SOL</td>
 <td>$266.50000</td>
 <td>$325.39000</td>
 <td>11/23/2024</td>
 <td>1/16/2025</td>
-<td>True</td>
 </tr>
-<tr class="blurred-row">
+<tr>
 <td>Arweave</td>
 <td>$17.38000</td>
 <td>$89.24000</td>
 <td>11/5/2021</td>
 <td>1/16/2025</td>
-<td>True</td>
 </tr>
-<tr class="blurred-row">
+<tr>
 <td>Bitcoin SV</td>
 <td>$57.25000</td>
 <td>$489.75000</td>
 <td>4/16/2021</td>
 <td>1/16/2025</td>
-<td>True</td>
 </tr>
-<tr class="blurred-row">
+<tr>
 <td>AIOZ Network</td>
 <td>$0.98442</td>
 <td>$2.65000</td>
 <td>4/3/2021</td>
 <td>1/16/2025</td>
-<td>True</td>
 </tr>
-<tr class="blurred-row">
+<tr>
 <td>BitTorrent</td>
 <td>$0.00000</td>
 <td>$0.00000</td>
 <td>1/21/2022</td>
 <td>1/16/2025</td>
-<td>True</td>
 </tr>
-<tr class="blurred-row">
+<tr>
 <td>Ethereum Name Service</td>
 <td>$33.47000</td>
 <td>$83.40000</td>
 <td>11/11/2021</td>
 <td>1/16/2025</td>
-<td>True</td>
 </tr>
-<tr class="blurred-row">
+<tr>
 <td>Solv Protocol SolvBTC.BBN</td>
 <td>$98,758.00000</td>
 <td>$107,558.00000</td>
 <td>12/17/2024</td>
 <td>1/16/2025</td>
-<td>True</td>
 </tr>
-<tr class="blurred-row">
+<tr>
 <td>Starknet</td>
 <td>$0.42995</td>
 <td>$4.41000</td>
 <td>2/20/2024</td>
 <td>1/16/2025</td>
-<td>True</td>
 </tr>
-<tr class="blurred-row">
+<tr>
 <td>Axie Infinity</td>
 <td>$6.48000</td>
 <td>$164.90000</td>
 <td>11/6/2021</td>
 <td>1/16/2025</td>
-<td>True</td>
 </tr>
-<tr class="blurred-row">
+<tr>
 <td>Aerodrome Finance</td>
 <td>$1.36000</td>
 <td>$2.32000</td>
 <td>12/7/2024</td>
 <td>1/16/2025</td>
-<td>True</td>
 </tr>
-<tr class="blurred-row">
+<tr>
 <td>MultiversX</td>
 <td>$36.44000</td>
 <td>$545.64000</td>
 <td>11/23/2021</td>
 <td>1/16/2025</td>
-<td>True</td>
 </tr>
-<tr class="blurred-row">
+<tr>
 <td>Renzo Restaked ETH</td>
 <td>$3,432.35000</td>
 <td>$4,207.05000</td>
 <td>12/6/2024</td>
 <td>1/16/2025</td>
-<td>True</td>
 </tr>
-<tr class="blurred-row">
+<tr>
 <td>Decentraland</td>
 <td>$0.52749</td>
 <td>$5.85000</td>
 <td>11/25/2021</td>
 <td>1/16/2025</td>
-<td>True</td>
 </tr>
-<tr class="blurred-row">
+<tr>
 <td>dYdX</td>
 <td>$1.36000</td>
 <td>$4.52000</td>
 <td>3/7/2024</td>
 <td>1/16/2025</td>
-<td>True</td>
 </tr>
-<tr class="blurred-row">
+<tr>
 <td>Binance-Peg Dogecoin</td>
 <td>$0.38200</td>
 <td>$0.48058</td>
 <td>12/8/2024</td>
 <td>1/16/2025</td>
-<td>True</td>
 </tr>
-<tr class="blurred-row">
+<tr>
 <td>SPX6900</td>
 <td>$1.03800</td>
 <td>$1.63000</td>
 <td>1/6/2025</td>
 <td>1/16/2025</td>
-<td>True</td>
 </tr>
-<tr class="blurred-row">
+<tr>
 <td>DeXe</td>
 <td>$16.57000</td>
 <td>$32.38000</td>
 <td>3/8/2021</td>
 <td>1/16/2025</td>
-<td>True</td>
 </tr>
-<tr class="blurred-row">
+<tr>
 <td>Core</td>
 <td>$1.00800</td>
 <td>$6.14000</td>
 <td>2/8/2023</td>
 <td>1/16/2025</td>
-<td>True</td>
 </tr>
-<tr class="blurred-row">
+<tr>
 <td>Polygon</td>
 <td>$0.47834</td>
 <td>$2.92000</td>
 <td>12/27/2021</td>
 <td>1/16/2025</td>
-<td>True</td>
 </tr>
-<tr class="blurred-row">
+<tr>
 <td>Helium</td>
 <td>$4.98000</td>
 <td>$54.88000</td>
 <td>11/13/2021</td>
 <td>1/16/2025</td>
-<td>True</td>
 </tr>
-<tr class="blurred-row">
+<tr>
 <td>Zcash</td>
 <td>$54.31000</td>
 <td>$3,191.93000</td>
 <td>10/29/2016</td>
 <td>1/16/2025</td>
-<td>True</td>
 </tr>
-<tr class="blurred-row">
+<tr>
 <td>Wrapped BNB</td>
 <td>$715.19000</td>
 <td>$789.32000</td>
 <td>12/4/2024</td>
 <td>1/16/2025</td>
-<td>True</td>
 </tr>
-<tr class="blurred-row">
+<tr>
 <td>Conflux</td>
 <td>$0.17274</td>
 <td>$1.70000</td>
 <td>3/27/2021</td>
 <td>1/16/2025</td>
-<td>True</td>
 </tr>
-<tr class="blurred-row">
+<tr>
 <td>Arbitrum Bridged WBTC (Arbitrum One)</td>
 <td>$99,822.00000</td>
 <td>$107,654.00000</td>
 <td>12/17/2024</td>
 <td>1/16/2025</td>
-<td>True</td>
 </tr>
-<tr class="blurred-row">
+<tr>
 <td>Jupiter Staked SOL</td>
 <td>$228.19000</td>
 <td>$278.51000</td>
 <td>11/22/2024</td>
 <td>1/16/2025</td>
-<td>True</td>
 </tr>
-<tr class="blurred-row">
+<tr>
 <td>Echelon Prime</td>
 <td>$15.45000</td>
 <td>$28.00000</td>
 <td>3/18/2024</td>
 <td>1/16/2025</td>
-<td>True</td>
 </tr>
-<tr class="blurred-row">
+<tr>
 <td>ApeCoin</td>
 <td>$1.12000</td>
 <td>$26.70000</td>
 <td>4/28/2022</td>
 <td>1/16/2025</td>
-<td>True</td>
 </tr>
-<tr class="blurred-row">
+<tr>
 <td>Chiliz</td>
 <td>$0.08626</td>
 <td>$0.87863</td>
 <td>3/13/2021</td>
 <td>1/16/2025</td>
-<td>True</td>
 </tr>
-<tr class="blurred-row">
+<tr>
 <td>Reserve Rights</td>
 <td>$0.01464</td>
 <td>$0.11742</td>
 <td>4/16/2021</td>
 <td>1/16/2025</td>
-<td>True</td>
 </tr>
-<tr class="blurred-row">
+<tr>
 <td>L2 Standard Bridged WETH (Base)</td>
 <td>$3,328.53000</td>
 <td>$4,096.05000</td>
 <td>12/6/2024</td>
 <td>1/16/2025</td>
-<td>True</td>
 </tr>
-<tr class="blurred-row">
+<tr>
 <td>Eigenlayer</td>
 <td>$3.31000</td>
 <td>$5.65000</td>
 <td>12/17/2024</td>
 <td>1/16/2025</td>
-<td>True</td>
 </tr>
-<tr class="blurred-row">
+<tr>
 <td>Jito</td>
 <td>$2.71000</td>
 <td>$6.01000</td>
 <td>12/7/2023</td>
 <td>1/16/2025</td>
-<td>True</td>
 </tr>
-<tr class="blurred-row">
+<tr>
 <td>Akash Network</td>
 <td>$3.10000</td>
 <td>$8.07000</td>
 <td>4/6/2021</td>
 <td>1/16/2025</td>
-<td>True</td>
 </tr>
-<tr class="blurred-row">
+<tr>
 <td>USDD</td>
 <td>$0.99719</td>
 <td>$1.05200</td>
 <td>10/24/2023</td>
 <td>1/16/2025</td>
-<td>True</td>
 </tr>
-<tr class="blurred-row">
+<tr>
 <td>eCash</td>
 <td>$0.00004</td>
 <td>$0.00038</td>
 <td>9/4/2021</td>
 <td>1/16/2025</td>
-<td>True</td>
 </tr>
-<tr class="blurred-row">
+<tr>
 <td>Wormhole</td>
 <td>$0.25917</td>
 <td>$1.66000</td>
 <td>4/3/2024</td>
 <td>1/16/2025</td>
-<td>True</td>
 </tr>
-<tr class="blurred-row">
+<tr>
 <td>ether.fi Staked ETH</td>
 <td>$3,314.10000</td>
 <td>$5,307.23000</td>
 <td>8/6/2024</td>
 <td>1/16/2025</td>
-<td>True</td>
 </tr>
-<tr class="blurred-row">
+<tr>
 <td>Compound</td>
 <td>$81.71000</td>
 <td>$910.54000</td>
 <td>5/12/2021</td>
 <td>1/16/2025</td>
-<td>True</td>
 </tr>
-<tr class="blurred-row">
+<tr>
 <td>Arbitrum Bridged WETH (Arbitrum One)</td>
 <td>$3,331.35000</td>
 <td>$4,097.16000</td>
 <td>12/6/2024</td>
 <td>1/16/2025</td>
-<td>True</td>
 </tr>
-<tr class="blurred-row">
+<tr>
 <td>PancakeSwap</td>
 <td>$2.47000</td>
 <td>$43.96000</td>
 <td>4/30/2021</td>
 <td>1/16/2025</td>
-<td>True</td>
 </tr>
-<tr class="blurred-row">
+<tr>
 <td>Mina Protocol</td>
 <td>$0.58752</td>
 <td>$9.09000</td>
 <td>6/1/2021</td>
 <td>1/16/2025</td>
-<td>True</td>
 </tr>
-<tr class="blurred-row">
+<tr>
 <td>Mog Coin</td>
 <td>$0.00000</td>
 <td>$0.00000</td>
 <td>12/7/2024</td>
 <td>1/16/2025</td>
-<td>True</td>
 </tr>
-<tr class="blurred-row">
+<tr>
 <td>Mantle Restaked ETH</td>
 <td>$3,513.32000</td>
 <td>$4,298.87000</td>
 <td>12/16/2024</td>
 <td>1/16/2025</td>
-<td>True</td>
 </tr>
-<tr class="blurred-row">
+<tr>
 <td>aixbt by Virtuals</td>
 <td>$0.81806</td>
 <td>$0.94258</td>
 <td>1/16/2025</td>
 <td>1/16/2025</td>
-<td>True</td>
 </tr>
-<tr class="blurred-row">
+<tr>
 <td>Ronin</td>
 <td>$1.82000</td>
 <td>$4.45000</td>
 <td>3/26/2024</td>
 <td>1/16/2025</td>
-<td>True</td>
 </tr>
-<tr class="blurred-row">
+<tr>
 <td>Amp</td>
 <td>$0.00806</td>
 <td>$0.12081</td>
 <td>6/16/2021</td>
 <td>1/16/2025</td>
-<td>True</td>
 </tr>
-<tr class="blurred-row">
+<tr>
 <td>ZKsync</td>
 <td>$0.18240</td>
 <td>$0.32098</td>
 <td>6/17/2024</td>
 <td>1/16/2025</td>
-<td>True</td>
 </tr>
-<tr class="blurred-row">
+<tr>
 <td>Bio Protocol</td>
 <td>$0.40969</td>
 <td>$0.88899</td>
 <td>1/3/2025</td>
 <td>1/16/2025</td>
-<td>True</td>
 </tr>
-<tr class="blurred-row">
+<tr>
 <td>Tether Gold</td>
 <td>$2,686.52000</td>
 <td>$2,815.31000</td>
 <td>10/23/2024</td>
 <td>1/16/2025</td>
-<td>True</td>
 </tr>
-<tr class="blurred-row">
+<tr>
 <td>Ether.fi Staked BTC</td>
 <td>$100,054.00000</td>
 <td>$107,553.00000</td>
 <td>12/16/2024</td>
 <td>1/16/2025</td>
-<td>True</td>
 </tr>
-<tr class="blurred-row">
+<tr>
 <td>Frax</td>
 <td>$0.99353</td>
 <td>$1.14000</td>
 <td>2/7/2021</td>
 <td>1/16/2025</td>
-<td>True</td>
 </tr>
-<tr class="blurred-row">
+<tr>
 <td>Notcoin</td>
 <td>$0.00627</td>
 <td>$0.02836</td>
 <td>6/2/2024</td>
 <td>1/16/2025</td>
-<td>True</td>
 </tr>
-<tr class="blurred-row">
+<tr>
 <td>Gnosis</td>
 <td>$247.70000</td>
 <td>$644.20000</td>
 <td>11/8/2021</td>
 <td>1/16/2025</td>
-<td>True</td>
 </tr>
-<tr class="blurred-row">
+<tr>
 <td>Synthetix Network</td>
 <td>$1.88000</td>
 <td>$28.53000</td>
 <td>2/14/2021</td>
 <td>1/16/2025</td>
-<td>True</td>
 </tr>
-<tr class="blurred-row">
+<tr>
 <td>Pendle</td>
 <td>$3.87000</td>
 <td>$7.50000</td>
 <td>4/11/2024</td>
 <td>1/16/2025</td>
-<td>True</td>
 </tr>
-<tr class="blurred-row">
+<tr>
 <td>Grass</td>
 <td>$2.59000</td>
 <td>$3.89000</td>
 <td>11/8/2024</td>
 <td>1/16/2025</td>
-<td>True</td>
 </tr>
-<tr class="blurred-row">
+<tr>
 <td>Morpho</td>
 <td>$3.69000</td>
 <td>$3.80000</td>
 <td>1/16/2025</td>
 <td>1/16/2025</td>
-<td>True</td>
 </tr>
-<tr class="blurred-row">
+<tr>
 <td>usdx.money USDX</td>
 <td>$0.99861</td>
 <td>$1.05700</td>
 <td>12/6/2024</td>
 <td>1/16/2025</td>
-<td>True</td>
 </tr>
-<tr class="blurred-row">
+<tr>
 <td>dYdX</td>
 <td>$1.36000</td>
 <td>$27.86000</td>
 <td>9/30/2021</td>
 <td>1/16/2025</td>
-<td>True</td>
 </tr>
-<tr class="blurred-row">
+<tr>
 <td>Peanut the Squirrel</td>
 <td>$0.61020</td>
 <td>$2.44000</td>
 <td>11/14/2024</td>
 <td>1/16/2025</td>
-<td>True</td>
 </tr>
-<tr class="blurred-row">
+<tr>
 <td>MEOW</td>
 <td>$0.00675</td>
 <td>$0.00675</td>
 <td>1/16/2025</td>
 <td>1/16/2025</td>
-<td>True</td>
 </tr>
-<tr class="blurred-row">
+<tr>
 <td>Gigachad</td>
 <td>$0.06184</td>
 <td>$0.09513</td>
 <td>1/3/2025</td>
 <td>1/16/2025</td>
-<td>True</td>
 </tr>
-<tr class="blurred-row">
+<tr>
 <td>Popcat</td>
 <td>$0.60641</td>
 <td>$2.05000</td>
 <td>11/17/2024</td>
 <td>1/16/2025</td>
-<td>True</td>
 </tr>
-<tr class="blurred-row">
+<tr>
 <td>Axelar</td>
 <td>$0.65274</td>
 <td>$2.64000</td>
 <td>3/1/2024</td>
 <td>1/16/2025</td>
-<td>True</td>
 </tr>
-<tr class="blurred-row">
+<tr>
 <td>pumpBTC</td>
 <td>$97,157.00000</td>
 <td>$107,240.00000</td>
 <td>12/17/2024</td>
 <td>1/16/2025</td>
-<td>True</td>
 </tr>
-<tr class="blurred-row">
+<tr>
 <td>SuperVerse</td>
 <td>$1.28000</td>
 <td>$4.74000</td>
 <td>3/31/2021</td>
 <td>1/16/2025</td>
-<td>True</td>
 </tr>
-<tr class="blurred-row">
+<tr>
 <td>Terra Luna Classic</td>
 <td>$0.00010</td>
 <td>$119.18000</td>
 <td>4/5/2022</td>
 <td>1/16/2025</td>
-<td>True</td>
 </tr>
-<tr class="blurred-row">
+<tr>
 <td>Beldex</td>
 <td>$0.08102</td>
 <td>$0.45078</td>
 <td>12/17/2018</td>
 <td>1/16/2025</td>
-<td>True</td>
 </tr>
-<tr class="blurred-row">
+<tr>
 <td>ORDI</td>
 <td>$26.69000</td>
 <td>$95.52000</td>
 <td>3/5/2024</td>
 <td>1/16/2025</td>
-<td>True</td>
 </tr>
-<tr class="blurred-row">
+<tr>
 <td>Turbo</td>
 <td>$0.00808</td>
 <td>$0.01432</td>
 <td>12/11/2024</td>
 <td>1/16/2025</td>
-<td>True</td>
 </tr>
-<tr class="blurred-row">
+<tr>
 <td>Livepeer</td>
 <td>$14.73000</td>
 <td>$99.03000</td>
 <td>11/9/2021</td>
 <td>1/16/2025</td>
-<td>True</td>
 </tr>
-<tr class="blurred-row">
+<tr>
 <td>Oasis</td>
 <td>$0.08124</td>
 <td>$0.59735</td>
 <td>1/15/2022</td>
 <td>1/16/2025</td>
-<td>True</td>
 </tr>
-<tr class="blurred-row">
+<tr>
 <td>Coinbase Wrapped Staked ETH</td>
 <td>$3,616.96000</td>
 <td>$4,434.57000</td>
 <td>12/16/2024</td>
 <td>1/16/2025</td>
-<td>True</td>
 </tr>
-<tr class="blurred-row">
+<tr>
 <td>Dog (Bitcoin)</td>
 <td>$0.00546</td>
 <td>$0.00992</td>
 <td>12/11/2024</td>
 <td>1/16/2025</td>
-<td>True</td>
 </tr>
-<tr class="blurred-row">
+<tr>
 <td>Avalanche Bridged BTC (Avalanche)</td>
 <td>$100,041.00000</td>
 <td>$108,026.00000</td>
 <td>12/17/2024</td>
 <td>1/16/2025</td>
-<td>True</td>
 </tr>
-<tr class="blurred-row">
+<tr>
 <td>Kava</td>
 <td>$0.50084</td>
 <td>$9.12000</td>
 <td>8/30/2021</td>
 <td>1/16/2025</td>
-<td>True</td>
 </tr>
-<tr class="blurred-row">
+<tr>
 <td>PAX Gold</td>
 <td>$2,711.20000</td>
 <td>$2,855.83000</td>
 <td>4/13/2024</td>
 <td>1/16/2025</td>
-<td>True</td>
 </tr>
-<tr class="blurred-row">
+<tr>
 <td>cat in a dogs world</td>
 <td>$0.00606</td>
 <td>$0.01288</td>
 <td>11/17/2024</td>
 <td>1/16/2025</td>
-<td>True</td>
 </tr>
-<tr class="blurred-row">
+<tr>
 <td>GRIFFAIN</td>
 <td>$0.53679</td>
 <td>$0.57173</td>
 <td>1/16/2025</td>
 <td>1/16/2025</td>
-<td>True</td>
 </tr>
-<tr class="blurred-row">
+<tr>
 <td>1inch</td>
 <td>$0.38489</td>
 <td>$8.65000</td>
 <td>10/27/2021</td>
 <td>1/16/2025</td>
-<td>True</td>
 </tr>
-<tr class="blurred-row">
+<tr>
 <td>Resolv USR</td>
 <td>$0.99959</td>
 <td>$1.02100</td>
 <td>11/15/2024</td>
 <td>1/16/2025</td>
-<td>True</td>
 </tr>
-<tr class="blurred-row">
+<tr>
 <td>LayerZero</td>
 <td>$4.71000</td>
 <td>$7.47000</td>
 <td>12/6/2024</td>
 <td>1/16/2025</td>
-<td>True</td>
 </tr>
-<tr class="blurred-row">
+<tr>
 <td>Akuma Inu</td>
 <td>$0.00078</td>
 <td>$0.00135</td>
 <td>1/10/2025</td>
 <td>1/16/2025</td>
-<td>True</td>
 </tr>
-<tr class="blurred-row">
+<tr>
 <td>Trust Wallet</td>
 <td>$1.23000</td>
 <td>$2.72000</td>
 <td>12/12/2022</td>
 <td>1/16/2025</td>
-<td>True</td>
 </tr>
-<tr class="blurred-row">
+<tr>
 <td>Kusama</td>
 <td>$32.11000</td>
 <td>$621.71000</td>
 <td>5/18/2021</td>
 <td>1/16/2025</td>
-<td>True</td>
 </tr>
-<tr class="blurred-row">
+<tr>
 <td>Snek</td>
 <td>$0.00688</td>
 <td>$0.00896</td>
 <td>12/5/2024</td>
 <td>1/16/2025</td>
-<td>True</td>
 </tr>
-<tr class="blurred-row">
+<tr>
 <td>Safe</td>
 <td>$0.96777</td>
 <td>$3.56000</td>
 <td>4/23/2024</td>
 <td>1/16/2025</td>
-<td>True</td>
 </tr>
-<tr class="blurred-row">
+<tr>
 <td>Nervos Network</td>
 <td>$0.01115</td>
 <td>$0.04371</td>
 <td>3/31/2021</td>
 <td>1/16/2025</td>
-<td>True</td>
 </tr>
-<tr class="blurred-row">
+<tr>
 <td>APENFT</td>
 <td>$0.00000</td>
 <td>$0.00001</td>
 <td>9/5/2021</td>
 <td>1/16/2025</td>
-<td>True</td>
 </tr>
-<tr class="blurred-row">
+<tr>
 <td>PayPal USD</td>
 <td>$0.99919</td>
 <td>$1.02100</td>
 <td>10/24/2023</td>
 <td>1/16/2025</td>
-<td>True</td>
 </tr>
-<tr class="blurred-row">
+<tr>
 <td>TrueUSD</td>
 <td>$0.99715</td>
 <td>$1.62000</td>
 <td>8/26/2018</td>
 <td>1/16/2025</td>
-<td>True</td>
 </tr>
-<tr class="blurred-row">
+<tr>
 <td>Freysa AI</td>
 <td>$0.06008</td>
 <td>$0.08005</td>
 <td>1/6/2025</td>
 <td>1/16/2025</td>
-<td>True</td>
 </tr>
-<tr class="blurred-row">
+<tr>
 <td>Blur</td>
 <td>$0.22741</td>
 <td>$5.02000</td>
 <td>2/14/2023</td>
 <td>1/16/2025</td>
-<td>True</td>
 </tr>
-<tr class="blurred-row">
+<tr>
 <td>Frax Ether</td>
 <td>$3,329.82000</td>
 <td>$4,084.25000</td>
 <td>12/6/2024</td>
 <td>1/16/2025</td>
-<td>True</td>
 </tr>
-<tr class="blurred-row">
+<tr>
 <td>DeepBook</td>
 <td>$0.19364</td>
 <td>$0.19147</td>
 <td>1/16/2025</td>
 <td>1/16/2025</td>
-<td>True</td>
 </tr>
-<tr class="blurred-row">
+<tr>
 <td>Dash</td>
 <td>$39.98000</td>
 <td>$1,493.59000</td>
 <td>12/20/2017</td>
 <td>1/16/2025</td>
-<td>True</td>
 </tr>
-<tr class="blurred-row">
+<tr>
 <td>Horizen</td>
 <td>$30.25000</td>
 <td>$165.92000</td>
 <td>5/8/2021</td>
 <td>1/16/2025</td>
-<td>True</td>
 </tr>
-<tr class="blurred-row">
+<tr>
 <td>Polygon PoS Bridged WETH (Polygon POS)</td>
 <td>$3,327.99000</td>
 <td>$4,090.99000</td>
 <td>12/16/2024</td>
 <td>1/16/2025</td>
-<td>True</td>
 </tr>
-<tr class="blurred-row">
+<tr>
 <td>Arkham</td>
 <td>$1.41000</td>
 <td>$3.98000</td>
 <td>3/10/2024</td>
 <td>1/16/2025</td>
-<td>True</td>
 </tr>
-<tr class="blurred-row">
+<tr>
 <td>Theta Fuel</td>
 <td>$0.06896</td>
 <td>$0.68159</td>
 <td>6/9/2021</td>
 <td>1/16/2025</td>
-<td>True</td>
 </tr>
-<tr class="blurred-row">
+<tr>
 <td>Baby Doge Coin</td>
 <td>$0.00000</td>
 <td>$0.00000</td>
 <td>12/10/2024</td>
 <td>1/16/2025</td>
-<td>True</td>
 </tr>
-<tr class="blurred-row">
+<tr>
 <td>Astar</td>
 <td>$0.06191</td>
 <td>$0.42157</td>
 <td>1/17/2022</td>
 <td>1/16/2025</td>
-<td>True</td>
 </tr>
-<tr class="blurred-row">
+<tr>
 <td>Creditcoin</td>
 <td>$1.10000</td>
 <td>$8.67000</td>
 <td>3/14/2021</td>
 <td>1/16/2025</td>
-<td>True</td>
 </tr>
-<tr class="blurred-row">
+<tr>
 <td>io.net</td>
 <td>$3.34000</td>
 <td>$6.43000</td>
 <td>6/12/2024</td>
 <td>1/16/2025</td>
-<td>True</td>
 </tr>
-<tr class="blurred-row">
+<tr>
 <td>Ether.fi</td>
 <td>$2.05000</td>
 <td>$8.53000</td>
 <td>3/28/2024</td>
 <td>1/16/2025</td>
-<td>True</td>
 </tr>
-<tr class="blurred-row">
+<tr>
 <td>INSURANCE</td>
 <td>$23.83000</td>
 <td>$23.58000</td>
 <td>1/16/2025</td>
 <td>1/16/2025</td>
-<td>True</td>
 </tr>
-<tr class="blurred-row">
+<tr>
 <td>Zilliqa</td>
 <td>$0.02289</td>
 <td>$0.25538</td>
 <td>5/6/2021</td>
 <td>1/16/2025</td>
-<td>True</td>
 </tr>
-<tr class="blurred-row">
+<tr>
 <td>Telcoin</td>
 <td>$0.00568</td>
 <td>$0.06448</td>
 <td>5/11/2021</td>
 <td>1/16/2025</td>
-<td>True</td>
 </tr>
-<tr class="blurred-row">
+<tr>
 <td>Stader ETHx</td>
 <td>$3,485.67000</td>
 <td>$4,275.30000</td>
 <td>12/16/2024</td>
 <td>1/16/2025</td>
-<td>True</td>
 </tr>
-<tr class="blurred-row">
+<tr>
 <td>CHEX Token</td>
 <td>$0.43983</td>
 <td>$0.80434</td>
 <td>12/17/2024</td>
 <td>1/16/2025</td>
-<td>True</td>
 </tr>
-<tr class="blurred-row">
+<tr>
 <td>0x Protocol</td>
 <td>$0.51636</td>
 <td>$2.50000</td>
 <td>1/13/2018</td>
 <td>1/16/2025</td>
-<td>True</td>
 </tr>
-<tr class="blurred-row">
+<tr>
 <td>QuantixAI</td>
 <td>$89.98000</td>
 <td>$105.74000</td>
 <td>11/11/2024</td>
 <td>1/16/2025</td>
-<td>True</td>
 </tr>
-<tr class="blurred-row">
+<tr>
 <td>Swell Ethereum</td>
 <td>$3,584.35000</td>
 <td>$4,395.57000</td>
 <td>12/16/2024</td>
 <td>1/16/2025</td>
-<td>True</td>
 </tr>
-<tr class="blurred-row">
+<tr>
 <td>Holo</td>
 <td>$0.00244</td>
 <td>$0.03127</td>
 <td>4/5/2021</td>
 <td>1/16/2025</td>
-<td>True</td>
 </tr>
-<tr class="blurred-row">
+<tr>
 <td>tBTC</td>
 <td>$99,980.00000</td>
 <td>$107,841.00000</td>
 <td>12/17/2024</td>
 <td>1/16/2025</td>
-<td>True</td>
 </tr>
-<tr class="blurred-row">
+<tr>
 <td>Bridged USDC (Polygon PoS Bridge)</td>
 <td>$0.99959</td>
 <td>$1.02800</td>
 <td>4/14/2024</td>
 <td>1/16/2025</td>
-<td>True</td>
 </tr>
-<tr class="blurred-row">
+<tr>
 <td>Super OETH</td>
 <td>$3,327.98000</td>
 <td>$4,099.87000</td>
 <td>12/16/2024</td>
 <td>1/16/2025</td>
-<td>True</td>
 </tr>
-<tr class="blurred-row">
+<tr>
 <td>Ultima</td>
 <td>$9,843.22000</td>
 <td>$20,506.00000</td>
 <td>9/27/2023</td>
 <td>1/16/2025</td>
-<td>True</td>
 </tr>
-<tr class="blurred-row">
+<tr>
 <td>AgentFun.AI</td>
 <td>$4.22000</td>
 <td>$25.25000</td>
 <td>12/4/2024</td>
 <td>1/16/2025</td>
-<td>True</td>
 </tr>
-<tr class="blurred-row">
+<tr>
 <td>AI Rig Complex</td>
 <td>$0.41755</td>
 <td>$0.50883</td>
 <td>1/16/2025</td>
 <td>1/16/2025</td>
-<td>True</td>
 </tr>
-<tr class="blurred-row">
+<tr>
 <td>Hashnote USYC</td>
 <td>$1.07400</td>
 <td>$1.10000</td>
 <td>12/20/2024</td>
 <td>1/16/2025</td>
-<td>True</td>
 </tr>
-<tr class="blurred-row">
+<tr>
 <td>USDB</td>
 <td>$0.99052</td>
 <td>$1.07000</td>
 <td>3/6/2024</td>
 <td>1/16/2025</td>
-<td>True</td>
 </tr>
-<tr class="blurred-row">
+<tr>
 <td>Golem</td>
 <td>$0.39650</td>
 <td>$1.32000</td>
 <td>4/13/2018</td>
 <td>1/16/2025</td>
-<td>True</td>
 </tr>
-<tr class="blurred-row">
+<tr>
 <td>JUST</td>
 <td>$0.04001</td>
 <td>$0.19325</td>
 <td>4/5/2021</td>
 <td>1/16/2025</td>
-<td>True</td>
 </tr>
-<tr class="blurred-row">
+<tr>
 <td>BOOK OF MEME</td>
 <td>$0.00573</td>
 <td>$0.02689</td>
 <td>3/16/2024</td>
 <td>1/16/2025</td>
-<td>True</td>
 </tr>
-<tr class="blurred-row">
+<tr>
 <td>WOO</td>
 <td>$0.21192</td>
 <td>$1.78000</td>
 <td>11/15/2021</td>
 <td>1/16/2025</td>
-<td>True</td>
 </tr>
-<tr class="blurred-row">
+<tr>
 <td>Basic Attention</td>
 <td>$0.25840</td>
 <td>$1.90000</td>
 <td>11/28/2021</td>
 <td>1/16/2025</td>
-<td>True</td>
 </tr>
-<tr class="blurred-row">
+<tr>
 <td>Verus</td>
 <td>$4.91000</td>
 <td>$6.74000</td>
 <td>12/5/2024</td>
 <td>1/16/2025</td>
-<td>True</td>
 </tr>
-<tr class="blurred-row">
+<tr>
 <td>Vana</td>
 <td>$12.48000</td>
 <td>$35.23000</td>
 <td>12/17/2024</td>
 <td>1/16/2025</td>
-<td>True</td>
 </tr>
-<tr class="blurred-row">
+<tr>
 <td>Ondo US Dollar Yield</td>
 <td>$1.06700</td>
 <td>$1.26000</td>
 <td>3/27/2024</td>
 <td>1/16/2025</td>
-<td>True</td>
 </tr>
-<tr class="blurred-row">
+<tr>
 <td>Enjin Coin</td>
 <td>$0.20813</td>
 <td>$4.82000</td>
 <td>11/25/2021</td>
 <td>1/16/2025</td>
-<td>True</td>
 </tr>
-<tr class="blurred-row">
+<tr>
 <td>Convex Finance</td>
 <td>$4.53000</td>
 <td>$60.09000</td>
 <td>1/1/2022</td>
 <td>1/16/2025</td>
-<td>True</td>
 </tr>
-<tr class="blurred-row">
+<tr>
 <td>Aethir</td>
 <td>$0.06537</td>
 <td>$0.11854</td>
 <td>6/12/2024</td>
 <td>1/16/2025</td>
-<td>True</td>
 </tr>
-<tr class="blurred-row">
+<tr>
 <td>Binance-Peg BUSD</td>
 <td>$1.00200</td>
 <td>$1.06400</td>
 <td>10/24/2023</td>
 <td>1/16/2025</td>
-<td>True</td>
 </tr>
-<tr class="blurred-row">
+<tr>
 <td>Olympus</td>
 <td>$22.36000</td>
 <td>$1,415.26000</td>
 <td>4/25/2021</td>
 <td>1/16/2025</td>
-<td>True</td>
 </tr>
-<tr class="blurred-row">
+<tr>
 <td>PAAL AI</td>
 <td>$0.41758</td>
 <td>$0.85980</td>
 <td>3/10/2024</td>
 <td>1/16/2025</td>
-<td>True</td>
 </tr>
-<tr class="blurred-row">
+<tr>
 <td>Liquid Staked ETH</td>
 <td>$3,544.30000</td>
 <td>$4,332.67000</td>
 <td>12/6/2024</td>
 <td>1/16/2025</td>
-<td>True</td>
 </tr>
-<tr class="blurred-row">
+<tr>
 <td>Ankr Network</td>
 <td>$0.03655</td>
 <td>$0.21351</td>
 <td>4/16/2021</td>
 <td>1/16/2025</td>
-<td>True</td>
 </tr>
-<tr class="blurred-row">
+<tr>
 <td>Solayer Staked SOL</td>
 <td>$222.06000</td>
 <td>$273.12000</td>
 <td>11/23/2024</td>
 <td>1/16/2025</td>
-<td>True</td>
 </tr>
-<tr class="blurred-row">
+<tr>
 <td>Celo</td>
 <td>$0.64943</td>
 <td>$9.82000</td>
 <td>8/30/2021</td>
 <td>1/16/2025</td>
-<td>True</td>
 </tr>
 </tbody>
 </table>
@@ -2220,7 +1887,6 @@
 <th>ATH Market Cap (USD)</th>
 <th>ATH Market Cap Date</th>
 <th>Last Updated</th>
-<th>blurred</th>
 </tr>
 </thead>
 <tbody>
@@ -2231,7 +1897,6 @@
 <td>2.142266e+06</td>
 <td>12/17/2024</td>
 <td>1/16/2025</td>
-<td>False</td>
 </tr>
 <tr>
 <td>Ethereum</td>
@@ -2240,7 +1905,6 @@
 <td>5.878242e+05</td>
 <td>11/10/2021</td>
 <td>1/16/2025</td>
-<td>False</td>
 </tr>
 <tr>
 <td>XRP</td>
@@ -2249,7 +1913,6 @@
 <td>1.954766e+05</td>
 <td>1/7/2018</td>
 <td>1/16/2025</td>
-<td>False</td>
 </tr>
 <tr>
 <td>Tether</td>
@@ -2258,7 +1921,6 @@
 <td>1.814347e+05</td>
 <td>7/24/2018</td>
 <td>1/16/2025</td>
-<td>False</td>
 </tr>
 <tr>
 <td>BNB</td>
@@ -2267,7 +1929,6 @@
 <td>1.150820e+05</td>
 <td>12/4/2024</td>
 <td>1/16/2025</td>
-<td>False</td>
 </tr>
 <tr>
 <td>Solana</td>
@@ -2276,7 +1937,6 @@
 <td>1.280513e+05</td>
 <td>11/23/2024</td>
 <td>1/16/2025</td>
-<td>False</td>
 </tr>
 <tr>
 <td>Dogecoin</td>
@@ -2285,7 +1945,6 @@
 <td>1.079872e+05</td>
 <td>5/8/2021</td>
 <td>1/16/2025</td>
-<td>False</td>
 </tr>
 <tr>
 <td>USDC</td>
@@ -2294,7 +1953,6 @@
 <td>5.418173e+04</td>
 <td>5/8/2019</td>
 <td>1/16/2025</td>
-<td>False</td>
 </tr>
 <tr>
 <td>Cardano</td>
@@ -2303,7 +1961,6 @@
 <td>1.108399e+05</td>
 <td>9/2/2021</td>
 <td>1/16/2025</td>
-<td>False</td>
 </tr>
 <tr>
 <td>Lido Staked Ether</td>
@@ -2312,7 +1969,6 @@
 <td>4.638787e+04</td>
 <td>11/10/2021</td>
 <td>1/16/2025</td>
-<td>False</td>
 </tr>
 <tr>
 <td>TRON</td>
@@ -2321,7 +1977,6 @@
 <td>3.715988e+04</td>
 <td>12/4/2024</td>
 <td>1/16/2025</td>
-<td>False</td>
 </tr>
 <tr>
 <td>Avalanche</td>
@@ -2330,7 +1985,6 @@
 <td>5.963412e+04</td>
 <td>11/21/2021</td>
 <td>1/16/2025</td>
-<td>False</td>
 </tr>
 <tr>
 <td>Stellar</td>
@@ -2339,7 +1993,6 @@
 <td>2.665809e+04</td>
 <td>1/3/2018</td>
 <td>1/16/2025</td>
-<td>False</td>
 </tr>
 <tr>
 <td>Sui</td>
@@ -2348,7 +2001,6 @@
 <td>1.610120e+04</td>
 <td>1/4/2025</td>
 <td>1/16/2025</td>
-<td>False</td>
 </tr>
 <tr>
 <td>Chainlink</td>
@@ -2357,7 +2009,6 @@
 <td>3.325897e+04</td>
 <td>5/10/2021</td>
 <td>1/16/2025</td>
-<td>False</td>
 </tr>
 <tr>
 <td>Hedera</td>
@@ -2366,7 +2017,6 @@
 <td>2.177787e+04</td>
 <td>9/15/2021</td>
 <td>1/16/2025</td>
-<td>False</td>
 </tr>
 <tr>
 <td>Toncoin</td>
@@ -2375,7 +2025,6 @@
 <td>2.050408e+04</td>
 <td>6/15/2024</td>
 <td>1/16/2025</td>
-<td>False</td>
 </tr>
 <tr>
 <td>Wrapped stETH</td>
@@ -2384,7 +2033,6 @@
 <td>2.515530e+04</td>
 <td>5/13/2022</td>
 <td>1/16/2025</td>
-<td>False</td>
 </tr>
 <tr>
 <td>Wrapped Bitcoin</td>
@@ -2393,7 +2041,6 @@
 <td>1.412070e+04</td>
 <td>12/17/2024</td>
 <td>1/16/2025</td>
-<td>False</td>
 </tr>
 <tr>
 <td>Shiba Inu</td>
@@ -2402,2077 +2049,1846 @@
 <td>5.077023e+04</td>
 <td>10/28/2021</td>
 <td>1/16/2025</td>
-<td>False</td>
 </tr>
-<tr class="blurred-row">
+<tr>
 <td>Polkadot</td>
 <td>$7.28000</td>
 <td>1.108288e+04</td>
 <td>8.369424e+04</td>
 <td>11/4/2021</td>
 <td>1/16/2025</td>
-<td>True</td>
 </tr>
-<tr class="blurred-row">
+<tr>
 <td>WETH</td>
 <td>$3,325.44000</td>
 <td>1.044725e+04</td>
 <td>1.506562e+04</td>
 <td>11/9/2021</td>
 <td>1/16/2025</td>
-<td>True</td>
 </tr>
-<tr class="blurred-row">
+<tr>
 <td>Litecoin</td>
 <td>$127.86000</td>
 <td>9.641495e+03</td>
 <td>3.094458e+04</td>
 <td>5/10/2021</td>
 <td>1/16/2025</td>
-<td>True</td>
 </tr>
-<tr class="blurred-row">
+<tr>
 <td>Bitcoin Cash</td>
 <td>$466.08000</td>
 <td>9.247440e+03</td>
 <td>7.502238e+04</td>
 <td>12/20/2017</td>
 <td>1/16/2025</td>
-<td>True</td>
 </tr>
-<tr class="blurred-row">
+<tr>
 <td>LEO Token</td>
 <td>$9.67000</td>
 <td>8.941291e+03</td>
 <td>9.049079e+03</td>
 <td>12/18/2024</td>
 <td>1/16/2025</td>
-<td>True</td>
 </tr>
-<tr class="blurred-row">
+<tr>
 <td>Uniswap</td>
 <td>$14.29000</td>
 <td>8.580592e+03</td>
 <td>2.697370e+04</td>
 <td>5/3/2021</td>
 <td>1/16/2025</td>
-<td>True</td>
 </tr>
-<tr class="blurred-row">
+<tr>
 <td>Bitget Token</td>
 <td>$6.67000</td>
 <td>8.016912e+03</td>
 <td>1.014000e+04</td>
 <td>12/27/2024</td>
 <td>1/16/2025</td>
-<td>True</td>
 </tr>
-<tr class="blurred-row">
+<tr>
 <td>Hyperliquid</td>
 <td>$23.58000</td>
 <td>7.874245e+03</td>
 <td>1.167413e+04</td>
 <td>12/22/2024</td>
 <td>1/16/2025</td>
-<td>True</td>
 </tr>
-<tr class="blurred-row">
+<tr>
 <td>Pepe</td>
 <td>$0.00002</td>
 <td>7.710165e+03</td>
 <td>1.179194e+04</td>
 <td>12/9/2024</td>
 <td>1/16/2025</td>
-<td>True</td>
 </tr>
-<tr class="blurred-row">
+<tr>
 <td>Wrapped eETH</td>
 <td>$3,516.68000</td>
 <td>6.643491e+03</td>
 <td>8.143182e+03</td>
 <td>12/6/2024</td>
 <td>1/16/2025</td>
-<td>True</td>
 </tr>
-<tr class="blurred-row">
+<tr>
 <td>USDS</td>
 <td>$0.99933</td>
 <td>6.407410e+03</td>
 <td>6.774981e+03</td>
 <td>10/29/2024</td>
 <td>1/16/2025</td>
-<td>True</td>
 </tr>
-<tr class="blurred-row">
+<tr>
 <td>NEAR Protocol</td>
 <td>$5.24000</td>
 <td>6.156830e+03</td>
 <td>2.402119e+04</td>
 <td>1/16/2022</td>
 <td>1/16/2025</td>
-<td>True</td>
 </tr>
-<tr class="blurred-row">
+<tr>
 <td>Ethena USDe</td>
 <td>$0.99836</td>
 <td>5.810799e+03</td>
 <td>6.001348e+03</td>
 <td>12/20/2023</td>
 <td>1/16/2025</td>
-<td>True</td>
 </tr>
-<tr class="blurred-row">
+<tr>
 <td>Aptos</td>
 <td>$9.34000</td>
 <td>5.341645e+03</td>
 <td>1.138296e+04</td>
 <td>1/26/2023</td>
 <td>1/16/2025</td>
-<td>True</td>
 </tr>
-<tr class="blurred-row">
+<tr>
 <td>Internet Computer</td>
 <td>$10.96000</td>
 <td>5.259490e+03</td>
 <td>3.360198e+05</td>
 <td>5/10/2021</td>
 <td>1/16/2025</td>
-<td>True</td>
 </tr>
-<tr class="blurred-row">
+<tr>
 <td>Aave</td>
 <td>$315.82000</td>
 <td>4.748991e+03</td>
 <td>9.955729e+03</td>
 <td>5/18/2021</td>
 <td>1/16/2025</td>
-<td>True</td>
 </tr>
-<tr class="blurred-row">
+<tr>
 <td>VeChain</td>
 <td>$0.05201</td>
 <td>4.221164e+03</td>
 <td>2.275607e+04</td>
 <td>4/19/2021</td>
 <td>1/16/2025</td>
-<td>True</td>
 </tr>
-<tr class="blurred-row">
+<tr>
 <td>Ethereum Classic</td>
 <td>$26.93000</td>
 <td>4.053020e+03</td>
 <td>2.512570e+04</td>
 <td>5/6/2021</td>
 <td>1/16/2025</td>
-<td>True</td>
 </tr>
-<tr class="blurred-row">
+<tr>
 <td>Monero</td>
 <td>$219.36000</td>
 <td>4.048091e+03</td>
 <td>1.000422e+04</td>
 <td>1/9/2018</td>
 <td>1/16/2025</td>
-<td>True</td>
 </tr>
-<tr class="blurred-row">
+<tr>
 <td>POL (ex-MATIC)</td>
 <td>$0.47843</td>
 <td>4.042315e+03</td>
 <td>1.089075e+04</td>
 <td>3/13/2024</td>
 <td>1/16/2025</td>
-<td>True</td>
 </tr>
-<tr class="blurred-row">
+<tr>
 <td>Cronos</td>
 <td>$0.14521</td>
 <td>3.962275e+03</td>
 <td>2.628706e+04</td>
 <td>11/24/2021</td>
 <td>1/16/2025</td>
-<td>True</td>
 </tr>
-<tr class="blurred-row">
+<tr>
 <td>Algorand</td>
 <td>$0.47230</td>
 <td>3.953336e+03</td>
 <td>2.983604e+04</td>
 <td>6/20/2019</td>
 <td>1/16/2025</td>
-<td>True</td>
 </tr>
-<tr class="blurred-row">
+<tr>
 <td>Render</td>
 <td>$7.56000</td>
 <td>3.918008e+03</td>
 <td>7.004450e+03</td>
 <td>3/17/2024</td>
 <td>1/16/2025</td>
-<td>True</td>
 </tr>
-<tr class="blurred-row">
+<tr>
 <td>Mantle</td>
 <td>$1.13000</td>
 <td>3.804916e+03</td>
 <td>5.181629e+03</td>
 <td>4/8/2024</td>
 <td>1/16/2025</td>
-<td>True</td>
 </tr>
-<tr class="blurred-row">
+<tr>
 <td>Kaspa</td>
 <td>$0.14853</td>
 <td>3.794820e+03</td>
 <td>5.295548e+03</td>
 <td>8/1/2024</td>
 <td>1/16/2025</td>
-<td>True</td>
 </tr>
-<tr class="blurred-row">
+<tr>
 <td>Bittensor</td>
 <td>$452.36000</td>
 <td>3.703991e+03</td>
 <td>6.199823e+03</td>
 <td>3/7/2024</td>
 <td>1/16/2025</td>
-<td>True</td>
 </tr>
-<tr class="blurred-row">
+<tr>
 <td>MANTRA</td>
 <td>$3.84000</td>
 <td>3.690197e+03</td>
 <td>4.371125e+03</td>
 <td>12/11/2024</td>
 <td>1/16/2025</td>
-<td>True</td>
 </tr>
-<tr class="blurred-row">
+<tr>
 <td>Filecoin</td>
 <td>$5.71000</td>
 <td>3.549821e+03</td>
 <td>1.471681e+05</td>
 <td>4/1/2021</td>
 <td>1/16/2025</td>
-<td>True</td>
 </tr>
-<tr class="blurred-row">
+<tr>
 <td>Artificial Superintelligence Alliance</td>
 <td>$1.35000</td>
 <td>3.526907e+03</td>
 <td>8.987109e+03</td>
 <td>3/28/2024</td>
 <td>1/16/2025</td>
-<td>True</td>
 </tr>
-<tr class="blurred-row">
+<tr>
 <td>Dai</td>
 <td>$0.99997</td>
 <td>3.502998e+03</td>
 <td>4.273700e+03</td>
 <td>3/13/2020</td>
 <td>1/16/2025</td>
-<td>True</td>
 </tr>
-<tr class="blurred-row">
+<tr>
 <td>Virtuals Protocol</td>
 <td>$3.48000</td>
 <td>3.494560e+03</td>
 <td>5.070000e+03</td>
 <td>1/2/2025</td>
 <td>1/16/2025</td>
-<td>True</td>
 </tr>
-<tr class="blurred-row">
+<tr>
 <td>Arbitrum</td>
 <td>$0.76475</td>
 <td>3.219407e+03</td>
 <td>1.006217e+04</td>
 <td>1/12/2024</td>
 <td>1/16/2025</td>
-<td>True</td>
 </tr>
-<tr class="blurred-row">
+<tr>
 <td>OKB</td>
 <td>$49.62000</td>
 <td>2.979397e+03</td>
 <td>4.428000e+03</td>
 <td>3/14/2024</td>
 <td>1/16/2025</td>
-<td>True</td>
 </tr>
-<tr class="blurred-row">
+<tr>
 <td>Cosmos Hub</td>
 <td>$6.68000</td>
 <td>2.890256e+03</td>
 <td>1.920159e+04</td>
 <td>1/17/2022</td>
 <td>1/16/2025</td>
-<td>True</td>
 </tr>
-<tr class="blurred-row">
+<tr>
 <td>Ethena</td>
 <td>$0.91755</td>
 <td>2.783816e+03</td>
 <td>4.609875e+03</td>
 <td>4/11/2024</td>
 <td>1/16/2025</td>
-<td>True</td>
 </tr>
-<tr class="blurred-row">
+<tr>
 <td>Tokenize Xchange</td>
 <td>$33.52000</td>
 <td>2.685029e+03</td>
 <td>4.034198e+03</td>
 <td>1/3/2025</td>
 <td>1/16/2025</td>
-<td>True</td>
 </tr>
-<tr class="blurred-row">
+<tr>
 <td>Sonic (prev. FTM)</td>
 <td>$0.79301</td>
 <td>2.518663e+03</td>
 <td>3.267075e+03</td>
 <td>1/4/2025</td>
 <td>1/16/2025</td>
-<td>True</td>
 </tr>
-<tr class="blurred-row">
+<tr>
 <td>Optimism</td>
 <td>$1.86000</td>
 <td>2.514312e+03</td>
 <td>6.542320e+03</td>
 <td>3/6/2024</td>
 <td>1/16/2025</td>
-<td>True</td>
 </tr>
-<tr class="blurred-row">
+<tr>
 <td>Celestia</td>
 <td>$5.04000</td>
 <td>2.485186e+03</td>
 <td>1.026996e+04</td>
 <td>2/10/2024</td>
 <td>1/16/2025</td>
-<td>True</td>
 </tr>
-<tr class="blurred-row">
+<tr>
 <td>Theta Network</td>
 <td>$2.44000</td>
 <td>2.442709e+03</td>
 <td>1.572000e+04</td>
 <td>4/16/2021</td>
 <td>1/16/2025</td>
-<td>True</td>
 </tr>
-<tr class="blurred-row">
+<tr>
 <td>Gate</td>
 <td>$19.35000</td>
 <td>2.435779e+03</td>
 <td>2.483597e+03</td>
 <td>1/16/2025</td>
 <td>1/16/2025</td>
-<td>True</td>
 </tr>
-<tr class="blurred-row">
+<tr>
 <td>Stacks</td>
 <td>$1.58000</td>
 <td>2.383809e+03</td>
 <td>5.825366e+03</td>
 <td>4/1/2024</td>
 <td>1/16/2025</td>
-<td>True</td>
 </tr>
-<tr class="blurred-row">
+<tr>
 <td>Immutable</td>
 <td>$1.36000</td>
 <td>2.331507e+03</td>
 <td>1.636758e+04</td>
 <td>11/26/2021</td>
 <td>1/16/2025</td>
-<td>True</td>
 </tr>
-<tr class="blurred-row">
+<tr>
 <td>Injective</td>
 <td>$22.96000</td>
 <td>2.242902e+03</td>
 <td>5.142406e+03</td>
 <td>3/14/2024</td>
 <td>1/16/2025</td>
-<td>True</td>
 </tr>
-<tr class="blurred-row">
+<tr>
 <td>XDC Network</td>
 <td>$0.14921</td>
 <td>2.229172e+03</td>
 <td>2.877883e+03</td>
 <td>8/21/2021</td>
 <td>1/16/2025</td>
-<td>True</td>
 </tr>
-<tr class="blurred-row">
+<tr>
 <td>Bonk</td>
 <td>$0.00003</td>
 <td>2.209300e+03</td>
 <td>4.450013e+03</td>
 <td>11/20/2024</td>
 <td>1/16/2025</td>
-<td>True</td>
 </tr>
-<tr class="blurred-row">
+<tr>
 <td>Coinbase Wrapped BTC</td>
 <td>$99,973.00000</td>
 <td>2.147664e+03</td>
 <td>2.324676e+03</td>
 <td>12/17/2024</td>
 <td>1/16/2025</td>
-<td>True</td>
 </tr>
-<tr class="blurred-row">
+<tr>
 <td>Pudgy Penguins</td>
 <td>$0.03306</td>
 <td>2.077034e+03</td>
 <td>4.302606e+03</td>
 <td>12/17/2024</td>
 <td>1/16/2025</td>
-<td>True</td>
 </tr>
-<tr class="blurred-row">
+<tr>
 <td>The Graph</td>
 <td>$0.21638</td>
 <td>2.067245e+03</td>
 <td>2.711783e+04</td>
 <td>2/12/2021</td>
 <td>1/16/2025</td>
-<td>True</td>
 </tr>
-<tr class="blurred-row">
+<tr>
 <td>Binance-Peg WETH</td>
 <td>$3,327.37000</td>
 <td>2.013083e+03</td>
 <td>2.479447e+03</td>
 <td>12/6/2024</td>
 <td>1/16/2025</td>
-<td>True</td>
 </tr>
-<tr class="blurred-row">
+<tr>
 <td>Worldcoin</td>
 <td>$2.19000</td>
 <td>1.981162e+03</td>
 <td>1.064919e+04</td>
 <td>3/10/2024</td>
 <td>1/16/2025</td>
-<td>True</td>
 </tr>
-<tr class="blurred-row">
+<tr>
 <td>Movement</td>
 <td>$0.82257</td>
 <td>1.891749e+03</td>
 <td>3.335000e+03</td>
 <td>12/10/2024</td>
 <td>1/16/2025</td>
-<td>True</td>
 </tr>
-<tr class="blurred-row">
+<tr>
 <td>Kelp DAO Restaked ETH</td>
 <td>$3,436.46000</td>
 <td>1.873503e+03</td>
 <td>2.297325e+03</td>
 <td>12/6/2024</td>
 <td>1/16/2025</td>
-<td>True</td>
 </tr>
-<tr class="blurred-row">
+<tr>
 <td>First Digital USD</td>
 <td>$0.99781</td>
 <td>1.855371e+03</td>
 <td>2.024180e+03</td>
 <td>5/20/2024</td>
 <td>1/16/2025</td>
-<td>True</td>
 </tr>
-<tr class="blurred-row">
+<tr>
 <td>Sei</td>
 <td>$0.41002</td>
 <td>1.821311e+03</td>
 <td>5.053208e+03</td>
 <td>3/16/2024</td>
 <td>1/16/2025</td>
-<td>True</td>
 </tr>
-<tr class="blurred-row">
+<tr>
 <td>dogwifhat</td>
 <td>$1.80000</td>
 <td>1.802377e+03</td>
 <td>4.824814e+03</td>
 <td>3/31/2024</td>
 <td>1/16/2025</td>
-<td>True</td>
 </tr>
-<tr class="blurred-row">
+<tr>
 <td>Ondo</td>
 <td>$1.24000</td>
 <td>1.798891e+03</td>
 <td>3.092681e+03</td>
 <td>12/16/2024</td>
 <td>1/16/2025</td>
-<td>True</td>
 </tr>
-<tr class="blurred-row">
+<tr>
 <td>Lido DAO</td>
 <td>$1.99000</td>
 <td>1.782682e+03</td>
 <td>6.541143e+03</td>
 <td>8/20/2021</td>
 <td>1/16/2025</td>
-<td>True</td>
 </tr>
-<tr class="blurred-row">
+<tr>
 <td>Quant</td>
 <td>$120.42000</td>
 <td>1.752080e+03</td>
 <td>6.216472e+03</td>
 <td>9/11/2021</td>
 <td>1/16/2025</td>
-<td>True</td>
 </tr>
-<tr class="blurred-row">
+<tr>
 <td>Lombard Staked BTC</td>
 <td>$100,183.00000</td>
 <td>1.706842e+03</td>
 <td>1.843376e+03</td>
 <td>12/16/2024</td>
 <td>1/16/2025</td>
-<td>True</td>
 </tr>
-<tr class="blurred-row">
+<tr>
 <td>Rocket Pool ETH</td>
 <td>$3,718.44000</td>
 <td>1.704335e+03</td>
 <td>2.206054e+03</td>
 <td>12/1/2021</td>
 <td>1/16/2025</td>
-<td>True</td>
 </tr>
-<tr class="blurred-row">
+<tr>
 <td>Binance Staked SOL</td>
 <td>$218.16000</td>
 <td>1.682040e+03</td>
 <td>2.064810e+03</td>
 <td>11/23/2024</td>
 <td>1/16/2025</td>
-<td>True</td>
 </tr>
-<tr class="blurred-row">
+<tr>
 <td>GALA</td>
 <td>$0.03949</td>
 <td>1.677309e+03</td>
 <td>3.505877e+04</td>
 <td>11/26/2021</td>
 <td>1/16/2025</td>
-<td>True</td>
 </tr>
-<tr class="blurred-row">
+<tr>
 <td>FLOKI</td>
 <td>$0.00017</td>
 <td>1.648246e+03</td>
 <td>3.336947e+03</td>
 <td>6/5/2024</td>
 <td>1/16/2025</td>
-<td>True</td>
 </tr>
-<tr class="blurred-row">
+<tr>
 <td>Flare</td>
 <td>$0.02877</td>
 <td>1.641242e+03</td>
 <td>8.542578e+03</td>
 <td>1/10/2023</td>
 <td>1/16/2025</td>
-<td>True</td>
 </tr>
-<tr class="blurred-row">
+<tr>
 <td>Fasttoken</td>
 <td>$3.82000</td>
 <td>1.636853e+03</td>
 <td>1.648909e+03</td>
 <td>1/14/2025</td>
 <td>1/16/2025</td>
-<td>True</td>
 </tr>
-<tr class="blurred-row">
+<tr>
 <td>Raydium</td>
 <td>$5.53000</td>
 <td>1.609857e+03</td>
 <td>4.895656e+03</td>
 <td>9/12/2021</td>
 <td>1/16/2025</td>
-<td>True</td>
 </tr>
-<tr class="blurred-row">
+<tr>
 <td>Mantle Staked Ether</td>
 <td>$3,511.48000</td>
 <td>1.548263e+03</td>
 <td>2.086018e+03</td>
 <td>3/27/2024</td>
 <td>1/16/2025</td>
-<td>True</td>
 </tr>
-<tr class="blurred-row">
+<tr>
 <td>JasmyCoin</td>
 <td>$0.03179</td>
 <td>1.538957e+03</td>
 <td>2.319318e+05</td>
 <td>2/16/2021</td>
 <td>1/16/2025</td>
-<td>True</td>
 </tr>
-<tr class="blurred-row">
+<tr>
 <td>The Sandbox</td>
 <td>$0.62801</td>
 <td>1.536656e+03</td>
 <td>2.054520e+04</td>
 <td>11/25/2021</td>
 <td>1/16/2025</td>
-<td>True</td>
 </tr>
-<tr class="blurred-row">
+<tr>
 <td>ai16z</td>
 <td>$1.37000</td>
 <td>1.508359e+03</td>
 <td>2.716998e+03</td>
 <td>1/2/2025</td>
 <td>1/16/2025</td>
-<td>True</td>
 </tr>
-<tr class="blurred-row">
+<tr>
 <td>Usual USD</td>
 <td>$0.99905</td>
 <td>1.482735e+03</td>
 <td>1.972813e+03</td>
 <td>7/12/2024</td>
 <td>1/16/2025</td>
-<td>True</td>
 </tr>
-<tr class="blurred-row">
+<tr>
 <td>IOTA</td>
 <td>$0.40070</td>
 <td>1.441287e+03</td>
 <td>1.886389e+04</td>
 <td>12/19/2017</td>
 <td>1/16/2025</td>
-<td>True</td>
 </tr>
-<tr class="blurred-row">
+<tr>
 <td>EOS</td>
 <td>$0.94443</td>
 <td>1.434136e+03</td>
 <td>3.444848e+04</td>
 <td>4/29/2018</td>
 <td>1/16/2025</td>
-<td>True</td>
 </tr>
-<tr class="blurred-row">
+<tr>
 <td>Tezos</td>
 <td>$1.37000</td>
 <td>1.408409e+03</td>
 <td>9.347569e+03</td>
 <td>10/4/2021</td>
 <td>1/16/2025</td>
-<td>True</td>
 </tr>
-<tr class="blurred-row">
+<tr>
 <td>NEXO</td>
 <td>$1.38000</td>
 <td>1.377073e+03</td>
 <td>4.070000e+03</td>
 <td>5/12/2021</td>
 <td>1/16/2025</td>
-<td>True</td>
 </tr>
-<tr class="blurred-row">
+<tr>
 <td>Fartcoin</td>
 <td>$1.37000</td>
 <td>1.372786e+03</td>
 <td>1.589993e+03</td>
 <td>1/3/2025</td>
 <td>1/16/2025</td>
-<td>True</td>
 </tr>
-<tr class="blurred-row">
+<tr>
 <td>KuCoin</td>
 <td>$11.14000</td>
 <td>1.364205e+03</td>
 <td>3.536446e+03</td>
 <td>12/1/2021</td>
 <td>1/16/2025</td>
-<td>True</td>
 </tr>
-<tr class="blurred-row">
+<tr>
 <td>Jupiter</td>
 <td>$0.79739</td>
 <td>1.346391e+03</td>
 <td>3.372887e+03</td>
 <td>1/31/2024</td>
 <td>1/16/2025</td>
-<td>True</td>
 </tr>
-<tr class="blurred-row">
+<tr>
 <td>Kaia</td>
 <td>$0.22875</td>
 <td>1.339806e+03</td>
 <td>2.381884e+03</td>
 <td>12/3/2024</td>
 <td>1/16/2025</td>
-<td>True</td>
 </tr>
-<tr class="blurred-row">
+<tr>
 <td>Solv Protocol SolvBTC</td>
 <td>$99,662.00000</td>
 <td>1.304467e+03</td>
 <td>1.409341e+03</td>
 <td>12/17/2024</td>
 <td>1/16/2025</td>
-<td>True</td>
 </tr>
-<tr class="blurred-row">
+<tr>
 <td>sUSDS</td>
 <td>$1.02700</td>
 <td>1.303241e+03</td>
 <td>1.348560e+03</td>
 <td>1/3/2025</td>
 <td>1/16/2025</td>
-<td>True</td>
 </tr>
-<tr class="blurred-row">
+<tr>
 <td>Maker</td>
 <td>$1,422.43000</td>
 <td>1.269234e+03</td>
 <td>5.611160e+03</td>
 <td>5/3/2021</td>
 <td>1/16/2025</td>
-<td>True</td>
 </tr>
-<tr class="blurred-row">
+<tr>
 <td>Brett</td>
 <td>$0.12667</td>
 <td>1.257050e+03</td>
 <td>2.320953e+03</td>
 <td>12/1/2024</td>
 <td>1/16/2025</td>
-<td>True</td>
 </tr>
-<tr class="blurred-row">
+<tr>
 <td>THORChain</td>
 <td>$3.54000</td>
 <td>1.234704e+03</td>
 <td>7.271616e+03</td>
 <td>5/19/2021</td>
 <td>1/16/2025</td>
-<td>True</td>
 </tr>
-<tr class="blurred-row">
+<tr>
 <td>Pyth Network</td>
 <td>$0.33972</td>
 <td>1.231791e+03</td>
 <td>4.349987e+03</td>
 <td>3/16/2024</td>
 <td>1/16/2025</td>
-<td>True</td>
 </tr>
-<tr class="blurred-row">
+<tr>
 <td>Beam</td>
 <td>$0.02336</td>
 <td>1.228388e+03</td>
 <td>2.321254e+03</td>
 <td>3/10/2024</td>
 <td>1/16/2025</td>
-<td>True</td>
 </tr>
-<tr class="blurred-row">
+<tr>
 <td>Curve DAO</td>
 <td>$0.95393</td>
 <td>1.210375e+03</td>
 <td>1.948837e+04</td>
 <td>8/14/2020</td>
 <td>1/16/2025</td>
-<td>True</td>
 </tr>
-<tr class="blurred-row">
+<tr>
 <td>Flow</td>
 <td>$0.77658</td>
 <td>1.210094e+03</td>
 <td>6.605309e+04</td>
 <td>4/5/2021</td>
 <td>1/16/2025</td>
-<td>True</td>
 </tr>
-<tr class="blurred-row">
+<tr>
 <td>NEO</td>
 <td>$16.35000</td>
 <td>1.153529e+03</td>
 <td>1.399174e+04</td>
 <td>1/15/2018</td>
 <td>1/16/2025</td>
-<td>True</td>
 </tr>
-<tr class="blurred-row">
+<tr>
 <td>Marinade Staked SOL</td>
 <td>$266.50000</td>
 <td>1.148611e+03</td>
 <td>1.402203e+03</td>
 <td>11/23/2024</td>
 <td>1/16/2025</td>
-<td>True</td>
 </tr>
-<tr class="blurred-row">
+<tr>
 <td>Arweave</td>
 <td>$17.38000</td>
 <td>1.137855e+03</td>
 <td>5.841132e+03</td>
 <td>11/5/2021</td>
 <td>1/16/2025</td>
-<td>True</td>
 </tr>
-<tr class="blurred-row">
+<tr>
 <td>Bitcoin SV</td>
 <td>$57.25000</td>
 <td>1.135296e+03</td>
 <td>9.702987e+03</td>
 <td>4/16/2021</td>
 <td>1/16/2025</td>
-<td>True</td>
 </tr>
-<tr class="blurred-row">
+<tr>
 <td>AIOZ Network</td>
 <td>$0.98442</td>
 <td>1.129758e+03</td>
 <td>3.040619e+03</td>
 <td>4/3/2021</td>
 <td>1/16/2025</td>
-<td>True</td>
 </tr>
-<tr class="blurred-row">
+<tr>
 <td>BitTorrent</td>
 <td>$0.00000</td>
 <td>1.116316e+03</td>
 <td>3.321085e+03</td>
 <td>1/21/2022</td>
 <td>1/16/2025</td>
-<td>True</td>
 </tr>
-<tr class="blurred-row">
+<tr>
 <td>Ethereum Name Service</td>
 <td>$33.47000</td>
 <td>1.109570e+03</td>
 <td>2.766010e+03</td>
 <td>11/11/2021</td>
 <td>1/16/2025</td>
-<td>True</td>
 </tr>
-<tr class="blurred-row">
+<tr>
 <td>Solv Protocol SolvBTC.BBN</td>
 <td>$98,758.00000</td>
 <td>1.059855e+03</td>
 <td>1.153090e+03</td>
 <td>12/17/2024</td>
 <td>1/16/2025</td>
-<td>True</td>
 </tr>
-<tr class="blurred-row">
+<tr>
 <td>Starknet</td>
 <td>$0.42995</td>
 <td>1.040749e+03</td>
 <td>1.066829e+04</td>
 <td>2/20/2024</td>
 <td>1/16/2025</td>
-<td>True</td>
 </tr>
-<tr class="blurred-row">
+<tr>
 <td>Axie Infinity</td>
 <td>$6.48000</td>
 <td>1.023011e+03</td>
 <td>2.601201e+04</td>
 <td>11/6/2021</td>
 <td>1/16/2025</td>
-<td>True</td>
 </tr>
-<tr class="blurred-row">
+<tr>
 <td>Aerodrome Finance</td>
 <td>$1.36000</td>
 <td>1.022173e+03</td>
 <td>1.741114e+03</td>
 <td>12/7/2024</td>
 <td>1/16/2025</td>
-<td>True</td>
 </tr>
-<tr class="blurred-row">
+<tr>
 <td>MultiversX</td>
 <td>$36.44000</td>
 <td>1.014844e+03</td>
 <td>1.518534e+04</td>
 <td>11/23/2021</td>
 <td>1/16/2025</td>
-<td>True</td>
 </tr>
-<tr class="blurred-row">
+<tr>
 <td>Renzo Restaked ETH</td>
 <td>$3,432.35000</td>
 <td>9.987359e+02</td>
 <td>1.223650e+03</td>
 <td>12/6/2024</td>
 <td>1/16/2025</td>
-<td>True</td>
 </tr>
-<tr class="blurred-row">
+<tr>
 <td>Decentraland</td>
 <td>$0.52749</td>
 <td>9.856678e+02</td>
 <td>1.092789e+04</td>
 <td>11/25/2021</td>
 <td>1/16/2025</td>
-<td>True</td>
 </tr>
-<tr class="blurred-row">
+<tr>
 <td>dYdX</td>
 <td>$1.36000</td>
 <td>9.842094e+02</td>
 <td>3.261908e+03</td>
 <td>3/7/2024</td>
 <td>1/16/2025</td>
-<td>True</td>
 </tr>
-<tr class="blurred-row">
+<tr>
 <td>Binance-Peg Dogecoin</td>
 <td>$0.38200</td>
 <td>9.793423e+02</td>
 <td>1.232220e+03</td>
 <td>12/8/2024</td>
 <td>1/16/2025</td>
-<td>True</td>
 </tr>
-<tr class="blurred-row">
+<tr>
 <td>SPX6900</td>
 <td>$1.03800</td>
 <td>9.657436e+02</td>
 <td>1.517519e+03</td>
 <td>1/6/2025</td>
 <td>1/16/2025</td>
-<td>True</td>
 </tr>
-<tr class="blurred-row">
+<tr>
 <td>DeXe</td>
 <td>$16.57000</td>
 <td>9.462487e+02</td>
 <td>1.849020e+03</td>
 <td>3/8/2021</td>
 <td>1/16/2025</td>
-<td>True</td>
 </tr>
-<tr class="blurred-row">
+<tr>
 <td>Core</td>
 <td>$1.00800</td>
 <td>9.424427e+02</td>
 <td>5.738644e+03</td>
 <td>2/8/2023</td>
 <td>1/16/2025</td>
-<td>True</td>
 </tr>
-<tr class="blurred-row">
+<tr>
 <td>Polygon</td>
 <td>$0.47834</td>
 <td>9.080938e+02</td>
 <td>5.542757e+03</td>
 <td>12/27/2021</td>
 <td>1/16/2025</td>
-<td>True</td>
 </tr>
-<tr class="blurred-row">
+<tr>
 <td>Helium</td>
 <td>$4.98000</td>
 <td>8.793765e+02</td>
 <td>9.689174e+03</td>
 <td>11/13/2021</td>
 <td>1/16/2025</td>
-<td>True</td>
 </tr>
-<tr class="blurred-row">
+<tr>
 <td>Zcash</td>
 <td>$54.31000</td>
 <td>8.612946e+02</td>
 <td>5.058271e+04</td>
 <td>10/29/2016</td>
 <td>1/16/2025</td>
-<td>True</td>
 </tr>
-<tr class="blurred-row">
+<tr>
 <td>Wrapped BNB</td>
 <td>$715.19000</td>
 <td>8.598983e+02</td>
 <td>9.487805e+02</td>
 <td>12/4/2024</td>
 <td>1/16/2025</td>
-<td>True</td>
 </tr>
-<tr class="blurred-row">
+<tr>
 <td>Conflux</td>
 <td>$0.17274</td>
 <td>8.344587e+02</td>
 <td>8.201992e+03</td>
 <td>3/27/2021</td>
 <td>1/16/2025</td>
-<td>True</td>
 </tr>
-<tr class="blurred-row">
+<tr>
 <td>Arbitrum Bridged WBTC (Arbitrum One)</td>
 <td>$99,822.00000</td>
 <td>8.340123e+02</td>
 <td>8.999311e+02</td>
 <td>12/17/2024</td>
 <td>1/16/2025</td>
-<td>True</td>
 </tr>
-<tr class="blurred-row">
+<tr>
 <td>Jupiter Staked SOL</td>
 <td>$228.19000</td>
 <td>8.207615e+02</td>
 <td>1.001720e+03</td>
 <td>11/22/2024</td>
 <td>1/16/2025</td>
-<td>True</td>
 </tr>
-<tr class="blurred-row">
+<tr>
 <td>Echelon Prime</td>
 <td>$15.45000</td>
 <td>8.189038e+02</td>
 <td>1.482528e+03</td>
 <td>3/18/2024</td>
 <td>1/16/2025</td>
-<td>True</td>
 </tr>
-<tr class="blurred-row">
+<tr>
 <td>ApeCoin</td>
 <td>$1.12000</td>
 <td>8.100926e+02</td>
 <td>1.926268e+04</td>
 <td>4/28/2022</td>
 <td>1/16/2025</td>
-<td>True</td>
 </tr>
-<tr class="blurred-row">
+<tr>
 <td>Chiliz</td>
 <td>$0.08626</td>
 <td>8.062875e+02</td>
 <td>8.210587e+03</td>
 <td>3/13/2021</td>
 <td>1/16/2025</td>
-<td>True</td>
 </tr>
-<tr class="blurred-row">
+<tr>
 <td>Reserve Rights</td>
 <td>$0.01464</td>
 <td>7.884796e+02</td>
 <td>6.321414e+03</td>
 <td>4/16/2021</td>
 <td>1/16/2025</td>
-<td>True</td>
 </tr>
-<tr class="blurred-row">
+<tr>
 <td>L2 Standard Bridged WETH (Base)</td>
 <td>$3,328.53000</td>
 <td>7.846541e+02</td>
 <td>9.657198e+02</td>
 <td>12/6/2024</td>
 <td>1/16/2025</td>
-<td>True</td>
 </tr>
-<tr class="blurred-row">
+<tr>
 <td>Eigenlayer</td>
 <td>$3.31000</td>
 <td>7.777816e+02</td>
 <td>1.327624e+03</td>
 <td>12/17/2024</td>
 <td>1/16/2025</td>
-<td>True</td>
 </tr>
-<tr class="blurred-row">
+<tr>
 <td>Jito</td>
 <td>$2.71000</td>
 <td>7.675620e+02</td>
 <td>1.699503e+03</td>
 <td>12/7/2023</td>
 <td>1/16/2025</td>
-<td>True</td>
 </tr>
-<tr class="blurred-row">
+<tr>
 <td>Akash Network</td>
 <td>$3.10000</td>
 <td>7.670437e+02</td>
 <td>1.996866e+03</td>
 <td>4/6/2021</td>
 <td>1/16/2025</td>
-<td>True</td>
 </tr>
-<tr class="blurred-row">
+<tr>
 <td>USDD</td>
 <td>$0.99719</td>
 <td>7.502169e+02</td>
 <td>7.903561e+02</td>
 <td>10/24/2023</td>
 <td>1/16/2025</td>
-<td>True</td>
 </tr>
-<tr class="blurred-row">
+<tr>
 <td>eCash</td>
 <td>$0.00004</td>
 <td>7.489662e+02</td>
 <td>7.528956e+03</td>
 <td>9/4/2021</td>
 <td>1/16/2025</td>
-<td>True</td>
 </tr>
-<tr class="blurred-row">
+<tr>
 <td>Wormhole</td>
 <td>$0.25917</td>
 <td>7.313480e+02</td>
 <td>4.681803e+03</td>
 <td>4/3/2024</td>
 <td>1/16/2025</td>
-<td>True</td>
 </tr>
-<tr class="blurred-row">
+<tr>
 <td>ether.fi Staked ETH</td>
 <td>$3,314.10000</td>
 <td>7.302500e+02</td>
 <td>1.168994e+03</td>
 <td>8/6/2024</td>
 <td>1/16/2025</td>
-<td>True</td>
 </tr>
-<tr class="blurred-row">
+<tr>
 <td>Compound</td>
 <td>$81.71000</td>
 <td>7.250983e+02</td>
 <td>8.075229e+03</td>
 <td>5/12/2021</td>
 <td>1/16/2025</td>
-<td>True</td>
 </tr>
-<tr class="blurred-row">
+<tr>
 <td>Arbitrum Bridged WETH (Arbitrum One)</td>
 <td>$3,331.35000</td>
 <td>7.238299e+02</td>
 <td>8.915846e+02</td>
 <td>12/6/2024</td>
 <td>1/16/2025</td>
-<td>True</td>
 </tr>
-<tr class="blurred-row">
+<tr>
 <td>PancakeSwap</td>
 <td>$2.47000</td>
 <td>7.204664e+02</td>
 <td>1.280195e+04</td>
 <td>4/30/2021</td>
 <td>1/16/2025</td>
-<td>True</td>
 </tr>
-<tr class="blurred-row">
+<tr>
 <td>Mina Protocol</td>
 <td>$0.58752</td>
 <td>7.092219e+02</td>
 <td>1.097196e+04</td>
 <td>6/1/2021</td>
 <td>1/16/2025</td>
-<td>True</td>
 </tr>
-<tr class="blurred-row">
+<tr>
 <td>Mog Coin</td>
 <td>$0.00000</td>
 <td>7.031490e+02</td>
 <td>1.570081e+03</td>
 <td>12/7/2024</td>
 <td>1/16/2025</td>
-<td>True</td>
 </tr>
-<tr class="blurred-row">
+<tr>
 <td>Mantle Restaked ETH</td>
 <td>$3,513.32000</td>
 <td>6.999726e+02</td>
 <td>8.564812e+02</td>
 <td>12/16/2024</td>
 <td>1/16/2025</td>
-<td>True</td>
 </tr>
-<tr class="blurred-row">
+<tr>
 <td>aixbt by Virtuals</td>
 <td>$0.81806</td>
 <td>6.999393e+02</td>
 <td>8.064817e+02</td>
 <td>1/16/2025</td>
 <td>1/16/2025</td>
-<td>True</td>
 </tr>
-<tr class="blurred-row">
+<tr>
 <td>Ronin</td>
 <td>$1.82000</td>
 <td>6.927767e+02</td>
 <td>1.692229e+03</td>
 <td>3/26/2024</td>
 <td>1/16/2025</td>
-<td>True</td>
 </tr>
-<tr class="blurred-row">
+<tr>
 <td>Amp</td>
 <td>$0.00806</td>
 <td>6.792498e+02</td>
 <td>1.017624e+04</td>
 <td>6/16/2021</td>
 <td>1/16/2025</td>
-<td>True</td>
 </tr>
-<tr class="blurred-row">
+<tr>
 <td>ZKsync</td>
 <td>$0.18240</td>
 <td>6.702324e+02</td>
 <td>1.179613e+03</td>
 <td>6/17/2024</td>
 <td>1/16/2025</td>
-<td>True</td>
 </tr>
-<tr class="blurred-row">
+<tr>
 <td>Bio Protocol</td>
 <td>$0.40969</td>
 <td>6.645089e+02</td>
 <td>1.440808e+03</td>
 <td>1/3/2025</td>
 <td>1/16/2025</td>
-<td>True</td>
 </tr>
-<tr class="blurred-row">
+<tr>
 <td>Tether Gold</td>
 <td>$2,686.52000</td>
 <td>6.627748e+02</td>
 <td>6.940424e+02</td>
 <td>10/23/2024</td>
 <td>1/16/2025</td>
-<td>True</td>
 </tr>
-<tr class="blurred-row">
+<tr>
 <td>Ether.fi Staked BTC</td>
 <td>$100,054.00000</td>
 <td>6.582515e+02</td>
 <td>7.090324e+02</td>
 <td>12/16/2024</td>
 <td>1/16/2025</td>
-<td>True</td>
 </tr>
-<tr class="blurred-row">
+<tr>
 <td>Frax</td>
 <td>$0.99353</td>
 <td>6.455917e+02</td>
 <td>7.403541e+02</td>
 <td>2/7/2021</td>
 <td>1/16/2025</td>
-<td>True</td>
 </tr>
-<tr class="blurred-row">
+<tr>
 <td>Notcoin</td>
 <td>$0.00627</td>
 <td>6.427817e+02</td>
 <td>2.905828e+03</td>
 <td>6/2/2024</td>
 <td>1/16/2025</td>
-<td>True</td>
 </tr>
-<tr class="blurred-row">
+<tr>
 <td>Gnosis</td>
 <td>$247.70000</td>
 <td>6.412045e+02</td>
 <td>1.668213e+03</td>
 <td>11/8/2021</td>
 <td>1/16/2025</td>
-<td>True</td>
 </tr>
-<tr class="blurred-row">
+<tr>
 <td>Synthetix Network</td>
 <td>$1.88000</td>
 <td>6.374006e+02</td>
 <td>9.684971e+03</td>
 <td>2/14/2021</td>
 <td>1/16/2025</td>
-<td>True</td>
 </tr>
-<tr class="blurred-row">
+<tr>
 <td>Pendle</td>
 <td>$3.87000</td>
 <td>6.350265e+02</td>
 <td>1.231449e+03</td>
 <td>4/11/2024</td>
 <td>1/16/2025</td>
-<td>True</td>
 </tr>
-<tr class="blurred-row">
+<tr>
 <td>Grass</td>
 <td>$2.59000</td>
 <td>6.318864e+02</td>
 <td>9.487908e+02</td>
 <td>11/8/2024</td>
 <td>1/16/2025</td>
-<td>True</td>
 </tr>
-<tr class="blurred-row">
+<tr>
 <td>Morpho</td>
 <td>$3.69000</td>
 <td>6.297826e+02</td>
 <td>6.480026e+02</td>
 <td>1/16/2025</td>
 <td>1/16/2025</td>
-<td>True</td>
 </tr>
-<tr class="blurred-row">
+<tr>
 <td>usdx.money USDX</td>
 <td>$0.99861</td>
 <td>6.223218e+02</td>
 <td>6.585041e+02</td>
 <td>12/6/2024</td>
 <td>1/16/2025</td>
-<td>True</td>
 </tr>
-<tr class="blurred-row">
+<tr>
 <td>dYdX</td>
 <td>$1.36000</td>
 <td>6.110512e+02</td>
 <td>1.250220e+04</td>
 <td>9/30/2021</td>
 <td>1/16/2025</td>
-<td>True</td>
 </tr>
-<tr class="blurred-row">
+<tr>
 <td>Peanut the Squirrel</td>
 <td>$0.61020</td>
 <td>6.101127e+02</td>
 <td>2.439656e+03</td>
 <td>11/14/2024</td>
 <td>1/16/2025</td>
-<td>True</td>
 </tr>
-<tr class="blurred-row">
+<tr>
 <td>MEOW</td>
 <td>$0.00675</td>
 <td>6.072729e+02</td>
 <td>6.078091e+02</td>
 <td>1/16/2025</td>
 <td>1/16/2025</td>
-<td>True</td>
 </tr>
-<tr class="blurred-row">
+<tr>
 <td>Gigachad</td>
 <td>$0.06184</td>
 <td>5.948582e+02</td>
 <td>9.136127e+02</td>
 <td>1/3/2025</td>
 <td>1/16/2025</td>
-<td>True</td>
 </tr>
-<tr class="blurred-row">
+<tr>
 <td>Popcat</td>
 <td>$0.60641</td>
 <td>5.941881e+02</td>
 <td>2.008956e+03</td>
 <td>11/17/2024</td>
 <td>1/16/2025</td>
-<td>True</td>
 </tr>
-<tr class="blurred-row">
+<tr>
 <td>Axelar</td>
 <td>$0.65274</td>
 <td>5.865972e+02</td>
 <td>2.370709e+03</td>
 <td>3/1/2024</td>
 <td>1/16/2025</td>
-<td>True</td>
 </tr>
-<tr class="blurred-row">
+<tr>
 <td>pumpBTC</td>
 <td>$97,157.00000</td>
 <td>5.835210e+02</td>
 <td>6.437280e+02</td>
 <td>12/17/2024</td>
 <td>1/16/2025</td>
-<td>True</td>
 </tr>
-<tr class="blurred-row">
+<tr>
 <td>SuperVerse</td>
 <td>$1.28000</td>
 <td>5.805386e+02</td>
 <td>2.141034e+03</td>
 <td>3/31/2021</td>
 <td>1/16/2025</td>
-<td>True</td>
 </tr>
-<tr class="blurred-row">
+<tr>
 <td>Terra Luna Classic</td>
 <td>$0.00010</td>
 <td>5.738593e+02</td>
 <td>6.562695e+08</td>
 <td>4/5/2022</td>
 <td>1/16/2025</td>
-<td>True</td>
 </tr>
-<tr class="blurred-row">
+<tr>
 <td>Beldex</td>
 <td>$0.08102</td>
 <td>5.607224e+02</td>
 <td>3.116233e+03</td>
 <td>12/17/2018</td>
 <td>1/16/2025</td>
-<td>True</td>
 </tr>
-<tr class="blurred-row">
+<tr>
 <td>ORDI</td>
 <td>$26.69000</td>
 <td>5.605669e+02</td>
 <td>2.005920e+03</td>
 <td>3/5/2024</td>
 <td>1/16/2025</td>
-<td>True</td>
 </tr>
-<tr class="blurred-row">
+<tr>
 <td>Turbo</td>
 <td>$0.00808</td>
 <td>5.577331e+02</td>
 <td>9.878516e+02</td>
 <td>12/11/2024</td>
 <td>1/16/2025</td>
-<td>True</td>
 </tr>
-<tr class="blurred-row">
+<tr>
 <td>Livepeer</td>
 <td>$14.73000</td>
 <td>5.505878e+02</td>
 <td>3.698809e+03</td>
 <td>11/9/2021</td>
 <td>1/16/2025</td>
-<td>True</td>
 </tr>
-<tr class="blurred-row">
+<tr>
 <td>Oasis</td>
 <td>$0.08124</td>
 <td>5.468589e+02</td>
 <td>4.020023e+03</td>
 <td>1/15/2022</td>
 <td>1/16/2025</td>
-<td>True</td>
 </tr>
-<tr class="blurred-row">
+<tr>
 <td>Coinbase Wrapped Staked ETH</td>
 <td>$3,616.96000</td>
 <td>5.464388e+02</td>
 <td>6.696664e+02</td>
 <td>12/16/2024</td>
 <td>1/16/2025</td>
-<td>True</td>
 </tr>
-<tr class="blurred-row">
+<tr>
 <td>Dog (Bitcoin)</td>
 <td>$0.00546</td>
 <td>5.462181e+02</td>
 <td>9.923700e+02</td>
 <td>12/11/2024</td>
 <td>1/16/2025</td>
-<td>True</td>
 </tr>
-<tr class="blurred-row">
+<tr>
 <td>Avalanche Bridged BTC (Avalanche)</td>
 <td>$100,041.00000</td>
 <td>5.447139e+02</td>
 <td>5.879371e+02</td>
 <td>12/17/2024</td>
 <td>1/16/2025</td>
-<td>True</td>
 </tr>
-<tr class="blurred-row">
+<tr>
 <td>Kava</td>
 <td>$0.50084</td>
 <td>5.422637e+02</td>
 <td>9.875627e+03</td>
 <td>8/30/2021</td>
 <td>1/16/2025</td>
-<td>True</td>
 </tr>
-<tr class="blurred-row">
+<tr>
 <td>PAX Gold</td>
 <td>$2,711.20000</td>
 <td>5.422588e+02</td>
 <td>5.710423e+02</td>
 <td>4/13/2024</td>
 <td>1/16/2025</td>
-<td>True</td>
 </tr>
-<tr class="blurred-row">
+<tr>
 <td>cat in a dogs world</td>
 <td>$0.00606</td>
 <td>5.390795e+02</td>
 <td>1.145025e+03</td>
 <td>11/17/2024</td>
 <td>1/16/2025</td>
-<td>True</td>
 </tr>
-<tr class="blurred-row">
+<tr>
 <td>GRIFFAIN</td>
 <td>$0.53679</td>
 <td>5.389811e+02</td>
 <td>5.716533e+02</td>
 <td>1/16/2025</td>
 <td>1/16/2025</td>
-<td>True</td>
 </tr>
-<tr class="blurred-row">
+<tr>
 <td>1inch</td>
 <td>$0.38489</td>
 <td>5.379829e+02</td>
 <td>1.209260e+04</td>
 <td>10/27/2021</td>
 <td>1/16/2025</td>
-<td>True</td>
 </tr>
-<tr class="blurred-row">
+<tr>
 <td>Resolv USR</td>
 <td>$0.99959</td>
 <td>5.261251e+02</td>
 <td>5.372238e+02</td>
 <td>11/15/2024</td>
 <td>1/16/2025</td>
-<td>True</td>
 </tr>
-<tr class="blurred-row">
+<tr>
 <td>LayerZero</td>
 <td>$4.71000</td>
 <td>5.233477e+02</td>
 <td>8.303118e+02</td>
 <td>12/6/2024</td>
 <td>1/16/2025</td>
-<td>True</td>
 </tr>
-<tr class="blurred-row">
+<tr>
 <td>Akuma Inu</td>
 <td>$0.00078</td>
 <td>5.200152e+02</td>
 <td>8.985867e+02</td>
 <td>1/10/2025</td>
 <td>1/16/2025</td>
-<td>True</td>
 </tr>
-<tr class="blurred-row">
+<tr>
 <td>Trust Wallet</td>
 <td>$1.23000</td>
 <td>5.144963e+02</td>
 <td>1.133288e+03</td>
 <td>12/12/2022</td>
 <td>1/16/2025</td>
-<td>True</td>
 </tr>
-<tr class="blurred-row">
+<tr>
 <td>Kusama</td>
 <td>$32.11000</td>
 <td>5.131562e+02</td>
 <td>9.938012e+03</td>
 <td>5/18/2021</td>
 <td>1/16/2025</td>
-<td>True</td>
 </tr>
-<tr class="blurred-row">
+<tr>
 <td>Snek</td>
 <td>$0.00688</td>
 <td>5.121036e+02</td>
 <td>6.662558e+02</td>
 <td>12/5/2024</td>
 <td>1/16/2025</td>
-<td>True</td>
 </tr>
-<tr class="blurred-row">
+<tr>
 <td>Safe</td>
 <td>$0.96777</td>
 <td>5.107771e+02</td>
 <td>1.877612e+03</td>
 <td>4/23/2024</td>
 <td>1/16/2025</td>
-<td>True</td>
 </tr>
-<tr class="blurred-row">
+<tr>
 <td>Nervos Network</td>
 <td>$0.01115</td>
 <td>5.072910e+02</td>
 <td>1.989015e+03</td>
 <td>3/31/2021</td>
 <td>1/16/2025</td>
-<td>True</td>
 </tr>
-<tr class="blurred-row">
+<tr>
 <td>APENFT</td>
 <td>$0.00000</td>
 <td>5.019878e+02</td>
 <td>7.455496e+03</td>
 <td>9/5/2021</td>
 <td>1/16/2025</td>
-<td>True</td>
 </tr>
-<tr class="blurred-row">
+<tr>
 <td>PayPal USD</td>
 <td>$0.99919</td>
 <td>4.980185e+02</td>
 <td>5.087173e+02</td>
 <td>10/24/2023</td>
 <td>1/16/2025</td>
-<td>True</td>
 </tr>
-<tr class="blurred-row">
+<tr>
 <td>TrueUSD</td>
 <td>$0.99715</td>
 <td>4.945574e+02</td>
 <td>8.027361e+02</td>
 <td>8/26/2018</td>
 <td>1/16/2025</td>
-<td>True</td>
 </tr>
-<tr class="blurred-row">
+<tr>
 <td>Freysa AI</td>
 <td>$0.06008</td>
 <td>4.926245e+02</td>
 <td>6.555609e+02</td>
 <td>1/6/2025</td>
 <td>1/16/2025</td>
-<td>True</td>
 </tr>
-<tr class="blurred-row">
+<tr>
 <td>Blur</td>
 <td>$0.22741</td>
 <td>4.875095e+02</td>
 <td>1.075785e+04</td>
 <td>2/14/2023</td>
 <td>1/16/2025</td>
-<td>True</td>
 </tr>
-<tr class="blurred-row">
+<tr>
 <td>Frax Ether</td>
 <td>$3,329.82000</td>
 <td>4.850419e+02</td>
 <td>5.936180e+02</td>
 <td>12/6/2024</td>
 <td>1/16/2025</td>
-<td>True</td>
 </tr>
-<tr class="blurred-row">
+<tr>
 <td>DeepBook</td>
 <td>$0.19364</td>
 <td>4.843692e+02</td>
 <td>4.786850e+02</td>
 <td>1/16/2025</td>
 <td>1/16/2025</td>
-<td>True</td>
 </tr>
-<tr class="blurred-row">
+<tr>
 <td>Dash</td>
 <td>$39.98000</td>
 <td>4.841516e+02</td>
 <td>1.808226e+04</td>
 <td>12/20/2017</td>
 <td>1/16/2025</td>
-<td>True</td>
 </tr>
-<tr class="blurred-row">
+<tr>
 <td>Horizen</td>
 <td>$30.25000</td>
 <td>4.794808e+02</td>
 <td>2.623586e+03</td>
 <td>5/8/2021</td>
 <td>1/16/2025</td>
-<td>True</td>
 </tr>
-<tr class="blurred-row">
+<tr>
 <td>Polygon PoS Bridged WETH (Polygon POS)</td>
 <td>$3,327.99000</td>
 <td>4.778448e+02</td>
 <td>5.876501e+02</td>
 <td>12/16/2024</td>
 <td>1/16/2025</td>
-<td>True</td>
 </tr>
-<tr class="blurred-row">
+<tr>
 <td>Arkham</td>
 <td>$1.41000</td>
 <td>4.706368e+02</td>
 <td>1.327502e+03</td>
 <td>3/10/2024</td>
 <td>1/16/2025</td>
-<td>True</td>
 </tr>
-<tr class="blurred-row">
+<tr>
 <td>Theta Fuel</td>
 <td>$0.06896</td>
 <td>4.698227e+02</td>
 <td>4.642863e+03</td>
 <td>6/9/2021</td>
 <td>1/16/2025</td>
-<td>True</td>
 </tr>
-<tr class="blurred-row">
+<tr>
 <td>Baby Doge Coin</td>
 <td>$0.00000</td>
 <td>4.668483e+02</td>
 <td>1.075188e+03</td>
 <td>12/10/2024</td>
 <td>1/16/2025</td>
-<td>True</td>
 </tr>
-<tr class="blurred-row">
+<tr>
 <td>Astar</td>
 <td>$0.06191</td>
 <td>4.636010e+02</td>
 <td>3.153701e+03</td>
 <td>1/17/2022</td>
 <td>1/16/2025</td>
-<td>True</td>
 </tr>
-<tr class="blurred-row">
+<tr>
 <td>Creditcoin</td>
 <td>$1.10000</td>
 <td>4.588508e+02</td>
 <td>3.616125e+03</td>
 <td>3/14/2021</td>
 <td>1/16/2025</td>
-<td>True</td>
 </tr>
-<tr class="blurred-row">
+<tr>
 <td>io.net</td>
 <td>$3.34000</td>
 <td>4.519911e+02</td>
 <td>8.685045e+02</td>
 <td>6/12/2024</td>
 <td>1/16/2025</td>
-<td>True</td>
 </tr>
-<tr class="blurred-row">
+<tr>
 <td>Ether.fi</td>
 <td>$2.05000</td>
 <td>4.494342e+02</td>
 <td>1.866558e+03</td>
 <td>3/28/2024</td>
 <td>1/16/2025</td>
-<td>True</td>
 </tr>
-<tr class="blurred-row">
+<tr>
 <td>INSURANCE</td>
 <td>$23.83000</td>
 <td>4.458489e+02</td>
 <td>4.409460e+02</td>
 <td>1/16/2025</td>
 <td>1/16/2025</td>
-<td>True</td>
 </tr>
-<tr class="blurred-row">
+<tr>
 <td>Zilliqa</td>
 <td>$0.02289</td>
 <td>4.447542e+02</td>
 <td>4.957368e+03</td>
 <td>5/6/2021</td>
 <td>1/16/2025</td>
-<td>True</td>
 </tr>
-<tr class="blurred-row">
+<tr>
 <td>Telcoin</td>
 <td>$0.00568</td>
 <td>4.420633e+02</td>
 <td>5.017340e+03</td>
 <td>5/11/2021</td>
 <td>1/16/2025</td>
-<td>True</td>
 </tr>
-<tr class="blurred-row">
+<tr>
 <td>Stader ETHx</td>
 <td>$3,485.67000</td>
 <td>4.405247e+02</td>
 <td>5.401186e+02</td>
 <td>12/16/2024</td>
 <td>1/16/2025</td>
-<td>True</td>
 </tr>
-<tr class="blurred-row">
+<tr>
 <td>CHEX Token</td>
 <td>$0.43983</td>
 <td>4.396659e+02</td>
 <td>8.034742e+02</td>
 <td>12/17/2024</td>
 <td>1/16/2025</td>
-<td>True</td>
 </tr>
-<tr class="blurred-row">
+<tr>
 <td>0x Protocol</td>
 <td>$0.51636</td>
 <td>4.381900e+02</td>
 <td>2.120991e+03</td>
 <td>1/13/2018</td>
 <td>1/16/2025</td>
-<td>True</td>
 </tr>
-<tr class="blurred-row">
+<tr>
 <td>QuantixAI</td>
 <td>$89.98000</td>
 <td>4.369391e+02</td>
 <td>5.128390e+02</td>
 <td>11/11/2024</td>
 <td>1/16/2025</td>
-<td>True</td>
 </tr>
-<tr class="blurred-row">
+<tr>
 <td>Swell Ethereum</td>
 <td>$3,584.35000</td>
 <td>4.350269e+02</td>
 <td>5.332842e+02</td>
 <td>12/16/2024</td>
 <td>1/16/2025</td>
-<td>True</td>
 </tr>
-<tr class="blurred-row">
+<tr>
 <td>Holo</td>
 <td>$0.00244</td>
 <td>4.342835e+02</td>
 <td>5.553595e+03</td>
 <td>4/5/2021</td>
 <td>1/16/2025</td>
-<td>True</td>
 </tr>
-<tr class="blurred-row">
+<tr>
 <td>tBTC</td>
 <td>$99,980.00000</td>
 <td>4.321024e+02</td>
 <td>4.657589e+02</td>
 <td>12/17/2024</td>
 <td>1/16/2025</td>
-<td>True</td>
 </tr>
-<tr class="blurred-row">
+<tr>
 <td>Bridged USDC (Polygon PoS Bridge)</td>
 <td>$0.99959</td>
 <td>4.265228e+02</td>
 <td>4.387053e+02</td>
 <td>4/14/2024</td>
 <td>1/16/2025</td>
-<td>True</td>
 </tr>
-<tr class="blurred-row">
+<tr>
 <td>Super OETH</td>
 <td>$3,327.98000</td>
 <td>4.233928e+02</td>
 <td>5.214579e+02</td>
 <td>12/16/2024</td>
 <td>1/16/2025</td>
-<td>True</td>
 </tr>
-<tr class="blurred-row">
+<tr>
 <td>Ultima</td>
 <td>$9,843.22000</td>
 <td>4.231888e+02</td>
 <td>8.816395e+02</td>
 <td>9/27/2023</td>
 <td>1/16/2025</td>
-<td>True</td>
 </tr>
-<tr class="blurred-row">
+<tr>
 <td>AgentFun.AI</td>
 <td>$4.22000</td>
 <td>4.187219e+02</td>
 <td>2.525000e+03</td>
 <td>12/4/2024</td>
 <td>1/16/2025</td>
-<td>True</td>
 </tr>
-<tr class="blurred-row">
+<tr>
 <td>AI Rig Complex</td>
 <td>$0.41755</td>
 <td>4.165448e+02</td>
 <td>5.088283e+02</td>
 <td>1/16/2025</td>
 <td>1/16/2025</td>
-<td>True</td>
 </tr>
-<tr class="blurred-row">
+<tr>
 <td>Hashnote USYC</td>
 <td>$1.07400</td>
 <td>4.034474e+02</td>
 <td>4.130784e+02</td>
 <td>12/20/2024</td>
 <td>1/16/2025</td>
-<td>True</td>
 </tr>
-<tr class="blurred-row">
+<tr>
 <td>USDB</td>
 <td>$0.99052</td>
 <td>4.029581e+02</td>
 <td>4.344699e+02</td>
 <td>3/6/2024</td>
 <td>1/16/2025</td>
-<td>True</td>
 </tr>
-<tr class="blurred-row">
+<tr>
 <td>Golem</td>
 <td>$0.39650</td>
 <td>3.965190e+02</td>
 <td>1.320000e+03</td>
 <td>4/13/2018</td>
 <td>1/16/2025</td>
-<td>True</td>
 </tr>
-<tr class="blurred-row">
+<tr>
 <td>JUST</td>
 <td>$0.04001</td>
 <td>3.959884e+02</td>
 <td>1.913215e+03</td>
 <td>4/5/2021</td>
 <td>1/16/2025</td>
-<td>True</td>
 </tr>
-<tr class="blurred-row">
+<tr>
 <td>BOOK OF MEME</td>
 <td>$0.00573</td>
 <td>3.952900e+02</td>
 <td>1.855317e+03</td>
 <td>3/16/2024</td>
 <td>1/16/2025</td>
-<td>True</td>
 </tr>
-<tr class="blurred-row">
+<tr>
 <td>WOO</td>
 <td>$0.21192</td>
 <td>3.948514e+02</td>
 <td>3.315683e+03</td>
 <td>11/15/2021</td>
 <td>1/16/2025</td>
-<td>True</td>
 </tr>
-<tr class="blurred-row">
+<tr>
 <td>Basic Attention</td>
 <td>$0.25840</td>
 <td>3.866225e+02</td>
 <td>2.841751e+03</td>
 <td>11/28/2021</td>
 <td>1/16/2025</td>
-<td>True</td>
 </tr>
-<tr class="blurred-row">
+<tr>
 <td>Verus</td>
 <td>$4.91000</td>
 <td>3.849069e+02</td>
 <td>5.276572e+02</td>
 <td>12/5/2024</td>
 <td>1/16/2025</td>
-<td>True</td>
 </tr>
-<tr class="blurred-row">
+<tr>
 <td>Vana</td>
 <td>$12.48000</td>
 <td>3.844418e+02</td>
 <td>1.085084e+03</td>
 <td>12/17/2024</td>
 <td>1/16/2025</td>
-<td>True</td>
 </tr>
-<tr class="blurred-row">
+<tr>
 <td>Ondo US Dollar Yield</td>
 <td>$1.06700</td>
 <td>3.786644e+02</td>
 <td>4.470135e+02</td>
 <td>3/27/2024</td>
 <td>1/16/2025</td>
-<td>True</td>
 </tr>
-<tr class="blurred-row">
+<tr>
 <td>Enjin Coin</td>
 <td>$0.20813</td>
 <td>3.739998e+02</td>
 <td>8.652364e+03</td>
 <td>11/25/2021</td>
 <td>1/16/2025</td>
-<td>True</td>
 </tr>
-<tr class="blurred-row">
+<tr>
 <td>Convex Finance</td>
 <td>$4.53000</td>
 <td>3.718030e+02</td>
 <td>4.926821e+03</td>
 <td>1/1/2022</td>
 <td>1/16/2025</td>
-<td>True</td>
 </tr>
-<tr class="blurred-row">
+<tr>
 <td>Aethir</td>
 <td>$0.06537</td>
 <td>3.714844e+02</td>
 <td>6.738172e+02</td>
 <td>6/12/2024</td>
 <td>1/16/2025</td>
-<td>True</td>
 </tr>
-<tr class="blurred-row">
+<tr>
 <td>Binance-Peg BUSD</td>
 <td>$1.00200</td>
 <td>3.686766e+02</td>
 <td>3.911933e+02</td>
 <td>10/24/2023</td>
 <td>1/16/2025</td>
-<td>True</td>
 </tr>
-<tr class="blurred-row">
+<tr>
 <td>Olympus</td>
 <td>$22.36000</td>
 <td>3.676790e+02</td>
 <td>2.327046e+04</td>
 <td>4/25/2021</td>
 <td>1/16/2025</td>
-<td>True</td>
 </tr>
-<tr class="blurred-row">
+<tr>
 <td>PAAL AI</td>
 <td>$0.41758</td>
 <td>3.670706e+02</td>
 <td>7.557724e+02</td>
 <td>3/10/2024</td>
 <td>1/16/2025</td>
-<td>True</td>
 </tr>
-<tr class="blurred-row">
+<tr>
 <td>Liquid Staked ETH</td>
 <td>$3,544.30000</td>
 <td>3.659636e+02</td>
 <td>4.471183e+02</td>
 <td>12/6/2024</td>
 <td>1/16/2025</td>
-<td>True</td>
 </tr>
-<tr class="blurred-row">
+<tr>
 <td>Ankr Network</td>
 <td>$0.03655</td>
 <td>3.655317e+02</td>
 <td>2.135130e+03</td>
 <td>4/16/2021</td>
 <td>1/16/2025</td>
-<td>True</td>
 </tr>
-<tr class="blurred-row">
+<tr>
 <td>Solayer Staked SOL</td>
 <td>$222.06000</td>
 <td>3.648598e+02</td>
 <td>4.486883e+02</td>
 <td>11/23/2024</td>
 <td>1/16/2025</td>
-<td>True</td>
 </tr>
-<tr class="blurred-row">
+<tr>
 <td>Celo</td>
 <td>$0.64943</td>
 <td>3.635718e+02</td>
 <td>5.494788e+03</td>
 <td>8/30/2021</td>
 <td>1/16/2025</td>
-<td>True</td>
 </tr>
 </tbody>
 </table>
@@ -4480,9 +3896,6 @@
         </div>
         
         
-    <script src="https://code.jquery.com/jquery-3.5.1.js"></script>
-    <script src="https://cdn.datatables.net/1.13.4/js/jquery.dataTables.min.js"></script>
-    <script src="https://cdn.datatables.net/responsive/2.4.1/js/dataTables.responsive.min.js"></script>
     <script>
         // Tab functionality
         function openTab(evt, tabName) {
@@ -4503,41 +3916,6 @@
         document.addEventListener("DOMContentLoaded", function() {
             document.getElementsByClassName("tablinks")[0].click();
         });
-
-        // Initialize DataTables on both tables
-        document.addEventListener("DOMContentLoaded", function() {
-            var table = $('.crypto-table').DataTable({
-                responsive: true,
-                paging: true,
-                pageLength: 20,
-                lengthChange: false,
-                searching: true,
-                ordering: true,
-                info: false
-            });
-
-            // Keep rows unlocked after ordering
-            table.on('order.dt', function() {
-                setTimeout(function() {
-                    unlockRows();
-                }, 10);
-            });
-        });
-
-        // Password functionality
-        function unlockRows() {
-            var password = document.getElementById('crypto-password').value;
-            var correctPassword = 'unlock';
-            
-            if(password === correctPassword) {
-                var blurredRows = document.querySelectorAll('.blurred-row');
-                blurredRows.forEach(function(row) {
-                    row.classList.remove('blurred-row');
-                });
-            } else {
-                alert('Incorrect Password. Please try again.');
-            }
-        }
     </script>
     
     </body>
