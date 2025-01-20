@@ -34,24 +34,53 @@ def generate_html_table(df, limit=20):
     # Limit to first 'limit' rows
     df_limited = df.head(limit)
 
-    # Define CSS for the table and blurred rows
+    # Define CSS for the table and responsiveness
     styles = """
     <style>
+        body {
+            background-color: black;
+            color: #f2f2f2;
+            font-family: Arial, sans-serif;
+            margin: 20px;
+        }
+        .crypto-table-container {
+            overflow-x: auto;
+        }
         .crypto-table {
             width: 100%;
             border-collapse: collapse;
+            min-width: 600px;
         }
         .crypto-table th, .crypto-table td {
-            border: 1px solid #ddd;
-            padding: 8px;
+            border: 1px solid #444;
+            padding: 12px 15px;
             text-align: center;
         }
         .crypto-table th {
-            background-color: #f2f2f2;
+            background-color: #333;
+            color: #f2f2f2;
         }
-        .blurred-row {
-            filter: blur(5px);
-            transition: filter 0.3s ease;
+        .crypto-table tr:nth-child(even) {
+            background-color: #1a1a1a;
+        }
+        .crypto-table tr:nth-child(odd) {
+            background-color: #2a2a2a;
+        }
+        .crypto-table tr:hover {
+            background-color: #555;
+        }
+        /* Responsive Font Sizes */
+        @media (max-width: 768px) {
+            .crypto-table th, .crypto-table td {
+                padding: 10px 12px;
+                font-size: 14px;
+            }
+        }
+        @media (max-width: 480px) {
+            .crypto-table th, .crypto-table td {
+                padding: 8px 10px;
+                font-size: 12px;
+            }
         }
         /* Password section styles */
         .password-section {
@@ -59,17 +88,51 @@ def generate_html_table(df, limit=20):
             text-align: center;
         }
         .password-section input {
-            padding: 8px;
-            width: 200px;
+            padding: 10px;
+            width: 220px;
+            border: 1px solid #444;
+            border-radius: 4px;
+            background-color: #333;
+            color: #f2f2f2;
         }
         .password-section button {
-            padding: 8px 16px;
+            padding: 10px 20px;
+            margin-left: 10px;
+            border: none;
+            border-radius: 4px;
+            background-color: #555;
+            color: #f2f2f2;
+            cursor: pointer;
+        }
+        .password-section button:hover {
+            background-color: #777;
         }
     </style>
     """
 
     # Convert DataFrame to HTML
-    html_table = df_limited.to_html(index=False, classes='crypto-table', border=0)
+    html_table = df_limited.to_html(index=False, classes='crypto-table', border=0, escape=False)
+
+    # Add classes to table rows beyond the limited rows to apply blur
+    # Assuming you want to display only the top 'limit' rows and blur the rest
+    # Fetch all records again to handle additional rows
+    total_rows = df.shape[0]
+    additional_rows = total_rows - limit
+    if additional_rows > 0:
+        # Re-fetch all records to include blurred rows
+        df_all = fetch_data_from_google_sheets()
+        # Convert to HTML with all rows
+        html_full_table = df_all.to_html(index=False, classes='crypto-table', border=0, escape=False)
+        # Inject 'blurred-row' class to rows beyond the limit
+        from bs4 import BeautifulSoup
+
+        soup = BeautifulSoup(html_full_table, 'html.parser')
+        rows = soup.find_all('tr')[limit+1:]  # +1 to skip the header row
+        for row in rows:
+            row['class'] = row.get('class', []) + ['blurred-row']
+        
+        # Update the HTML table
+        html_table = str(soup)
 
     # Complete HTML content
     html_content = f"""
@@ -82,7 +145,9 @@ def generate_html_table(df, limit=20):
     </head>
     <body>
         <h2 style="text-align:center;">Cryptocurrency Data (Top {limit})</h2>
-        {html_table}
+        <div class="crypto-table-container">
+            {html_table}
+        </div>
         
         <!-- Password Protection Section -->
         <div class="password-section">
@@ -94,7 +159,7 @@ def generate_html_table(df, limit=20):
         <script>
             function unlockRows() {{
                 var password = document.getElementById('crypto-password').value;
-                var correctPassword = '{PASSWORD}'; // Replace with your desired password
+                var correctPassword = '{PASSWORD}';
                 
                 if(password === correctPassword) {{
                     var blurredRows = document.querySelectorAll('.blurred-row');
@@ -118,11 +183,15 @@ def generate_html_table(df, limit=20):
     print(f"HTML table generated and saved to crypto_table.html")
 
 def main():
-    # Fetch data from Google Sheets
-    df = fetch_data_from_google_sheets()
+    try:
+        # Fetch data from Google Sheets
+        df = fetch_data_from_google_sheets()
 
-    # Generate HTML table
-    generate_html_table(df, limit=20)
+        # Generate HTML table
+        generate_html_table(df, limit=20)
+    except Exception as e:
+        print(f"An error occurred: {e}")
+        exit(1)
 
 if __name__ == "__main__":
     main()
