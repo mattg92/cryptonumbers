@@ -358,8 +358,6 @@ def generate_html_content(tab1_html, tab2_html):
         {styles}
     </head>
     <body>
-        <h2 style="text-align:center;">Cryptocurrency Data</h2>
-
                 <!-- Password Section -->
         <div class="password-section">
             <label for="crypto-password">Enter Password to View All Rows:</label><br>
