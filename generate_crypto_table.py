@@ -71,7 +71,6 @@ def generate_html_table_tab1(df):
     # Apply blurring logic
     df_tab1['blurred'] = False
     df_tab1.loc[20:, 'blurred'] = True
-    df_tab1 = df_tab1.sort_values(by='blurred').drop(columns='blurred')
     
     # Convert to HTML
     html_table = df_tab1.to_html(index=False, classes='crypto-table', border=0, escape=False)
@@ -102,7 +101,6 @@ def generate_html_table_tab2(df):
     # Apply blurring logic
     df_tab2['blurred'] = False
     df_tab2.loc[20:, 'blurred'] = True
-    df_tab2 = df_tab2.sort_values(by='blurred').drop(columns='blurred')
     
     # Convert to HTML
     html_table = df_tab2.to_html(index=False, classes='crypto-table', border=0, escape=False)
