@@ -68,9 +68,12 @@ def generate_html_table_tab1(df):
     # Format DataFrame
     df_tab1 = format_values(df_tab1)
     
-    # Sort DataFrame to place unblurred rows at the beginning
+    # Sort DataFrame by Market Cap to get the top 20 coins
+    df_tab1 = df_tab1.sort_values(by='Market Cap (USD)', ascending=False).reset_index(drop=True)
+    
+    # Apply blurring logic
     df_tab1['blurred'] = False
-    df_tab1.loc[21:, 'blurred'] = True
+    df_tab1.loc[20:, 'blurred'] = True
     df_tab1 = df_tab1.sort_values(by='blurred').drop(columns='blurred')
     
     # Convert to HTML
@@ -96,9 +99,12 @@ def generate_html_table_tab2(df):
     # Format DataFrame
     df_tab2 = format_values(df_tab2)
     
-    # Sort DataFrame to place unblurred rows at the beginning
+    # Sort DataFrame by Market Cap to get the top 20 coins
+    df_tab2 = df_tab2.sort_values(by='Market Cap (USD)', ascending=False).reset_index(drop=True)
+    
+    # Apply blurring logic
     df_tab2['blurred'] = False
-    df_tab2.loc[21:, 'blurred'] = True
+    df_tab2.loc[20:, 'blurred'] = True
     df_tab2 = df_tab2.sort_values(by='blurred').drop(columns='blurred')
     
     # Convert to HTML
@@ -341,6 +347,7 @@ def generate_html_content(tab1_html, tab2_html):
                     row.classList.remove('blurred-row');
                 }});
             }} else {{
+                alert('Incorrect Password. Please try again.');
             }}
         }}
     </script>
