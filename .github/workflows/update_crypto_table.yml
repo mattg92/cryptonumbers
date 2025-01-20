@@ -23,7 +23,7 @@ jobs:
 
     - name: Install Dependencies
       run: |
-        pip install gspread oauth2client pandas
+        pip install gspread oauth2client pandas beautifulsoup4
 
     - name: Decode Service Account Credentials
       run: |
