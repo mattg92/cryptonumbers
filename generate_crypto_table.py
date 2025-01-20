@@ -219,11 +219,63 @@ def generate_html_content(tab1_html, tab2_html):
                 font-size: 13px;
             }
         }
+
+        /* DataTables CSS */
+        @import url('https://cdn.datatables.net/1.13.4/css/jquery.dataTables.min.css');
+        @import url('https://cdn.datatables.net/responsive/2.4.1/css/responsive.dataTables.min.css');
+    
+        /* Adjust DataTables elements to match the dark theme */
+        table.dataTable thead {
+            background-color: #333;
+            color: #f2f2f2;
+        }
+        table.dataTable tbody tr {
+            background-color: #1a1a1a;
+        }
+        table.dataTable tbody tr:nth-child(even) {
+            background-color: #2a2a2a;
+        }
+        table.dataTable tbody tr:hover {
+            background-color: #555;
+        }
+        table.dataTable.no-footer {
+            border-bottom: 1px solid #444;
+        }
+        /* Adjust pagination and search input */
+        .dataTables_wrapper .dataTables_paginate .paginate_button {
+            color: #f2f2f2 !important;
+            background-color: #333 !important;
+            border: 1px solid #444 !important;
+            border-radius: 4px;
+            padding: 5px 10px;
+            margin: 2px;
+        }
+        .dataTables_wrapper .dataTables_paginate .paginate_button:hover {
+            background-color: #555 !important;
+        }
+        .dataTables_wrapper .dataTables_filter input {
+            background-color: #333 !important;
+            color: #f2f2f2 !important;
+            border: 1px solid #444 !important;
+            border-radius: 4px;
+            padding: 5px;
+        }
+        .dataTables_wrapper .dataTables_length select {
+            background-color: #333 !important;
+            color: #f2f2f2 !important;
+            border: 1px solid #444 !important;
+            border-radius: 4px;
+            padding: 5px;
+        }
+    
     </style>
     """
 
     # JavaScript for tabs and password functionality
     scripts = f"""
+    <script src="https://code.jquery.com/jquery-3.5.1.js"></script>
+    <script src="https://cdn.datatables.net/1.13.4/js/jquery.dataTables.min.js"></script>
+    <script src="https://cdn.datatables.net/responsive/2.4.1/js/dataTables.responsive.min.js"></script>
     <script>
         // Tab functionality
         function openTab(evt, tabName) {{
@@ -243,6 +295,19 @@ def generate_html_content(tab1_html, tab2_html):
         // Set default tab
         document.addEventListener("DOMContentLoaded", function() {{
             document.getElementsByClassName("tablinks")[0].click();
+        }});
+
+        // Initialize DataTables on both tables
+        document.addEventListener("DOMContentLoaded", function() {{
+            $('.crypto-table').DataTable({{
+                responsive: true,
+                paging: true,
+                pageLength: 20,
+                lengthChange: false,
+                searching: true,
+                ordering: true,
+                info: false
+            }});
         }});
 
         // Password functionality
@@ -274,6 +339,13 @@ def generate_html_content(tab1_html, tab2_html):
     </head>
     <body>
         <h2 style="text-align:center;">Cryptocurrency Data</h2>
+
+                <!-- Password Section -->
+        <div class="password-section">
+            <label for="crypto-password">Enter Password to View All Rows:</label><br>
+            <input type="password" id="crypto-password" placeholder="Enter password">
+            <button onclick="unlockRows()">Unlock</button>
+        </div>
         
         <!-- Tab buttons -->
         <div class="tab">
@@ -293,13 +365,6 @@ def generate_html_content(tab1_html, tab2_html):
             <div class="crypto-table-container">
                 {tab2_html}
             </div>
-        </div>
-        
-        <!-- Password Section -->
-        <div class="password-section">
-            <label for="crypto-password">Enter Password to View All Rows:</label><br>
-            <input type="password" id="crypto-password" placeholder="Enter password">
-            <button onclick="unlockRows()">Unlock</button>
         </div>
         
         {scripts}
