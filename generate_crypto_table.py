@@ -68,6 +68,11 @@ def generate_html_table_tab1(df):
     # Format DataFrame
     df_tab1 = format_values(df_tab1)
     
+    # Sort DataFrame to place unblurred rows at the beginning
+    df_tab1['blurred'] = False
+    df_tab1.loc[21:, 'blurred'] = True
+    df_tab1 = df_tab1.sort_values(by='blurred').drop(columns='blurred')
+    
     # Convert to HTML
     html_table = df_tab1.to_html(index=False, classes='crypto-table', border=0, escape=False)
     
@@ -90,6 +95,11 @@ def generate_html_table_tab2(df):
     
     # Format DataFrame
     df_tab2 = format_values(df_tab2)
+    
+    # Sort DataFrame to place unblurred rows at the beginning
+    df_tab2['blurred'] = False
+    df_tab2.loc[21:, 'blurred'] = True
+    df_tab2 = df_tab2.sort_values(by='blurred').drop(columns='blurred')
     
     # Convert to HTML
     html_table = df_tab2.to_html(index=False, classes='crypto-table', border=0, escape=False)
