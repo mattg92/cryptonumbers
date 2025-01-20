@@ -142,12 +142,15 @@ def generate_html_content(tab1_html, tab2_html):
         /* Table container for responsiveness */
         .crypto-table-container {
             overflow-x: auto;
+            margin-left: 10%;
+            margin-right: 10%;
         }
 
         /* Table styling */
         .crypto-table {
-            width: 100%;
+            width: 80%;
             border-collapse: collapse;
+            margin: 0 auto;
             min-width: 600px;
         }
         .crypto-table th, .crypto-table td {
@@ -299,7 +302,7 @@ def generate_html_content(tab1_html, tab2_html):
 
         // Initialize DataTables on both tables
         document.addEventListener("DOMContentLoaded", function() {{
-            $('.crypto-table').DataTable({{
+            var table = $('.crypto-table').DataTable({{
                 responsive: true,
                 paging: true,
                 pageLength: 20,
@@ -307,6 +310,13 @@ def generate_html_content(tab1_html, tab2_html):
                 searching: true,
                 ordering: true,
                 info: false
+            }});
+
+            // Keep rows unlocked after ordering
+            table.on('order.dt', function() {{
+                setTimeout(function() {{
+                    unlockRows();
+                }}, 10);
             }});
         }});
 
@@ -397,9 +407,6 @@ def main():
     except Exception as e:
         print(f"An error occurred: {e}")
         exit(1)
-
-if __name__ == "__main__":
-    main()
 
 if __name__ == "__main__":
     main()
