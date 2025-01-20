@@ -41,18 +41,15 @@ def format_values(df):
     def format_price(x):
         return f"${x:,.5f}" if pd.notnull(x) else "N/A"
     
-    def format_market_cap(x):
-        return f"${x / 1_000_000:,.2f}M" if pd.notnull(x) else "N/A"
-    
     # Apply formatting
     if 'Current Price (USD)' in df.columns:
         df['Current Price (USD)'] = df['Current Price (USD)'].apply(format_price)
     if 'ATH Price (USD)' in df.columns:
         df['ATH Price (USD)'] = df['ATH Price (USD)'].apply(format_price)
     if 'Market Cap (USD)' in df.columns:
-        df['Market Cap (USD)'] = df['Market Cap (USD)'].apply(format_market_cap)
+        df['Market Cap (USD)'] = df['Market Cap (USD)'] / 1_000_000
     if 'ATH Market Cap (USD)' in df.columns:
-        df['ATH Market Cap (USD)'] = df['ATH Market Cap (USD)'].apply(format_market_cap)
+        df['ATH Market Cap (USD)'] = df['ATH Market Cap (USD)'] / 1_000_000
     
     return df
 
@@ -90,7 +87,7 @@ def generate_html_table_tab1(df):
 def generate_html_table_tab2(df):
     """
     Generates HTML for the second table tab:
-    Columns: Name, Current Price (USD), Market Cap (USD), ATH Market Cap (USD), ATH Market Cap Date, Last Updated
+    Columns: Name, Current Price (USD), Market Cap (USD) (M), ATH Market Cap (USD) (M), ATH Market Cap Date, Last Updated
     """
     # Sort DataFrame by Market Cap to get the top 20 coins
     df = df.sort_values(by='Market Cap (USD)', ascending=False).reset_index(drop=True)
@@ -375,7 +372,7 @@ def generate_html_content(tab1_html, tab2_html):
         <!-- Tab buttons -->
         <div class="tab">
             <button class="tablinks" onclick="openTab(event, 'Tab1')">Price Data</button>
-            <button class="tablinks" onclick="openTab(event, 'Tab2')">Market Cap Data</button>
+            <button class="tablinks" onclick="openTab(event, 'Tab2')">Market Cap Data (M)</button>
         </div>
         
         <!-- Tab 1 Content -->
