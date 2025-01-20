@@ -61,15 +61,15 @@ def generate_html_table_tab1(df):
     Generates HTML for the first table tab:
     Columns: Name, Current Price (USD), ATH Price (USD), ATH Date, Last Updated
     """
+    # Sort DataFrame by Market Cap to get the top 20 coins
+    df = df.sort_values(by='Market Cap (USD)', ascending=False).reset_index(drop=True)
+    
     # Select required columns
     required_columns = ['Name', 'Current Price (USD)', 'ATH Price (USD)', 'ATH Date', 'Last Updated']
     df_tab1 = df[required_columns].copy()
     
     # Format DataFrame
     df_tab1 = format_values(df_tab1)
-    
-    # Sort DataFrame by Market Cap to get the top 20 coins
-    df_tab1 = df_tab1.sort_values(by='Market Cap (USD)', ascending=False).reset_index(drop=True)
     
     # Apply blurring logic
     df_tab1['blurred'] = False
@@ -92,15 +92,15 @@ def generate_html_table_tab2(df):
     Generates HTML for the second table tab:
     Columns: Name, Current Price (USD), Market Cap (USD), ATH Market Cap (USD), ATH Market Cap Date, Last Updated
     """
+    # Sort DataFrame by Market Cap to get the top 20 coins
+    df = df.sort_values(by='Market Cap (USD)', ascending=False).reset_index(drop=True)
+    
     # Select required columns
     required_columns = ['Name', 'Current Price (USD)', 'Market Cap (USD)', 'ATH Market Cap (USD)', 'ATH Market Cap Date', 'Last Updated']
     df_tab2 = df[required_columns].copy()
     
     # Format DataFrame
     df_tab2 = format_values(df_tab2)
-    
-    # Sort DataFrame by Market Cap to get the top 20 coins
-    df_tab2 = df_tab2.sort_values(by='Market Cap (USD)', ascending=False).reset_index(drop=True)
     
     # Apply blurring logic
     df_tab2['blurred'] = False
@@ -402,6 +402,9 @@ def generate_html_content(tab1_html, tab2_html):
 def generate_crypto_table_html():
     # Fetch data from Google Sheets
     df = fetch_data_from_google_sheets()
+    
+    # Sort DataFrame by Market Cap to get the top 20 coins
+    df = df.sort_values(by='Market Cap (USD)', ascending=False).reset_index(drop=True)
     
     # Generate HTML tables for both tabs
     tab1_html = generate_html_table_tab1(df)
