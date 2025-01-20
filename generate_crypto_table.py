@@ -57,7 +57,7 @@ def generate_html_table(df, columns):
     """
     Generates HTML for the table with specified columns.
     """
-    # Sort DataFrame by Market Cap to get the top 20 coins
+    # Sort DataFrame by Market Cap
     df = df.sort_values(by='Market Cap (USD)', ascending=False).reset_index(drop=True)
     
     # Select required columns
@@ -69,14 +69,17 @@ def generate_html_table(df, columns):
     # Convert to HTML
     html_table = df.to_html(index=False, classes='crypto-table', border=0, escape=False)
     
-    # Process with BeautifulSoup
+    # Process with BeautifulSoup to add 'blurred-row' class beyond first 20 rows
     soup = BeautifulSoup(html_table, 'html.parser')
+    rows = soup.find_all('tr')[21:]  # +1 for header, first 20 data rows
+    for row in rows:
+        row['class'] = row.get('class', []) + ['blurred-row']
     
     return str(soup)
 
 def generate_html_content(tab1_html, tab2_html):
     """
-    Generates the complete HTML content with two tabs.
+    Generates the complete HTML content with two tabs and password protection
     """
     styles = """
     <style>
@@ -145,7 +148,36 @@ def generate_html_content(tab1_html, tab2_html):
         .crypto-table tr:hover {
             background-color: #555;
         }
-
+        /* Blurred rows */
+        .blurred-row {
+            filter: blur(5px);
+            transition: filter 0.3s ease;
+        }
+        /* Password section styles */
+        .password-section {
+            margin-top: 20px;
+            text-align: center;
+        }
+        .password-section input {
+            padding: 10px;
+            width: 220px;
+            border: 1px solid #444;
+            border-radius: 4px;
+            background-color: #333;
+            color: #f2f2f2;
+        }
+        .password-section button {
+            padding: 10px 20px;
+            margin-left: 10px;
+            border: none;
+            border-radius: 4px;
+            background-color: #555;
+            color: #f2f2f2;
+            cursor: pointer;
+        }
+        .password-section button:hover {
+            background-color: #777;
+        }
         /* Responsive Font Sizes */
         @media (max-width: 768px) {
             .crypto-table th, .crypto-table td {
@@ -171,32 +203,46 @@ def generate_html_content(tab1_html, tab2_html):
     </style>
     """
 
-    # JavaScript for tabs
-    scripts = """
+    scripts = f"""
+    <script src="https://code.jquery.com/jquery-3.5.1.js"></script>
     <script>
         // Tab functionality
-        function openTab(evt, tabName) {
+        function openTab(evt, tabName) {{
             var i, tabcontent, tablinks;
             tabcontent = document.getElementsByClassName("tabcontent");
-            for (i = 0; i < tabcontent.length; i++) {
+            for (i = 0; i < tabcontent.length; i++) {{
                 tabcontent[i].style.display = "none";
-            }
+            }}
             tablinks = document.getElementsByClassName("tablinks");
-            for (i = 0; i < tablinks.length; i++) {
+            for (i = 0; i < tablinks.length; i++) {{
                 tablinks[i].className = tablinks[i].className.replace(" active", "");
-            }
+            }}
             document.getElementById(tabName).style.display = "block";
             evt.currentTarget.className += " active";
-        }
+        }}
 
         // Set default tab
-        document.addEventListener("DOMContentLoaded", function() {
+        document.addEventListener("DOMContentLoaded", function() {{
             document.getElementsByClassName("tablinks")[0].click();
-        });
+        }});
+
+        // Password functionality
+        function unlockRows() {{
+            var password = document.getElementById('crypto-password').value;
+            var correctPassword = 'unlock';
+            
+            if(password === correctPassword) {{
+                var blurredRows = document.querySelectorAll('.blurred-row');
+                blurredRows.forEach(function(row) {{
+                    row.classList.remove('blurred-row');
+                }});
+            }} else {{
+                alert('Incorrect Password. Please try again.');
+            }}
+        }}
     </script>
     """
 
-    # Complete HTML content
     html_content = f"""
     <!DOCTYPE html>
     <html lang="en">
@@ -207,6 +253,13 @@ def generate_html_content(tab1_html, tab2_html):
     </head>
     <body>
         <h2 style="text-align:center;">Cryptocurrency Data</h2>
+        
+        <!-- Password Section -->
+        <div class="password-section">
+            <label for="crypto-password">Enter Password to View All Rows:</label><br>
+            <input type="password" id="crypto-password" placeholder="Enter password">
+            <button onclick="unlockRows()">Unlock</button>
+        </div>
         
         <!-- Tab buttons -->
         <div class="tab">
@@ -239,7 +292,7 @@ def generate_crypto_table_html():
     # Fetch data from Google Sheets
     df = fetch_data_from_google_sheets()
     
-    # Sort DataFrame by Market Cap to get the top 20 coins
+    # Sort DataFrame by Market Cap
     df = df.sort_values(by='Market Cap (USD)', ascending=False).reset_index(drop=True)
     
     # Generate HTML tables for both tabs
