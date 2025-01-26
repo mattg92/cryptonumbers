@@ -9,7 +9,7 @@ from bs4 import BeautifulSoup
 SERVICE_ACCOUNT_FILE = os.getenv('SERVICE_ACCOUNT_FILE')
 SPREADSHEET_NAME = os.getenv('SPREADSHEET_NAME')
 WORKSHEET_NAME = os.getenv('WORKSHEET_NAME')
-PASSWORD = os.getenv('PASSWORD')
+PASSWORD = os.getenv('PASSWORD')  # Currently unused in the script, but available
 
 def fetch_data_from_google_sheets():
     """
@@ -37,7 +37,6 @@ def format_values(df):
     """
     Formats numerical columns:
       - Current Price (USD) and ATH Price (USD): 5 decimal places
-        (e.g., $1,234.56789)
     """
     def format_price(x):
         if pd.isnull(x):
@@ -52,32 +51,37 @@ def format_values(df):
         df['Current Price (USD)'] = df['Current Price (USD)'].apply(format_price)
     if 'ATH Price (USD)' in df.columns:
         df['ATH Price (USD)'] = df['ATH Price (USD)'].apply(format_price)
+    if 'Multiply to Price ATH' in df.columns:
+        # example: 1 or 2.34 => we can just show it to two decimals
+        df['Multiply to Price ATH'] = df['Multiply to Price ATH'].apply(
+            lambda x: f"{float(x):.2f}" if pd.notnull(x) else "N/A"
+        )
     
     return df
 
 def create_percent_bar(percent_str):
     """
-    Creates an HTML-based progress bar using the 'Percent from Price ATH' value.
-    - Interprets negative or positive numeric strings as a magnitude (absolute value).
-    - Clamps to 100% if desired (optional) or simply uses the raw absolute value.
-    - If the cell is empty or invalid, returns "N/A".
+    Converts 'Percent from Price ATH' value into an inline HTML progress bar.
+    Removes line breaks so there's no extra \n in the cell.
+    
+    Example:
+      -74.3 => shows a red bar "74.3%" wide.
     """
     if not percent_str or percent_str == "N/A":
         return "N/A"
     
     try:
-        val = abs(float(percent_str))  # 74.3 -> 74.3% (assuming negative means below ATH)
-        # If you'd like to cap it at 100%, uncomment the next line:
+        # Convert to float; if negative, we'll just show the absolute value
+        val = abs(float(percent_str))
+        # Optionally cap at 100%, if you wish:
         # val = min(val, 100.0)
         
-        # Create a red bar on a gray container
-        bar_html = f"""
-        <div class="percentage-bar-container">
-          <div class="percentage-bar" style="width: {val}%; background-color: red;">
-            {val}%
-          </div>
-        </div>
-        """
+        # Single-line HTML (no extra line breaks)
+        bar_html = f"""<div class="percentage-bar-container">
+            <div class="percentage-bar" style="width: {val}%; background-color: red;">
+                {val}%
+            </div>
+        </div>"""
         return bar_html
     except:
         return str(percent_str)
@@ -85,22 +89,28 @@ def create_percent_bar(percent_str):
 def generate_single_table_html(df):
     """
     Generates HTML for a single table with columns:
-      Name, Current Price (USD), ATH Price (USD), ATH Date,
-      and a progress bar for 'Percent from Price ATH'.
-    
-    Rows beyond the first 20 will be blurred.
+      - Name
+      - Current Price (USD)
+      - ATH Price (USD)
+      - ATH Date
+      - Percent from Price ATH (rendered as a progress bar)
+      - Multiply to Price ATH
+
+    Rows beyond the first 20 are blurred until the password is entered.
     """
-    # We only need these columns (assuming they exist in your sheet)
+    # We only need these columns (if they exist in your sheet):
     required_cols = [
         'Name',
         'Current Price (USD)',
         'ATH Price (USD)',
         'ATH Date',
-        'Percent from Price ATH'
+        'Percent from Price ATH',
+        'Multiply to Price ATH'
     ]
     
-    # Filter the DataFrame to include only the required columns (if they exist)
-    df = df[[col for col in required_cols if col in df.columns]].copy()
+    # Filter the DataFrame to include only the required columns
+    existing_cols = [col for col in required_cols if col in df.columns]
+    df = df[existing_cols].copy()
     
     # Format numeric columns
     df = format_values(df)
@@ -109,20 +119,20 @@ def generate_single_table_html(df):
     if 'Percent from Price ATH' in df.columns:
         df['Percent from Price ATH'] = df['Percent from Price ATH'].apply(create_percent_bar)
     
-    # Convert to HTML
+    # Convert to HTML table
+    # We'll assign an ID "cryptoTable" for the DataTables plugin to attach to
     html_table = df.to_html(
         index=False,
-        classes='crypto-table',
+        classes='crypto-table display',
         border=0,
-        escape=False  # IMPORTANT: so the <div> for the bar isn't escaped
+        escape=False,  # so the <div> for the bar isn't escaped
+        table_id='cryptoTable'  # for DataTables
     )
     
-    # Use BeautifulSoup to add blurred-row class beyond row 20 (plus 1 header row => row indices 21+ in HTML)
+    # Use BeautifulSoup to blur rows after the first 20 (plus 1 header row => row indices 21+)
     soup = BeautifulSoup(html_table, 'html.parser')
-    # The first row in <tbody> is index 1 in the final HTML (since row 0 is <thead>)
-    # So we blur from row 21 onwards => the first 20 data rows remain unblurred.
     all_rows = soup.find_all('tr')
-    blurred_rows = all_rows[21:]  # This means: skip the header row (0) plus first 20 data rows => blur from 21 onward
+    blurred_rows = all_rows[21:]  # skip header row (0) + first 20 data rows => blur from row index 21 onward
     for row in blurred_rows:
         existing_classes = row.get('class', [])
         row['class'] = existing_classes + ['blurred-row']
@@ -131,7 +141,10 @@ def generate_single_table_html(df):
 
 def generate_html_content(table_html):
     """
-    Generates the complete HTML content for a single table + password unlock section.
+    Generates the complete HTML content:
+      1) Adds spacing between the password section and the table
+      2) Adds DataTables (for sorting by column)
+      3) Maintains the blur/unlock functionality
     """
     styles = """
     <style>
@@ -141,67 +154,10 @@ def generate_html_content(table_html):
             font-family: Arial, sans-serif;
             margin: 20px;
         }
-        /* Table container */
-        .crypto-table-container {
-            overflow-x: auto;
-            margin: 0 auto;
-            max-height: 600px;
-            width: 80%;
-        }
-        /* Table styling */
-        .crypto-table {
-            width: 100%;
-            border-collapse: collapse;
-            margin: 0 auto;
-            min-width: 600px;
-        }
-        .crypto-table th, .crypto-table td {
-            border: 1px solid #444;
-            padding: 12px 15px;
-            text-align: center;
-        }
-        .crypto-table th {
-            background-color: #333;
-            color: #f2f2f2;
-        }
-        .crypto-table tr:nth-child(even) {
-            background-color: #1a1a1a;
-        }
-        .crypto-table tr:nth-child(odd) {
-            background-color: #2a2a2a;
-        }
-        .crypto-table tr:hover {
-            background-color: #555;
-        }
-        
-        /* Blurred rows */
-        .blurred-row {
-            filter: blur(5px);
-            transition: filter 0.3s ease;
-        }
-        
-        /* Percentage bar container */
-        .percentage-bar-container {
-            position: relative;
-            background-color: #555;
-            height: 20px;
-            width: 100px; /* adjust as desired */
-            margin: 0 auto;
-            border-radius: 3px;
-            overflow: hidden;
-        }
-        .percentage-bar {
-            height: 100%;
-            text-align: center;
-            color: white;
-            border-radius: 3px;
-            line-height: 20px;
-            font-size: 12px;
-        }
         
         /* Password section */
         .password-section {
-            margin-top: 20px;
+            margin-bottom: 30px; /* space before the table */
             text-align: center;
         }
         .password-section input {
@@ -224,7 +180,76 @@ def generate_html_content(table_html):
         .password-section button:hover {
             background-color: #777;
         }
+
+        /* Table container */
+        .crypto-table-container {
+            margin: 0 auto;
+            width: 90%;
+        }
+
+        /* Table styling (DataTables uses 'display' class) */
+        .crypto-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 0 auto;
+            min-width: 600px;
+            color: #f2f2f2;
+        }
+        .crypto-table th, .crypto-table td {
+            border: 1px solid #444;
+            padding: 12px 15px;
+            text-align: center;
+        }
+        .crypto-table th {
+            background-color: #333;
+        }
+        .crypto-table tr:nth-child(even) {
+            background-color: #1a1a1a;
+        }
+        .crypto-table tr:nth-child(odd) {
+            background-color: #2a2a2a;
+        }
+        .crypto-table tr:hover {
+            background-color: #555;
+        }
         
+        /* Blurred rows */
+        .blurred-row {
+            filter: blur(5px);
+            transition: filter 0.3s ease;
+        }
+        
+        /* Percentage bar container */
+        .percentage-bar-container {
+            position: relative;
+            background-color: #555;
+            height: 20px;
+            width: 100px; /* or any width you like */
+            margin: 0 auto;
+            border-radius: 3px;
+            overflow: hidden;
+        }
+        .percentage-bar {
+            height: 100%;
+            text-align: center;
+            color: white;
+            border-radius: 3px;
+            line-height: 20px;
+            font-size: 12px;
+        }
+
+        /* DataTables override (to keep text white) */
+        .dataTables_wrapper .dataTables_filter input,
+        .dataTables_wrapper .dataTables_length select,
+        .dataTables_wrapper .dataTables_info,
+        .dataTables_wrapper .dataTables_paginate {
+            color: #f2f2f2;
+        }
+        .dataTables_wrapper .dataTables_filter label,
+        .dataTables_wrapper .dataTables_length label {
+            color: #f2f2f2;
+        }
+
         /* Responsive adjustments */
         @media (max-width: 768px) {
             .crypto-table th, .crypto-table td {
@@ -240,10 +265,29 @@ def generate_html_content(table_html):
         }
     </style>
     """
+    
+    # We'll load jQuery and DataTables from a CDN
     scripts = """
-    <script src="https://code.jquery.com/jquery-3.5.1.js"></script>
+    <!-- jQuery -->
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <!-- DataTables JS & CSS -->
+    <link rel="stylesheet" type="text/css" 
+          href="https://cdn.datatables.net/1.13.4/css/jquery.dataTables.min.css"/>
+    <script src="https://cdn.datatables.net/1.13.4/js/jquery.dataTables.min.js"></script>
+
     <script>
-        // Password functionality
+        // Initialize DataTables once the document is ready
+        $(document).ready(function() {
+            // We disable paging & searching but keep ordering (sorting) enabled
+            $('#cryptoTable').DataTable({
+                "paging": false,
+                "info": false,
+                "ordering": true,
+                "searching": false
+            });
+        });
+
+        // Password unlock functionality
         function unlockRows() {
             var password = document.getElementById('crypto-password').value;
             var correctPassword = 'unlock';
@@ -290,12 +334,11 @@ def generate_html_content(table_html):
 
 def generate_crypto_table_html():
     """
-    Main function:
+    Main function to:
      1) Fetch data from Google Sheets
-     2) Create a single table with columns:
-        Name, Current Price (USD), ATH Price (USD), ATH Date,
-        and a red bar for "Percent from Price ATH"
-     3) Save to 'crypto_table.html'
+     2) Create a single table including 'Multiply to Price ATH'
+     3) Add DataTables for sorting
+     4) Save to 'crypto_table.html'
     """
     # 1. Fetch DataFrame from your Google Sheets
     df = fetch_data_from_google_sheets()
