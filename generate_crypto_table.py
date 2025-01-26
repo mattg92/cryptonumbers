@@ -12,6 +12,9 @@ WORKSHEET_NAME = os.getenv('WORKSHEET_NAME')
 PASSWORD = os.getenv('PASSWORD')
 
 def fetch_data_from_google_sheets():
+    """
+    Fetch data from the specified Google Sheets worksheet and return as a DataFrame.
+    """
     # Define the scope
     scope = ['https://spreadsheets.google.com/feeds',
              'https://www.googleapis.com/auth/drive']
@@ -23,63 +26,112 @@ def fetch_data_from_google_sheets():
     # Open the spreadsheet and worksheet
     sheet = client.open(SPREADSHEET_NAME).worksheet(WORKSHEET_NAME)
     
-    # Get all records
+    # Get all records (as list of dicts)
     records = sheet.get_all_records()
     
     # Convert to DataFrame
     df = pd.DataFrame(records)
-    
     return df
 
 def format_values(df):
     """
     Formats numerical columns:
-    - Current Price (USD) and ATH Price (USD): 5 decimal places
-    - Market Cap (USD) and ATH Market Cap (USD): in millions
+      - Current Price (USD) and ATH Price (USD): 5 decimal places
+        (e.g., $1,234.56789)
     """
-    # Define formatting functions
     def format_price(x):
-        return f"${x:,.5f}" if pd.notnull(x) else "N/A"
+        if pd.isnull(x):
+            return "N/A"
+        try:
+            return f"${float(x):,.5f}"
+        except:
+            return str(x)
     
-    # Apply formatting
+    # Apply formatting if these columns exist
     if 'Current Price (USD)' in df.columns:
         df['Current Price (USD)'] = df['Current Price (USD)'].apply(format_price)
     if 'ATH Price (USD)' in df.columns:
         df['ATH Price (USD)'] = df['ATH Price (USD)'].apply(format_price)
-    if 'Market Cap (USD)' in df.columns:
-        df['Market Cap (USD)'] = df['Market Cap (USD)'] / 1_000_000
-    if 'ATH Market Cap (USD)' in df.columns:
-        df['ATH Market Cap (USD)'] = df['ATH Market Cap (USD)'] / 1_000_000
     
     return df
 
-def generate_html_table(df, columns):
+def create_percent_bar(percent_str):
     """
-    Generates HTML for the table with specified columns.
+    Creates an HTML-based progress bar using the 'Percent from Price ATH' value.
+    - Interprets negative or positive numeric strings as a magnitude (absolute value).
+    - Clamps to 100% if desired (optional) or simply uses the raw absolute value.
+    - If the cell is empty or invalid, returns "N/A".
     """
-    # Sort DataFrame by Market Cap
-    df = df.sort_values(by='Market Cap (USD)', ascending=False).reset_index(drop=True)
+    if not percent_str or percent_str == "N/A":
+        return "N/A"
     
-    # Select required columns
-    df = df[columns].copy()
+    try:
+        val = abs(float(percent_str))  # 74.3 -> 74.3% (assuming negative means below ATH)
+        # If you'd like to cap it at 100%, uncomment the next line:
+        # val = min(val, 100.0)
+        
+        # Create a red bar on a gray container
+        bar_html = f"""
+        <div class="percentage-bar-container">
+          <div class="percentage-bar" style="width: {val}%; background-color: red;">
+            {val}%
+          </div>
+        </div>
+        """
+        return bar_html
+    except:
+        return str(percent_str)
+
+def generate_single_table_html(df):
+    """
+    Generates HTML for a single table with columns:
+      Name, Current Price (USD), ATH Price (USD), ATH Date,
+      and a progress bar for 'Percent from Price ATH'.
     
-    # Format DataFrame
+    Rows beyond the first 20 will be blurred.
+    """
+    # We only need these columns (assuming they exist in your sheet)
+    required_cols = [
+        'Name',
+        'Current Price (USD)',
+        'ATH Price (USD)',
+        'ATH Date',
+        'Percent from Price ATH'
+    ]
+    
+    # Filter the DataFrame to include only the required columns (if they exist)
+    df = df[[col for col in required_cols if col in df.columns]].copy()
+    
+    # Format numeric columns
     df = format_values(df)
     
-    # Convert to HTML
-    html_table = df.to_html(index=False, classes='crypto-table', border=0, escape=False)
+    # Convert "Percent from Price ATH" to an HTML progress bar
+    if 'Percent from Price ATH' in df.columns:
+        df['Percent from Price ATH'] = df['Percent from Price ATH'].apply(create_percent_bar)
     
-    # Process with BeautifulSoup to add 'blurred-row' class beyond first 20 rows
+    # Convert to HTML
+    html_table = df.to_html(
+        index=False,
+        classes='crypto-table',
+        border=0,
+        escape=False  # IMPORTANT: so the <div> for the bar isn't escaped
+    )
+    
+    # Use BeautifulSoup to add blurred-row class beyond row 20 (plus 1 header row => row indices 21+ in HTML)
     soup = BeautifulSoup(html_table, 'html.parser')
-    rows = soup.find_all('tr')[21:]  # +1 for header, first 20 data rows
-    for row in rows:
-        row['class'] = row.get('class', []) + ['blurred-row']
+    # The first row in <tbody> is index 1 in the final HTML (since row 0 is <thead>)
+    # So we blur from row 21 onwards => the first 20 data rows remain unblurred.
+    all_rows = soup.find_all('tr')
+    blurred_rows = all_rows[21:]  # This means: skip the header row (0) plus first 20 data rows => blur from 21 onward
+    for row in blurred_rows:
+        existing_classes = row.get('class', [])
+        row['class'] = existing_classes + ['blurred-row']
     
     return str(soup)
 
-def generate_html_content(tab1_html, tab2_html):
+def generate_html_content(table_html):
     """
-    Generates the complete HTML content with two tabs and password protection
+    Generates the complete HTML content for a single table + password unlock section.
     """
     styles = """
     <style>
@@ -89,43 +141,16 @@ def generate_html_content(tab1_html, tab2_html):
             font-family: Arial, sans-serif;
             margin: 20px;
         }
-        /* Tab styles */
-        .tab {
-            overflow: hidden;
-            border-bottom: 1px solid #444;
-        }
-
-        .tab button {
-            background-color: inherit;
-            border: none;
-            outline: none;
-            cursor: pointer;
-            padding: 14px 16px;
-            transition: background-color 0.3s;
-            color: #f2f2f2;
-            font-size: 17px;
-        }
-
-        .tab button:hover {
-            background-color: #575757;
-        }
-
-        .tab button.active {
-            background-color: #333;
-        }
-
-        /* Table container for responsiveness */
+        /* Table container */
         .crypto-table-container {
             overflow-x: auto;
-            margin-left: 10%;
-            margin-right: 10%;
-            overflow-y: auto;
+            margin: 0 auto;
             max-height: 600px;
+            width: 80%;
         }
-
         /* Table styling */
         .crypto-table {
-            width: 80%;
+            width: 100%;
             border-collapse: collapse;
             margin: 0 auto;
             min-width: 600px;
@@ -148,12 +173,33 @@ def generate_html_content(tab1_html, tab2_html):
         .crypto-table tr:hover {
             background-color: #555;
         }
+        
         /* Blurred rows */
         .blurred-row {
             filter: blur(5px);
             transition: filter 0.3s ease;
         }
-        /* Password section styles */
+        
+        /* Percentage bar container */
+        .percentage-bar-container {
+            position: relative;
+            background-color: #555;
+            height: 20px;
+            width: 100px; /* adjust as desired */
+            margin: 0 auto;
+            border-radius: 3px;
+            overflow: hidden;
+        }
+        .percentage-bar {
+            height: 100%;
+            text-align: center;
+            color: white;
+            border-radius: 3px;
+            line-height: 20px;
+            font-size: 12px;
+        }
+        
+        /* Password section */
         .password-section {
             margin-top: 20px;
             text-align: center;
@@ -178,15 +224,12 @@ def generate_html_content(tab1_html, tab2_html):
         .password-section button:hover {
             background-color: #777;
         }
-        /* Responsive Font Sizes */
+        
+        /* Responsive adjustments */
         @media (max-width: 768px) {
             .crypto-table th, .crypto-table td {
                 padding: 10px 12px;
                 font-size: 14px;
-            }
-            .tab button {
-                padding: 10px 12px;
-                font-size: 15px;
             }
         }
         @media (max-width: 480px) {
@@ -194,52 +237,26 @@ def generate_html_content(tab1_html, tab2_html):
                 padding: 8px 10px;
                 font-size: 12px;
             }
-            .tab button {
-                padding: 8px 10px;
-                font-size: 13px;
-            }
         }
-
     </style>
     """
-
-    scripts = f"""
+    scripts = """
     <script src="https://code.jquery.com/jquery-3.5.1.js"></script>
     <script>
-        // Tab functionality
-        function openTab(evt, tabName) {{
-            var i, tabcontent, tablinks;
-            tabcontent = document.getElementsByClassName("tabcontent");
-            for (i = 0; i < tabcontent.length; i++) {{
-                tabcontent[i].style.display = "none";
-            }}
-            tablinks = document.getElementsByClassName("tablinks");
-            for (i = 0; i < tablinks.length; i++) {{
-                tablinks[i].className = tablinks[i].className.replace(" active", "");
-            }}
-            document.getElementById(tabName).style.display = "block";
-            evt.currentTarget.className += " active";
-        }}
-
-        // Set default tab
-        document.addEventListener("DOMContentLoaded", function() {{
-            document.getElementsByClassName("tablinks")[0].click();
-        }});
-
         // Password functionality
-        function unlockRows() {{
+        function unlockRows() {
             var password = document.getElementById('crypto-password').value;
             var correctPassword = 'unlock';
             
-            if(password === correctPassword) {{
+            if(password === correctPassword) {
                 var blurredRows = document.querySelectorAll('.blurred-row');
-                blurredRows.forEach(function(row) {{
+                blurredRows.forEach(function(row) {
                     row.classList.remove('blurred-row');
-                }});
-            }} else {{
+                });
+            } else {
                 alert('Incorrect Password. Please try again.');
-            }}
-        }}
+            }
+        }
     </script>
     """
 
@@ -252,7 +269,7 @@ def generate_html_content(tab1_html, tab2_html):
         {styles}
     </head>
     <body>
-        <h2 style="text-align:center;">Cryptocurrency Data</h2>
+        <h2 style="text-align:center;">Cryptocurrency Prices</h2>
         
         <!-- Password Section -->
         <div class="password-section">
@@ -261,48 +278,35 @@ def generate_html_content(tab1_html, tab2_html):
             <button onclick="unlockRows()">Unlock</button>
         </div>
         
-        <!-- Tab buttons -->
-        <div class="tab">
-            <button class="tablinks" onclick="openTab(event, 'Tab1')">Price Data</button>
-            <button class="tablinks" onclick="openTab(event, 'Tab2')">Market Cap Data (M)</button>
-        </div>
-        
-        <!-- Tab 1 Content -->
-        <div id="Tab1" class="tabcontent">
-            <div class="crypto-table-container">
-                {tab1_html}
-            </div>
-        </div>
-        
-        <!-- Tab 2 Content -->
-        <div id="Tab2" class="tabcontent">
-            <div class="crypto-table-container">
-                {tab2_html}
-            </div>
+        <div class="crypto-table-container">
+            {table_html}
         </div>
         
         {scripts}
     </body>
     </html>
     """
-
     return html_content
 
 def generate_crypto_table_html():
-    # Fetch data from Google Sheets
+    """
+    Main function:
+     1) Fetch data from Google Sheets
+     2) Create a single table with columns:
+        Name, Current Price (USD), ATH Price (USD), ATH Date,
+        and a red bar for "Percent from Price ATH"
+     3) Save to 'crypto_table.html'
+    """
+    # 1. Fetch DataFrame from your Google Sheets
     df = fetch_data_from_google_sheets()
     
-    # Sort DataFrame by Market Cap
-    df = df.sort_values(by='Market Cap (USD)', ascending=False).reset_index(drop=True)
+    # 2. Create single-table HTML (with blurred rows after 20th)
+    single_table_html = generate_single_table_html(df)
     
-    # Generate HTML tables for both tabs
-    tab1_html = generate_html_table(df, ['Name', 'Current Price (USD)', 'ATH Price (USD)', 'ATH Date', 'Last Updated'])
-    tab2_html = generate_html_table(df, ['Name', 'Current Price (USD)', 'Market Cap (USD)', 'ATH Market Cap (USD)', 'ATH Market Cap Date', 'Last Updated'])
+    # 3. Generate the final HTML (including styles/scripts)
+    full_html = generate_html_content(single_table_html)
     
-    # Generate complete HTML content
-    full_html = generate_html_content(tab1_html, tab2_html)
-    
-    # Write to HTML file
+    # 4. Write to an HTML file
     with open('crypto_table.html', 'w', encoding='utf-8') as f:
         f.write(full_html)
     
