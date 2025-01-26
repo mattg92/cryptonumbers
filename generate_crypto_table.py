@@ -4,9 +4,62 @@ import pandas as pd
 import os
 from bs4 import BeautifulSoup
 
+# Environment config
 SERVICE_ACCOUNT_FILE = os.getenv('SERVICE_ACCOUNT_FILE')
 SPREADSHEET_NAME = os.getenv('SPREADSHEET_NAME')
 WORKSHEET_NAME = os.getenv('WORKSHEET_NAME')
+
+def format_values(df):
+    """
+    Formats numerical columns:
+      - Current Price (USD) and ATH Price (USD): 5 decimal places
+      - Multiply to Price ATH: 2 decimal places
+    """
+    def format_price_5dec(x):
+        if pd.isnull(x):
+            return "N/A"
+        try:
+            return f"${float(x):,.6f}"
+        except:
+            return str(x)
+    
+    # Apply formatting if these columns exist
+    if 'Current Price (USD)' in df.columns:
+        df['Current Price (USD)'] = df['Current Price (USD)'].apply(format_price_5dec)
+    if 'ATH Price (USD)' in df.columns:
+        df['ATH Price (USD)'] = df['ATH Price (USD)'].apply(format_price_5dec)
+    if 'Multiply to Price ATH' in df.columns:
+        df['Multiply to Price ATH'] = df['Multiply to Price ATH'].apply(
+            lambda x: f"{float(x):.2f}" if pd.notnull(x) else "N/A"
+        )
+    
+    return df
+
+def create_percent_bar(percent_str):
+    """
+    Converts 'Percent from Price ATH' value into an inline HTML progress bar.
+    The red bar starts from the RIGHT, showing how far below ATH the price is.
+    A minus sign is prefixed to the percentage.
+    """
+    if not percent_str or percent_str == "N/A":
+        return "N/A"
+    
+    try:
+        # Convert to float; if negative, we take the absolute value to get the magnitude.
+        val = abs(float(percent_str))
+        # If you want to cap at 100%, do: val = min(val, 100.0)
+
+        # We place the bar on the right by using 'float: right;'
+        # Add a minus sign before the digits (e.g., -50.44%).
+        bar_html = (
+            f'<div class="percentage-bar-container">'
+            f'<div class="percentage-bar" style="float: right; width: {val}%; background-color: red;">'
+            f'-{val:.2f}%</div>'
+            '</div>'
+        )
+        return bar_html
+    except:
+        return str(percent_str)
 
 def fetch_data_from_google_sheets():
     """Fetch data from the specified Google Sheet and return a DataFrame."""
@@ -22,32 +75,61 @@ def fetch_data_from_google_sheets():
 
 def generate_html_table(df):
     """
-    Convert the DataFrame to an HTML table string (unblurred). 
-    We'll blur the rows in JavaScript, not here in Python.
+    1) Keep only the required columns.
+    2) Format numeric columns.
+    3) Convert 'Percent from Price ATH' into an HTML bar.
+    4) Sort by 'Market Cap (USD)' descending if that column exists.
+    5) Convert the final DataFrame to HTML (unblurred).
+       Blurring & sorting restrictions are handled in JS.
     """
-    # Example: Sort by Market Cap descending if present
+    # Only these columns
+    required_cols = [
+        'Name',
+        'Current Price (USD)',
+        'ATH Price (USD)',
+        'ATH Date',
+        'Percent from Price ATH',
+        'Multiply to Price ATH'
+    ]
+    
+    # If 'Market Cap (USD)' is present and you want to sort by it:
     if 'Market Cap (USD)' in df.columns:
         df['Market Cap (USD)'] = pd.to_numeric(df['Market Cap (USD)'], errors='coerce')
         df.sort_values('Market Cap (USD)', ascending=False, inplace=True)
     
-    # If you only want certain columns, filter them here:
-    # required_cols = [...]
-    # df = df[required_cols]
+    # Filter to required columns, if present
+    existing_cols = [col for col in required_cols if col in df.columns]
+    if not existing_cols:
+        return "<p>No matching columns found in the sheet.</p>"
     
-    # Convert to HTML (no row-blurring here):
+    df = df[existing_cols].copy()
+    
+    # Format numeric columns
+    df = format_values(df)
+    
+    # Convert 'Percent from Price ATH' to an HTML bar
+    if 'Percent from Price ATH' in df.columns:
+        df['Percent from Price ATH'] = df['Percent from Price ATH'].apply(create_percent_bar)
+
+    # Convert final DataFrame to HTML
+    # No blurring here - that will be handled by the client JS
     html_table = df.to_html(
         index=False,
         classes='crypto-table display',
         border=0,
-        escape=False,      # if you have custom HTML in some cells
+        escape=False,   # so the bar HTML is not escaped
         table_id='cryptoTable'
     )
     return html_table
 
 def generate_html_page(table_html):
     """
-    Returns the complete HTML page, including DataTables and 
-    JS code that blurs all but the first 20 rows on each draw—unless unlocked.
+    Returns the complete HTML page, including:
+      - A password box
+      - Table initially with:
+          - 1) row #21 and onward blurred
+          - 2) no user sorting allowed
+        All done in JS. After correct password, everything is unblurred & sorting is enabled.
     """
     styles = """
     <style>
@@ -113,6 +195,24 @@ def generate_html_page(table_html):
             filter: blur(5px);
             transition: filter 0.3s ease;
         }
+        /* Percentage bar container */
+        .percentage-bar-container {
+            position: relative;
+            background-color: #555;
+            height: 20px;
+            width: 100px;
+            margin: 0 auto;
+            border-radius: 3px;
+            overflow: hidden;
+        }
+        .percentage-bar {
+            height: 100%;
+            text-align: center;
+            color: white;
+            border-radius: 3px;
+            line-height: 20px;
+            font-size: 12px;
+        }
         /* Overriding DataTables elements to keep text white */
         .dataTables_wrapper .dataTables_filter input,
         .dataTables_wrapper .dataTables_length select,
@@ -136,14 +236,16 @@ def generate_html_page(table_html):
     <script src="https://cdn.datatables.net/1.13.4/js/jquery.dataTables.min.js"></script>
 
     <script>
-        var isUnlocked = false;  // Tracks whether rows are unlocked or not
+        // We'll manage two DataTables states:
+        // 1) ordering = false before unlock
+        // 2) ordering = true after unlock
+        var table;
+        var isUnlocked = false;
 
-        // Called after each DataTables draw event to blur rows, if still locked
         function blurRowsIfLocked() {
             if (!isUnlocked) {
-                // Select all data rows
+                // Blur row #21 and onward
                 var rows = $('#cryptoTable tbody tr');
-                // Remove blur from all, then re-apply it after the 20th row
                 rows.removeClass('blurred-row');
                 for (var i = 20; i < rows.length; i++) {
                     $(rows[i]).addClass('blurred-row');
@@ -153,33 +255,43 @@ def generate_html_page(table_html):
 
         function unlockRows() {
             var password = document.getElementById('crypto-password').value;
-            if(password === 'cryptoath') {
+            if (password === 'cryptoath') {
                 isUnlocked = true;
-                // Remove blur from all rows
+                // Unblur all rows
                 $('#cryptoTable tbody tr').removeClass('blurred-row');
+
+                // Destroy the old table (with no ordering)
+                table.destroy();
+
+                // Re-initialize DataTable WITH ordering enabled
+                table = $('#cryptoTable').DataTable({
+                    paging: false,
+                    info: false,
+                    ordering: true,
+                    searching: false,
+                    order: []
+                });
             } else {
                 alert('Incorrect Password. Please try again.');
             }
         }
 
         $(document).ready(function() {
-            var table = $('#cryptoTable').DataTable({
+            // Initialize DataTable with ordering disabled
+            table = $('#cryptoTable').DataTable({
                 paging: false,
                 info: false,
-                ordering: true,
+                ordering: false,
                 searching: false,
-                // If you want no initial re-sorting by DataTables,
-                // you can specify "order": [] here:
                 order: []
             });
 
-            // On every DataTables draw (including the initial),
-            // re-check if we should blur rows.
+            // On each draw (including initial), blur if locked
             table.on('draw', function() {
                 blurRowsIfLocked();
             });
 
-            // Blur initially
+            // Initially blur (in case there's no "draw" event)
             blurRowsIfLocked();
         });
     </script>
@@ -197,7 +309,7 @@ def generate_html_page(table_html):
       <h2 style="text-align:center;">Cryptocurrency Prices</h2>
 
       <div class="password-section">
-        <label for="crypto-password">Enter Password to View All Rows:</label><br>
+        <label for="crypto-password">Enter Password to View All Rows & Enable Sorting:</label><br>
         <input type="password" id="crypto-password" placeholder="Enter password">
         <button onclick="unlockRows()">Unlock</button>
       </div>
@@ -215,11 +327,12 @@ def generate_html_page(table_html):
 def generate_crypto_table_html():
     """
     Main function to:
-      1) Fetch data from Google Sheets
-      2) Convert to HTML (no blurring in Python)
-      3) Build a page with JS that blurs all but the first 20 rows
-         until the user enters the password 'cryptoath'
-      4) Save to 'crypto_table.html'
+      1) Fetch DataFrame from Google Sheets
+      2) Keep only desired columns, format them, generate 'Percent from ATH' bars
+      3) Sort by Market Cap if present
+      4) Convert to HTML (no blur done here)
+      5) Build final page with JS-driven blur & locked sorting
+      6) Save to 'crypto_table.html'
     """
     df = fetch_data_from_google_sheets()
     table_html = generate_html_table(df)
