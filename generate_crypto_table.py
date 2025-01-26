@@ -67,26 +67,37 @@ def format_values(df):
 
 def create_percent_bar(percent_str):
     """
-    Converts 'Percent from Price ATH' value into an inline HTML progress bar.
-    The red bar starts from the RIGHT, showing how far below ATH the price is.
-    A minus sign is prefixed to the percentage (e.g., -31.85%).
+    Converts 'Percent from Price ATH' value into an inline HTML "progress bar"
+    where the red portion starts from the right, and the minus-percent text is
+    visible in the middle of the gray bar.
     """
     if not percent_str or percent_str == "N/A":
         return "N/A"
     
     try:
-        # Convert to float; if negative, use absolute value for the magnitude
+        # Convert to float; if negative, use abs for magnitude
         val = abs(float(percent_str))
-        # If needed, cap it at 100.0 => val = min(val, 100.0)
+        # If you want to cap at 100, uncomment:
+        # val = min(val, 100.0)
 
-        # Make sure the text is fully visible by not clipping the container
-        bar_html = (
-            '<div class="percentage-bar-container" style="overflow: visible;">'
-            f'<div class="percentage-bar" style="float: right; width: {val}%; background-color: red; white-space: nowrap;">'
-            f'-{val:.2f}%</div>'
-            '</div>'
-        )
-        return bar_html
+        # We create a container (gray) and absolutely position the red bar
+        # from the right. The text is displayed above the bar (z-index: 2),
+        # ensuring it doesn't get clipped or hidden.
+        bar_html = f"""
+        <div style="position: relative; background-color: #555; height: 20px; width: 100px;
+                    margin: 0 auto; border-radius: 3px; overflow: hidden;">
+          <!-- Red bar anchored to the right -->
+          <div style="position: absolute; right: 0; top: 0; bottom: 0; 
+                      width: {val}%; background-color: red; border-radius: 3px;">
+          </div>
+          <!-- Centered text layer -->
+          <div style="position: relative; text-align: center; z-index: 2; 
+                      line-height: 20px; color: #fff; font-size: 12px;">
+            -{val:.2f}%
+          </div>
+        </div>
+        """
+        return bar_html.strip()
     except:
         return str(percent_str)
 
@@ -198,7 +209,7 @@ def generate_html_page(table_html, last_updated_str):
         .crypto-table-container {
             margin: 0 auto;
             width: 90%;
-            max-height: 600px; /* approximate for ~21 rows visible */
+            max-height: 800px; /* approximate for ~21 rows visible */
             overflow-y: auto;
         }
         .crypto-table {
@@ -212,6 +223,12 @@ def generate_html_page(table_html, last_updated_str):
             padding: 12px 15px;
             text-align: center; /* center columns' names & data */
         }
+
+        /* If DataTables overrides the header, use this: */
+        .crypto-table thead th {
+            text-align: center !important;
+        }
+    
         .crypto-table th {
             background-color: #333;
         }
