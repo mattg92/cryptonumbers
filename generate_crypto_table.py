@@ -2,157 +2,52 @@ import gspread
 from oauth2client.service_account import ServiceAccountCredentials
 import pandas as pd
 import os
-from datetime import datetime
 from bs4 import BeautifulSoup
 
-# Configuration from environment variables
 SERVICE_ACCOUNT_FILE = os.getenv('SERVICE_ACCOUNT_FILE')
 SPREADSHEET_NAME = os.getenv('SPREADSHEET_NAME')
 WORKSHEET_NAME = os.getenv('WORKSHEET_NAME')
 
 def fetch_data_from_google_sheets():
-    """
-    Fetch data from the specified Google Sheets worksheet and return as a DataFrame.
-    """
-    # Define the scope
+    """Fetch data from the specified Google Sheet and return a DataFrame."""
     scope = ['https://spreadsheets.google.com/feeds',
              'https://www.googleapis.com/auth/drive']
-    
-    # Authenticate using the service account file
     creds = ServiceAccountCredentials.from_json_keyfile_name(SERVICE_ACCOUNT_FILE, scope)
     client = gspread.authorize(creds)
     
-    # Open the spreadsheet and worksheet
     sheet = client.open(SPREADSHEET_NAME).worksheet(WORKSHEET_NAME)
-    
-    # Get all records (list of dicts)
     records = sheet.get_all_records()
-    
-    # Convert to DataFrame
     df = pd.DataFrame(records)
     return df
 
-def format_values(df):
+def generate_html_table(df):
     """
-    Formats numerical columns:
-      - Current Price (USD) and ATH Price (USD): 5 decimal places
-      - Multiply to Price ATH: 2 decimal places
+    Convert the DataFrame to an HTML table string (unblurred). 
+    We'll blur the rows in JavaScript, not here in Python.
     """
-    def format_price_5dec(x):
-        if pd.isnull(x):
-            return "N/A"
-        try:
-            return f"${float(x):,.5f}"
-        except:
-            return str(x)
-    
-    # Apply formatting if these columns exist
-    if 'Current Price (USD)' in df.columns:
-        df['Current Price (USD)'] = df['Current Price (USD)'].apply(format_price_5dec)
-    if 'ATH Price (USD)' in df.columns:
-        df['ATH Price (USD)'] = df['ATH Price (USD)'].apply(format_price_5dec)
-    if 'Multiply to Price ATH' in df.columns:
-        df['Multiply to Price ATH'] = df['Multiply to Price ATH'].apply(
-            lambda x: f"{float(x):.2f}" if pd.notnull(x) else "N/A"
-        )
-    
-    return df
-
-def create_percent_bar(percent_str):
-    """
-    Converts 'Percent from Price ATH' value into an inline HTML progress bar.
-    The red bar starts from the RIGHT, showing how far below ATH the price is.
-    A minus sign is prefixed to the percentage.
-    """
-    if not percent_str or percent_str == "N/A":
-        return "N/A"
-    
-    try:
-        # Convert to float; if negative, we take the absolute value to get the magnitude.
-        val = abs(float(percent_str))
-        # If you want to cap at 100%, do: val = min(val, 100.0)
-
-        # We place the bar on the right by using 'float: right;'
-        # Add a minus sign before the digits.
-        bar_html = (
-            f'<div class="percentage-bar-container">'
-            f'<div class="percentage-bar" style="float: right; width: {val}%; background-color: red;">'
-            f'-{val:.2f}%</div>'  # always show minus
-            '</div>'
-        )
-        return bar_html
-    except:
-        return str(percent_str)
-
-def generate_single_table_html(df):
-    """
-    Generates HTML for a single table with columns (if present):
-      - Name
-      - Current Price (USD)
-      - ATH Price (USD)
-      - ATH Date
-      - Percent from Price ATH (rendered as a progress bar)
-      - Multiply to Price ATH
-    
-    Removes 'Last Updated' from the output, if present.
-    Sorts by 'Market Cap (USD)' descending at the start (if present).
-    Blurs rows after the first 20 until unlocked.
-    """
-    # 1. If 'Market Cap (USD)' is present, convert to numeric & sort descending
+    # Example: Sort by Market Cap descending if present
     if 'Market Cap (USD)' in df.columns:
         df['Market Cap (USD)'] = pd.to_numeric(df['Market Cap (USD)'], errors='coerce')
         df.sort_values('Market Cap (USD)', ascending=False, inplace=True)
     
-    # 2. Define the columns we actually want to display (do NOT include 'Last Updated')
-    required_cols = [
-        'Name',
-        'Current Price (USD)',
-        'ATH Price (USD)',
-        'ATH Date',
-        'Percent from Price ATH',
-        'Multiply to Price ATH'
-    ]
+    # If you only want certain columns, filter them here:
+    # required_cols = [...]
+    # df = df[required_cols]
     
-    existing_cols = [col for col in required_cols if col in df.columns]
-    if not existing_cols:
-        return "<p>No matching columns found in the sheet.</p>"
-    
-    # 3. Filter DataFrame to just these columns
-    df = df[existing_cols].copy()
-    
-    # 4. Format numeric columns
-    df = format_values(df)
-    
-    # 5. Convert "Percent from Price ATH" to HTML bars
-    if 'Percent from Price ATH' in df.columns:
-        df['Percent from Price ATH'] = df['Percent from Price ATH'].apply(create_percent_bar)
-    
-    # 6. Convert to HTML table
+    # Convert to HTML (no row-blurring here):
     html_table = df.to_html(
         index=False,
         classes='crypto-table display',
         border=0,
-        escape=False,      # so the HTML bar is not escaped
+        escape=False,      # if you have custom HTML in some cells
         table_id='cryptoTable'
     )
-    
-    # 7. Blur rows after the first 20 data rows (+ 1 header => row index 21+)
-    soup = BeautifulSoup(html_table, 'html.parser')
-    all_rows = soup.find_all('tr')
-    blurred_rows = all_rows[21:]  # 0 = header, 1..20 = first 20 data rows
-    for row in blurred_rows:
-        classes = row.get('class', [])
-        row['class'] = classes + ['blurred-row']
-    
-    return str(soup)
+    return html_table
 
-def generate_html_content(table_html):
+def generate_html_page(table_html):
     """
-    Builds the full HTML page:
-      - A heading
-      - Password box + unlock button (password: 'cryptoath')
-      - The table container
-      - DataTables for sorting
+    Returns the complete HTML page, including DataTables and 
+    JS code that blurs all but the first 20 rows on each draw—unless unlocked.
     """
     styles = """
     <style>
@@ -162,8 +57,6 @@ def generate_html_content(table_html):
             font-family: Arial, sans-serif;
             margin: 20px;
         }
-        
-        /* Password section */
         .password-section {
             margin-bottom: 30px;
             text-align: center;
@@ -188,20 +81,15 @@ def generate_html_content(table_html):
         .password-section button:hover {
             background-color: #777;
         }
-
-        /* Table container */
         .crypto-table-container {
             margin: 0 auto;
             width: 90%;
         }
-
-        /* Table styling (DataTables uses 'display' class) */
         .crypto-table {
             width: 100%;
             border-collapse: collapse;
             margin: 0 auto;
             min-width: 600px;
-            color: #f2f2f2;
         }
         .crypto-table th, .crypto-table td {
             border: 1px solid #444;
@@ -220,33 +108,12 @@ def generate_html_content(table_html):
         .crypto-table tr:hover {
             background-color: #555;
         }
-        
-        /* Blurred rows */
+        /* Our blur class */
         .blurred-row {
             filter: blur(5px);
             transition: filter 0.3s ease;
         }
-        
-        /* Percentage bar container */
-        .percentage-bar-container {
-            position: relative;
-            background-color: #555;
-            height: 20px;
-            width: 100px;
-            margin: 0 auto;
-            border-radius: 3px;
-            overflow: hidden;
-        }
-        .percentage-bar {
-            height: 100%;
-            text-align: center;
-            color: white;
-            border-radius: 3px;
-            line-height: 20px;
-            font-size: 12px;
-        }
-
-        /* DataTables override (to keep text white) */
+        /* Overriding DataTables elements to keep text white */
         .dataTables_wrapper .dataTables_filter input,
         .dataTables_wrapper .dataTables_length select,
         .dataTables_wrapper .dataTables_info,
@@ -257,119 +124,117 @@ def generate_html_content(table_html):
         .dataTables_wrapper .dataTables_length label {
             color: #f2f2f2;
         }
-
-        /* Responsive adjustments */
-        @media (max-width: 768px) {
-            .crypto-table th, .crypto-table td {
-                padding: 10px 12px;
-                font-size: 14px;
-            }
-        }
-        @media (max-width: 480px) {
-            .crypto-table th, .crypto-table td {
-                padding: 8px 10px;
-                font-size: 12px;
-            }
-        }
     </style>
     """
-    
-    # We'll load jQuery and DataTables from a CDN
+
     scripts = """
     <!-- jQuery -->
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-    <!-- DataTables JS & CSS -->
-    <link rel="stylesheet" type="text/css" 
+    <!-- DataTables -->
+    <link rel="stylesheet" type="text/css"
           href="https://cdn.datatables.net/1.13.4/css/jquery.dataTables.min.css"/>
     <script src="https://cdn.datatables.net/1.13.4/js/jquery.dataTables.min.js"></script>
 
     <script>
-        // Initialize DataTables once the document is ready
-        $(document).ready(function() {
-            // We disable paging & searching but keep ordering (sorting) enabled
-            $('#cryptoTable').DataTable({
-                "paging": false,
-                "info": false,
-                "ordering": true,
-                "searching": false
-            });
-        });
+        var isUnlocked = false;  // Tracks whether rows are unlocked or not
 
-        // Password unlock functionality
+        // Called after each DataTables draw event to blur rows, if still locked
+        function blurRowsIfLocked() {
+            if (!isUnlocked) {
+                // Select all data rows
+                var rows = $('#cryptoTable tbody tr');
+                // Remove blur from all, then re-apply it after the 20th row
+                rows.removeClass('blurred-row');
+                for (var i = 20; i < rows.length; i++) {
+                    $(rows[i]).addClass('blurred-row');
+                }
+            }
+        }
+
         function unlockRows() {
             var password = document.getElementById('crypto-password').value;
-            var correctPassword = 'cryptoath';
-            
-            if(password === correctPassword) {
-                var blurredRows = document.querySelectorAll('.blurred-row');
-                blurredRows.forEach(function(row) {
-                    row.classList.remove('blurred-row');
-                });
+            if(password === 'cryptoath') {
+                isUnlocked = true;
+                // Remove blur from all rows
+                $('#cryptoTable tbody tr').removeClass('blurred-row');
             } else {
                 alert('Incorrect Password. Please try again.');
             }
         }
+
+        $(document).ready(function() {
+            var table = $('#cryptoTable').DataTable({
+                paging: false,
+                info: false,
+                ordering: true,
+                searching: false,
+                // If you want no initial re-sorting by DataTables,
+                // you can specify "order": [] here:
+                order: []
+            });
+
+            // On every DataTables draw (including the initial),
+            // re-check if we should blur rows.
+            table.on('draw', function() {
+                blurRowsIfLocked();
+            });
+
+            // Blur initially
+            blurRowsIfLocked();
+        });
     </script>
     """
 
-    html_content = f"""
+    html = f"""
     <!DOCTYPE html>
     <html lang="en">
     <head>
-        <meta charset="UTF-8">
-        <title>Crypto Data Table</title>
-        {styles}
+      <meta charset="UTF-8">
+      <title>Crypto Data Table</title>
+      {styles}
     </head>
     <body>
-        <h2 style="text-align:center;">Cryptocurrency Prices</h2>
-        
-        <!-- Password Section -->
-        <div class="password-section">
-            <label for="crypto-password">Enter Password to View All Rows:</label><br>
-            <input type="password" id="crypto-password" placeholder="Enter password">
-            <button onclick="unlockRows()">Unlock</button>
-        </div>
-        
-        <div class="crypto-table-container">
-            {table_html}
-        </div>
-        
-        {scripts}
+      <h2 style="text-align:center;">Cryptocurrency Prices</h2>
+
+      <div class="password-section">
+        <label for="crypto-password">Enter Password to View All Rows:</label><br>
+        <input type="password" id="crypto-password" placeholder="Enter password">
+        <button onclick="unlockRows()">Unlock</button>
+      </div>
+
+      <div class="crypto-table-container">
+        {table_html}
+      </div>
+
+      {scripts}
     </body>
     </html>
     """
-    return html_content
+    return html
 
 def generate_crypto_table_html():
     """
     Main function to:
-     1) Fetch data from Google Sheets
-     2) Sort by Market Cap (USD) descending if available
-     3) Show a single table (20 unblurred rows, rest blurred)
-     4) Use password 'cryptoath'
-     5) Remove 'Last Updated' column entirely
-     6) Place the red bar from the right, prefixed with '-'
+      1) Fetch data from Google Sheets
+      2) Convert to HTML (no blurring in Python)
+      3) Build a page with JS that blurs all but the first 20 rows
+         until the user enters the password 'cryptoath'
+      4) Save to 'crypto_table.html'
     """
-    # 1. Fetch DataFrame
     df = fetch_data_from_google_sheets()
-    
-    # 2. Generate the HTML for our single table
-    single_table_html = generate_single_table_html(df)
-    
-    # 3. Build final HTML
-    full_html = generate_html_content(single_table_html)
-    
-    # 4. Write to an HTML file
-    with open('crypto_table.html', 'w', encoding='utf-8') as f:
+    table_html = generate_html_table(df)
+    full_html = generate_html_page(table_html)
+
+    with open("crypto_table.html", "w", encoding="utf-8") as f:
         f.write(full_html)
-    
+
     print("HTML table generated and saved to crypto_table.html")
 
 def main():
     try:
         generate_crypto_table_html()
     except Exception as e:
-        print(f"An error occurred: {e}")
+        print(f"Error: {e}")
         exit(1)
 
 if __name__ == "__main__":
