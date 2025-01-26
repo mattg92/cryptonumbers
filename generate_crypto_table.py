@@ -9,7 +9,6 @@ from bs4 import BeautifulSoup
 SERVICE_ACCOUNT_FILE = os.getenv('SERVICE_ACCOUNT_FILE')
 SPREADSHEET_NAME = os.getenv('SPREADSHEET_NAME')
 WORKSHEET_NAME = os.getenv('WORKSHEET_NAME')
-PASSWORD = os.getenv('PASSWORD')  # Not specifically used, but available if needed
 
 def fetch_data_from_google_sheets():
     """
@@ -39,7 +38,7 @@ def format_values(df):
       - Current Price (USD) and ATH Price (USD): 5 decimal places
       - Multiply to Price ATH: 2 decimal places
     """
-    def format_price(x):
+    def format_price_5dec(x):
         if pd.isnull(x):
             return "N/A"
         try:
@@ -49,9 +48,9 @@ def format_values(df):
     
     # Apply formatting if these columns exist
     if 'Current Price (USD)' in df.columns:
-        df['Current Price (USD)'] = df['Current Price (USD)'].apply(format_price)
+        df['Current Price (USD)'] = df['Current Price (USD)'].apply(format_price_5dec)
     if 'ATH Price (USD)' in df.columns:
-        df['ATH Price (USD)'] = df['ATH Price (USD)'].apply(format_price)
+        df['ATH Price (USD)'] = df['ATH Price (USD)'].apply(format_price_5dec)
     if 'Multiply to Price ATH' in df.columns:
         df['Multiply to Price ATH'] = df['Multiply to Price ATH'].apply(
             lambda x: f"{float(x):.2f}" if pd.notnull(x) else "N/A"
@@ -62,21 +61,24 @@ def format_values(df):
 def create_percent_bar(percent_str):
     """
     Converts 'Percent from Price ATH' value into an inline HTML progress bar.
-    Generates the bar in a single-line string to avoid extra line breaks (\n).
+    The red bar starts from the RIGHT, showing how far below ATH the price is.
+    A minus sign is prefixed to the percentage.
     """
     if not percent_str or percent_str == "N/A":
         return "N/A"
     
     try:
-        # Convert to float; if negative, take absolute value to represent how far below ATH
+        # Convert to float; if negative, we take the absolute value to get the magnitude.
         val = abs(float(percent_str))
-        # If desired, cap at 100, e.g. val = min(val, 100.0)
-        
-        # Single-line HTML so it doesn't embed newline characters
+        # If you want to cap at 100%, do: val = min(val, 100.0)
+
+        # We place the bar on the right by using 'float: right;'
+        # Add a minus sign before the digits.
         bar_html = (
             f'<div class="percentage-bar-container">'
-            f'<div class="percentage-bar" style="width: {val}%; background-color: red;">'
-            f'{val}%</div></div>'
+            f'<div class="percentage-bar" style="float: right; width: {val}%; background-color: red;">'
+            f'-{val:.2f}%</div>'  # always show minus
+            '</div>'
         )
         return bar_html
     except:
@@ -91,44 +93,50 @@ def generate_single_table_html(df):
       - ATH Date
       - Percent from Price ATH (rendered as a progress bar)
       - Multiply to Price ATH
-
-    Blurs rows after the first 20 until unlocked with a password.
+    
+    Removes 'Last Updated' from the output, if present.
+    Sorts by 'Market Cap (USD)' descending at the start (if present).
+    Blurs rows after the first 20 until unlocked.
     """
-    # We only need these columns (if they exist):
+    # 1. If 'Market Cap (USD)' is present, convert to numeric & sort descending
+    if 'Market Cap (USD)' in df.columns:
+        df['Market Cap (USD)'] = pd.to_numeric(df['Market Cap (USD)'], errors='coerce')
+        df.sort_values('Market Cap (USD)', ascending=False, inplace=True)
+    
+    # 2. Define the columns we actually want to display (do NOT include 'Last Updated')
     required_cols = [
         'Name',
         'Current Price (USD)',
         'ATH Price (USD)',
         'ATH Date',
         'Percent from Price ATH',
-        'Multiply to Price ATH',
-        'Last Updated'  # We'll also include this if you want it in the table
+        'Multiply to Price ATH'
     ]
     
     existing_cols = [col for col in required_cols if col in df.columns]
     if not existing_cols:
         return "<p>No matching columns found in the sheet.</p>"
     
-    # Filter DF to those columns
+    # 3. Filter DataFrame to just these columns
     df = df[existing_cols].copy()
     
-    # Format numeric columns
+    # 4. Format numeric columns
     df = format_values(df)
     
-    # Convert "Percent from Price ATH" to HTML bars
+    # 5. Convert "Percent from Price ATH" to HTML bars
     if 'Percent from Price ATH' in df.columns:
         df['Percent from Price ATH'] = df['Percent from Price ATH'].apply(create_percent_bar)
     
-    # Convert to HTML table
+    # 6. Convert to HTML table
     html_table = df.to_html(
         index=False,
         classes='crypto-table display',
         border=0,
-        escape=False,      # so the HTML bars are not escaped
+        escape=False,      # so the HTML bar is not escaped
         table_id='cryptoTable'
     )
     
-    # Blur rows after the first 20 data rows (+ 1 header row => index 21+)
+    # 7. Blur rows after the first 20 data rows (+ 1 header => row index 21+)
     soup = BeautifulSoup(html_table, 'html.parser')
     all_rows = soup.find_all('tr')
     blurred_rows = all_rows[21:]  # 0 = header, 1..20 = first 20 data rows
@@ -138,36 +146,12 @@ def generate_single_table_html(df):
     
     return str(soup)
 
-def extract_last_updated_info(df):
-    """
-    Pulls the *latest* 'Last Updated' value from the DataFrame (if present).
-    Removes 'Z' from the end, if it exists.
-    
-    Returns a string like: "2023-02-07T13:40:00" or "N/A" if not found.
-    """
-    if 'Last Updated' not in df.columns:
-        return "N/A"
-    
-    # Some rows might have different times; let's take the maximum or the first, up to you:
-    #   Option 1: The last row's date:
-    #       last_val = df['Last Updated'].iloc[-1]
-    #   Option 2: The max date/time:
-    last_val = df['Last Updated'].max()
-    
-    if pd.isnull(last_val):
-        return "N/A"
-    
-    # Convert to str and remove trailing 'Z'
-    last_str = str(last_val).replace("Z", "")
-    return last_str
-
-def generate_html_content(table_html, last_updated_str):
+def generate_html_content(table_html):
     """
     Builds the full HTML page:
       - A heading
-      - Password box + unlock button
+      - Password box + unlock button (password: 'cryptoath')
       - The table container
-      - A short sentence under the table about last updated date/time (no trailing 'Z')
       - DataTables for sorting
     """
     styles = """
@@ -274,13 +258,6 @@ def generate_html_content(table_html, last_updated_str):
             color: #f2f2f2;
         }
 
-        /* Footer / last-updated info */
-        .last-updated {
-            text-align: center;
-            margin-top: 20px;
-            font-style: italic;
-        }
-
         /* Responsive adjustments */
         @media (max-width: 768px) {
             .crypto-table th, .crypto-table td {
@@ -321,7 +298,7 @@ def generate_html_content(table_html, last_updated_str):
         // Password unlock functionality
         function unlockRows() {
             var password = document.getElementById('crypto-password').value;
-            var correctPassword = 'unlock';
+            var correctPassword = 'cryptoath';
             
             if(password === correctPassword) {
                 var blurredRows = document.querySelectorAll('.blurred-row');
@@ -356,9 +333,6 @@ def generate_html_content(table_html, last_updated_str):
         <div class="crypto-table-container">
             {table_html}
         </div>
-
-        <!-- Short sentence under the table about last updated time -->
-        <p class="last-updated">Data last updated: {last_updated_str}</p>
         
         {scripts}
     </body>
@@ -370,24 +344,22 @@ def generate_crypto_table_html():
     """
     Main function to:
      1) Fetch data from Google Sheets
-     2) Create a single table (including 'Multiply to Price ATH')
-     3) Display a short sentence under the table about last updated (no trailing 'Z')
-     4) Use DataTables for column sorting
-     5) Save to 'crypto_table.html'
+     2) Sort by Market Cap (USD) descending if available
+     3) Show a single table (20 unblurred rows, rest blurred)
+     4) Use password 'cryptoath'
+     5) Remove 'Last Updated' column entirely
+     6) Place the red bar from the right, prefixed with '-'
     """
     # 1. Fetch DataFrame
     df = fetch_data_from_google_sheets()
     
-    # 2. Create single-table HTML
+    # 2. Generate the HTML for our single table
     single_table_html = generate_single_table_html(df)
     
-    # 3. Extract the "Last Updated" info (e.g., the latest date/time), remove 'Z'
-    last_updated_str = extract_last_updated_info(df)
+    # 3. Build final HTML
+    full_html = generate_html_content(single_table_html)
     
-    # 4. Generate the final HTML (including styles/scripts & last-updated line)
-    full_html = generate_html_content(single_table_html, last_updated_str)
-    
-    # 5. Write to an HTML file
+    # 4. Write to an HTML file
     with open('crypto_table.html', 'w', encoding='utf-8') as f:
         f.write(full_html)
     
