@@ -2,9 +2,9 @@
     <!DOCTYPE html>
     <html lang="en">
     <head>
-        <meta charset="UTF-8">
-        <title>Crypto Data Table</title>
-        
+      <meta charset="UTF-8">
+      <title>Crypto Data Table</title>
+      
     <style>
         body {
             background-color: black;
@@ -12,8 +12,6 @@
             font-family: Arial, sans-serif;
             margin: 20px;
         }
-        
-        /* Password section */
         .password-section {
             margin-bottom: 30px;
             text-align: center;
@@ -38,20 +36,15 @@
         .password-section button:hover {
             background-color: #777;
         }
-
-        /* Table container */
         .crypto-table-container {
             margin: 0 auto;
             width: 90%;
         }
-
-        /* Table styling (DataTables uses 'display' class) */
         .crypto-table {
             width: 100%;
             border-collapse: collapse;
             margin: 0 auto;
             min-width: 600px;
-            color: #f2f2f2;
         }
         .crypto-table th, .crypto-table td {
             border: 1px solid #444;
@@ -70,33 +63,12 @@
         .crypto-table tr:hover {
             background-color: #555;
         }
-        
-        /* Blurred rows */
+        /* Our blur class */
         .blurred-row {
             filter: blur(5px);
             transition: filter 0.3s ease;
         }
-        
-        /* Percentage bar container */
-        .percentage-bar-container {
-            position: relative;
-            background-color: #555;
-            height: 20px;
-            width: 100px;
-            margin: 0 auto;
-            border-radius: 3px;
-            overflow: hidden;
-        }
-        .percentage-bar {
-            height: 100%;
-            text-align: center;
-            color: white;
-            border-radius: 3px;
-            line-height: 20px;
-            font-size: 12px;
-        }
-
-        /* DataTables override (to keep text white) */
+        /* Overriding DataTables elements to keep text white */
         .dataTables_wrapper .dataTables_filter input,
         .dataTables_wrapper .dataTables_length select,
         .dataTables_wrapper .dataTables_info,
@@ -107,2084 +79,3345 @@
         .dataTables_wrapper .dataTables_length label {
             color: #f2f2f2;
         }
-
-        /* Responsive adjustments */
-        @media (max-width: 768px) {
-            .crypto-table th, .crypto-table td {
-                padding: 10px 12px;
-                font-size: 14px;
-            }
-        }
-        @media (max-width: 480px) {
-            .crypto-table th, .crypto-table td {
-                padding: 8px 10px;
-                font-size: 12px;
-            }
-        }
     </style>
     
     </head>
     <body>
-        <h2 style="text-align:center;">Cryptocurrency Prices</h2>
-        
-        <!-- Password Section -->
-        <div class="password-section">
-            <label for="crypto-password">Enter Password to View All Rows:</label><br>
-            <input type="password" id="crypto-password" placeholder="Enter password">
-            <button onclick="unlockRows()">Unlock</button>
-        </div>
-        
-        <div class="crypto-table-container">
-            <table class="dataframe crypto-table display" id="cryptoTable">
-<thead>
-<tr style="text-align: right;">
-<th>Name</th>
-<th>Current Price (USD)</th>
-<th>ATH Price (USD)</th>
-<th>ATH Date</th>
-<th>Percent from Price ATH</th>
-<th>Multiply to Price ATH</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>Bitcoin</td>
-<td>$105,069.61670</td>
-<td>$109,021.48210</td>
-<td>2025-01-20T07:11:03Z</td>
-<td><div class="percentage-bar-container"><div class="percentage-bar" style="float: right; width: 3.58%; background-color: red;">-3.58%</div></div></td>
-<td>1.04</td>
-</tr>
-<tr>
-<td>Ethereum</td>
-<td>$3,335.11595</td>
-<td>$4,864.11320</td>
-<td>2021-11-10T16:05:00Z</td>
-<td><div class="percentage-bar-container"><div class="percentage-bar" style="float: right; width: 31.4%; background-color: red;">-31.40%</div></div></td>
-<td>1.46</td>
-</tr>
-<tr>
-<td>XRP</td>
-<td>$3.12959</td>
-<td>$3.84194</td>
-<td>2018-01-04T07:14:00Z</td>
-<td><div class="percentage-bar-container"><div class="percentage-bar" style="float: right; width: 18.46%; background-color: red;">-18.46%</div></div></td>
-<td>1.23</td>
-</tr>
-<tr>
-<td>Tether</td>
-<td>$1.00059</td>
-<td>$1.21549</td>
-<td>2015-02-25T17:04:00Z</td>
-<td><div class="percentage-bar-container"><div class="percentage-bar" style="float: right; width: 17.66%; background-color: red;">-17.66%</div></div></td>
-<td>1.21</td>
-</tr>
-<tr>
-<td>Solana</td>
-<td>$254.15731</td>
-<td>$294.16320</td>
-<td>2025-01-19T11:17:03Z</td>
-<td><div class="percentage-bar-container"><div class="percentage-bar" style="float: right; width: 13.55%; background-color: red;">-13.55%</div></div></td>
-<td>1.16</td>
-</tr>
-<tr>
-<td>Binance Coin</td>
-<td>$683.53769</td>
-<td>$786.50330</td>
-<td>2024-12-04T10:27:23Z</td>
-<td><div class="percentage-bar-container"><div class="percentage-bar" style="float: right; width: 13.05%; background-color: red;">-13.05%</div></div></td>
-<td>1.15</td>
-</tr>
-<tr>
-<td>USDC</td>
-<td>$1.00064</td>
-<td>$1.90620</td>
-<td>2018-10-11T06:35:00Z</td>
-<td><div class="percentage-bar-container"><div class="percentage-bar" style="float: right; width: 47.49%; background-color: red;">-47.49%</div></div></td>
-<td>1.90</td>
-</tr>
-<tr>
-<td>Dogecoin</td>
-<td>$0.35232</td>
-<td>$0.75287</td>
-<td>2021-05-08T05:00:00Z</td>
-<td><div class="percentage-bar-container"><div class="percentage-bar" style="float: right; width: 53.15%; background-color: red;">-53.15%</div></div></td>
-<td>2.14</td>
-</tr>
-<tr>
-<td>Cardano</td>
-<td>$0.99477</td>
-<td>$3.09503</td>
-<td>2021-09-02T06:00:00Z</td>
-<td><div class="percentage-bar-container"><div class="percentage-bar" style="float: right; width: 67.82%; background-color: red;">-67.82%</div></div></td>
-<td>3.11</td>
-</tr>
-<tr>
-<td>Lido Staked Ether</td>
-<td>$3,330.30053</td>
-<td>$4,824.29256</td>
-<td>2021-11-10T16:05:00Z</td>
-<td><div class="percentage-bar-container"><div class="percentage-bar" style="float: right; width: 30.93%; background-color: red;">-30.93%</div></div></td>
-<td>1.45</td>
-</tr>
-<tr>
-<td>TRON</td>
-<td>$0.25219</td>
-<td>$0.44044</td>
-<td>2024-12-04T00:12:23Z</td>
-<td><div class="percentage-bar-container"><div class="percentage-bar" style="float: right; width: 42.74%; background-color: red;">-42.74%</div></div></td>
-<td>1.75</td>
-</tr>
-<tr>
-<td>Chainlink</td>
-<td>$26.24750</td>
-<td>$53.01224</td>
-<td>2021-05-10T00:10:00Z</td>
-<td><div class="percentage-bar-container"><div class="percentage-bar" style="float: right; width: 50.44%; background-color: red;">-50.44%</div></div></td>
-<td>2.02</td>
-</tr>
-<tr>
-<td>Avalanche</td>
-<td>$37.64947</td>
-<td>$145.66522</td>
-<td>2021-11-21T14:15:00Z</td>
-<td><div class="percentage-bar-container"><div class="percentage-bar" style="float: right; width: 74.14%; background-color: red;">-74.14%</div></div></td>
-<td>3.87</td>
-</tr>
-<tr>
-<td>Wrapped Bitcoin</td>
-<td>$104,837.71780</td>
-<td>$108,532.12400</td>
-<td>2025-01-20T09:11:03Z</td>
-<td><div class="percentage-bar-container"><div class="percentage-bar" style="float: right; width: 3.35%; background-color: red;">-3.35%</div></div></td>
-<td>1.04</td>
-</tr>
-<tr>
-<td>Stellar</td>
-<td>$0.42350</td>
-<td>$0.93814</td>
-<td>2018-01-04T08:19:00Z</td>
-<td><div class="percentage-bar-container"><div class="percentage-bar" style="float: right; width: 54.82%; background-color: red;">-54.82%</div></div></td>
-<td>2.22</td>
-</tr>
-<tr>
-<td>Toncoin</td>
-<td>$5.03505</td>
-<td>$8.27961</td>
-<td>2024-06-15T00:36:22Z</td>
-<td><div class="percentage-bar-container"><div class="percentage-bar" style="float: right; width: 39.16%; background-color: red;">-39.16%</div></div></td>
-<td>1.64</td>
-</tr>
-<tr>
-<td>Hedera Hashgraph</td>
-<td>$0.33669</td>
-<td>$0.56614</td>
-<td>2021-09-15T10:40:00Z</td>
-<td><div class="percentage-bar-container"><div class="percentage-bar" style="float: right; width: 40.49%; background-color: red;">-40.49%</div></div></td>
-<td>1.68</td>
-</tr>
-<tr>
-<td>WETH</td>
-<td>$3,334.20476</td>
-<td>$4,858.35492</td>
-<td>2021-11-10T16:00:00Z</td>
-<td><div class="percentage-bar-container"><div class="percentage-bar" style="float: right; width: 31.32%; background-color: red;">-31.32%</div></div></td>
-<td>1.46</td>
-</tr>
-<tr>
-<td>Sui</td>
-<td>$4.09996</td>
-<td>$5.35086</td>
-<td>2025-01-04T22:53:04Z</td>
-<td><div class="percentage-bar-container"><div class="percentage-bar" style="float: right; width: 23.29%; background-color: red;">-23.29%</div></div></td>
-<td>1.31</td>
-</tr>
-<tr>
-<td>Shiba Inu</td>
-<td>$0.00002</td>
-<td>$0.00009</td>
-<td>2021-10-28T03:25:00Z</td>
-<td><div class="percentage-bar-container"><div class="percentage-bar" style="float: right; width: 77.49%; background-color: red;">-77.49%</div></div></td>
-<td>4.45</td>
-</tr>
-<tr class="blurred-row">
-<td>Bitget Token</td>
-<td>$7.45036</td>
-<td>$8.49757</td>
-<td>2024-12-27T11:42:21Z</td>
-<td><div class="percentage-bar-container"><div class="percentage-bar" style="float: right; width: 12.28%; background-color: red;">-12.28%</div></div></td>
-<td>1.14</td>
-</tr>
-<tr class="blurred-row">
-<td>Polkadot</td>
-<td>$6.45189</td>
-<td>$55.00430</td>
-<td>2021-11-04T14:00:00Z</td>
-<td><div class="percentage-bar-container"><div class="percentage-bar" style="float: right; width: 88.26%; background-color: red;">-88.26%</div></div></td>
-<td>8.53</td>
-</tr>
-<tr class="blurred-row">
-<td>Litecoin</td>
-<td>$122.13741</td>
-<td>$412.70053</td>
-<td>2021-05-10T02:55:00Z</td>
-<td><div class="percentage-bar-container"><div class="percentage-bar" style="float: right; width: 70.39%; background-color: red;">-70.39%</div></div></td>
-<td>3.38</td>
-</tr>
-<tr class="blurred-row">
-<td>LEO Token</td>
-<td>$9.27648</td>
-<td>$9.75556</td>
-<td>2025-01-18T00:56:04Z</td>
-<td><div class="percentage-bar-container"><div class="percentage-bar" style="float: right; width: 4.75%; background-color: red;">-4.75%</div></div></td>
-<td>1.05</td>
-</tr>
-<tr class="blurred-row">
-<td>Bitcoin Cash</td>
-<td>$436.61386</td>
-<td>$4,355.62000</td>
-<td>2017-12-20T16:59:00Z</td>
-<td><div class="percentage-bar-container"><div class="percentage-bar" style="float: right; width: 89.97%; background-color: red;">-89.97%</div></div></td>
-<td>9.98</td>
-</tr>
-<tr class="blurred-row">
-<td>Hyperliquid</td>
-<td>$23.49037</td>
-<td>$35.02036</td>
-<td>2024-12-21T07:36:20Z</td>
-<td><div class="percentage-bar-container"><div class="percentage-bar" style="float: right; width: 32.87%; background-color: red;">-32.87%</div></div></td>
-<td>1.49</td>
-</tr>
-<tr class="blurred-row">
-<td>Binance Bitcoin</td>
-<td>$105,096.81940</td>
-<td>$110,004.12040</td>
-<td>2025-01-20T06:59:03Z</td>
-<td><div class="percentage-bar-container"><div class="percentage-bar" style="float: right; width: 4.43%; background-color: red;">-4.43%</div></div></td>
-<td>1.05</td>
-</tr>
-<tr class="blurred-row">
-<td>Uniswap</td>
-<td>$11.98174</td>
-<td>$45.01251</td>
-<td>2021-05-03T04:15:00Z</td>
-<td><div class="percentage-bar-container"><div class="percentage-bar" style="float: right; width: 73.35%; background-color: red;">-73.35%</div></div></td>
-<td>3.76</td>
-</tr>
-<tr class="blurred-row">
-<td>Dai</td>
-<td>$1.00095</td>
-<td>$1.36678</td>
-<td>2018-02-03T10:29:00Z</td>
-<td><div class="percentage-bar-container"><div class="percentage-bar" style="float: right; width: 26.77%; background-color: red;">-26.77%</div></div></td>
-<td>1.37</td>
-</tr>
-<tr class="blurred-row">
-<td>Pepe</td>
-<td>$0.00001</td>
-<td>$0.00003</td>
-<td>2024-12-09T16:33:23Z</td>
-<td><div class="percentage-bar-container"><div class="percentage-bar" style="float: right; width: 47.1%; background-color: red;">-47.10%</div></div></td>
-<td>1.89</td>
-</tr>
-<tr class="blurred-row">
-<td>OFFICIAL TRUMP</td>
-<td>$29.00664</td>
-<td>$75.26900</td>
-<td>2025-01-19T11:41:03Z</td>
-<td><div class="percentage-bar-container"><div class="percentage-bar" style="float: right; width: 61.39%; background-color: red;">-61.39%</div></div></td>
-<td>2.59</td>
-</tr>
-<tr class="blurred-row">
-<td>Usds</td>
-<td>$1.00144</td>
-<td>$1.58205</td>
-<td>2024-09-24T03:00:21Z</td>
-<td><div class="percentage-bar-container"><div class="percentage-bar" style="float: right; width: 36.7%; background-color: red;">-36.70%</div></div></td>
-<td>1.58</td>
-</tr>
-<tr class="blurred-row">
-<td>Near Protocol</td>
-<td>$4.98131</td>
-<td>$20.39546</td>
-<td>2022-01-16T22:10:00Z</td>
-<td><div class="percentage-bar-container"><div class="percentage-bar" style="float: right; width: 75.56%; background-color: red;">-75.56%</div></div></td>
-<td>4.09</td>
-</tr>
-<tr class="blurred-row">
-<td>Aave</td>
-<td>$330.13257</td>
-<td>$666.02931</td>
-<td>2021-05-18T21:20:00Z</td>
-<td><div class="percentage-bar-container"><div class="percentage-bar" style="float: right; width: 50.39%; background-color: red;">-50.39%</div></div></td>
-<td>2.02</td>
-</tr>
-<tr class="blurred-row">
-<td>Aptos</td>
-<td>$8.20544</td>
-<td>$19.94634</td>
-<td>2023-01-30T08:50:00Z</td>
-<td><div class="percentage-bar-container"><div class="percentage-bar" style="float: right; width: 58.83%; background-color: red;">-58.83%</div></div></td>
-<td>2.43</td>
-</tr>
-<tr class="blurred-row">
-<td>Internet Computer</td>
-<td>$9.21005</td>
-<td>$342.22937</td>
-<td>2021-05-13T05:35:00Z</td>
-<td><div class="percentage-bar-container"><div class="percentage-bar" style="float: right; width: 97.31%; background-color: red;">-97.31%</div></div></td>
-<td>37.16</td>
-</tr>
-<tr class="blurred-row">
-<td>Monero</td>
-<td>$224.60855</td>
-<td>$519.75943</td>
-<td>2021-05-07T13:55:00Z</td>
-<td><div class="percentage-bar-container"><div class="percentage-bar" style="float: right; width: 56.78%; background-color: red;">-56.78%</div></div></td>
-<td>2.31</td>
-</tr>
-<tr class="blurred-row">
-<td>WhiteBIT Coin</td>
-<td>$28.68340</td>
-<td>$28.84956</td>
-<td>2025-01-23T16:50:04Z</td>
-<td><div class="percentage-bar-container"><div class="percentage-bar" style="float: right; width: 0.56%; background-color: red;">-0.56%</div></div></td>
-<td>1.01</td>
-</tr>
-<tr class="blurred-row">
-<td>Ethereum Classic</td>
-<td>$26.83732</td>
-<td>$167.08246</td>
-<td>2021-05-06T18:35:00Z</td>
-<td><div class="percentage-bar-container"><div class="percentage-bar" style="float: right; width: 83.93%; background-color: red;">-83.93%</div></div></td>
-<td>6.23</td>
-</tr>
-<tr class="blurred-row">
-<td>Mantle</td>
-<td>$1.18220</td>
-<td>$1.50265</td>
-<td>2024-04-08T01:46:07Z</td>
-<td><div class="percentage-bar-container"><div class="percentage-bar" style="float: right; width: 21.19%; background-color: red;">-21.19%</div></div></td>
-<td>1.27</td>
-</tr>
-<tr class="blurred-row">
-<td>VeChain</td>
-<td>$0.04708</td>
-<td>$9.55167</td>
-<td>2018-01-22T10:04:00Z</td>
-<td><div class="percentage-bar-container"><div class="percentage-bar" style="float: right; width: 99.51%; background-color: red;">-99.51%</div></div></td>
-<td>202.87</td>
-</tr>
-<tr class="blurred-row">
-<td>MANTRA</td>
-<td>$4.64505</td>
-<td>$5.00293</td>
-<td>2025-01-26T01:26:04Z</td>
-<td><div class="percentage-bar-container"><div class="percentage-bar" style="float: right; width: 7.13%; background-color: red;">-7.13%</div></div></td>
-<td>1.08</td>
-</tr>
-<tr class="blurred-row">
-<td>Cronos</td>
-<td>$0.13812</td>
-<td>$0.95855</td>
-<td>2021-11-24T16:05:00Z</td>
-<td><div class="percentage-bar-container"><div class="percentage-bar" style="float: right; width: 85.58%; background-color: red;">-85.58%</div></div></td>
-<td>6.94</td>
-</tr>
-<tr class="blurred-row">
-<td>Render</td>
-<td>$6.94679</td>
-<td>$13.62973</td>
-<td>2024-03-17T16:31:07Z</td>
-<td><div class="percentage-bar-container"><div class="percentage-bar" style="float: right; width: 48.98%; background-color: red;">-48.98%</div></div></td>
-<td>1.96</td>
-</tr>
-<tr class="blurred-row">
-<td>Algorand</td>
-<td>$0.40078</td>
-<td>$2.64524</td>
-<td>2021-11-18T04:45:00Z</td>
-<td><div class="percentage-bar-container"><div class="percentage-bar" style="float: right; width: 84.82%; background-color: red;">-84.82%</div></div></td>
-<td>6.60</td>
-</tr>
-<tr class="blurred-row">
-<td>Kaspa</td>
-<td>$0.13192</td>
-<td>$0.20758</td>
-<td>2024-07-31T19:24:21Z</td>
-<td><div class="percentage-bar-container"><div class="percentage-bar" style="float: right; width: 36.39%; background-color: red;">-36.39%</div></div></td>
-<td>1.57</td>
-</tr>
-<tr class="blurred-row">
-<td>OKB</td>
-<td>$54.60561</td>
-<td>$73.91770</td>
-<td>2024-03-14T00:31:12Z</td>
-<td><div class="percentage-bar-container"><div class="percentage-bar" style="float: right; width: 26.11%; background-color: red;">-26.11%</div></div></td>
-<td>1.35</td>
-</tr>
-<tr class="blurred-row">
-<td>Filecoin</td>
-<td>$5.10036</td>
-<td>$236.96534</td>
-<td>2021-04-01T13:25:00Z</td>
-<td><div class="percentage-bar-container"><div class="percentage-bar" style="float: right; width: 97.85%; background-color: red;">-97.85%</div></div></td>
-<td>46.46</td>
-</tr>
-<tr class="blurred-row">
-<td>Artificial Superintelligence Alliance</td>
-<td>$1.21241</td>
-<td>$3.47064</td>
-<td>2024-03-28T16:04:13Z</td>
-<td><div class="percentage-bar-container"><div class="percentage-bar" style="float: right; width: 65.01%; background-color: red;">-65.01%</div></div></td>
-<td>2.86</td>
-</tr>
-<tr class="blurred-row">
-<td>Jito Staked SOL</td>
-<td>$299.59436</td>
-<td>$338.64928</td>
-<td>2025-01-19T11:38:04Z</td>
-<td><div class="percentage-bar-container"><div class="percentage-bar" style="float: right; width: 11.49%; background-color: red;">-11.49%</div></div></td>
-<td>1.13</td>
-</tr>
-<tr class="blurred-row">
-<td>BitTensor</td>
-<td>$451.41798</td>
-<td>$769.13308</td>
-<td>2024-04-11T12:07:07Z</td>
-<td><div class="percentage-bar-container"><div class="percentage-bar" style="float: right; width: 41.26%; background-color: red;">-41.26%</div></div></td>
-<td>1.70</td>
-</tr>
-<tr class="blurred-row">
-<td>Polygon Ecosystem Token</td>
-<td>$0.44549</td>
-<td>$1.29395</td>
-<td>2024-03-13T18:43:07Z</td>
-<td><div class="percentage-bar-container"><div class="percentage-bar" style="float: right; width: 65.54%; background-color: red;">-65.54%</div></div></td>
-<td>2.90</td>
-</tr>
-<tr class="blurred-row">
-<td>Cosmos</td>
-<td>$6.32259</td>
-<td>$44.55288</td>
-<td>2022-01-07T10:35:00Z</td>
-<td><div class="percentage-bar-container"><div class="percentage-bar" style="float: right; width: 85.8%; background-color: red;">-85.80%</div></div></td>
-<td>7.05</td>
-</tr>
-<tr class="blurred-row">
-<td>Virtuals Protocol</td>
-<td>$2.40539</td>
-<td>$5.09618</td>
-<td>2025-01-02T05:54:23Z</td>
-<td><div class="percentage-bar-container"><div class="percentage-bar" style="float: right; width: 52.69%; background-color: red;">-52.69%</div></div></td>
-<td>2.12</td>
-</tr>
-<tr class="blurred-row">
-<td>Gatechain Token</td>
-<td>$25.37395</td>
-<td>$25.94632</td>
-<td>2025-01-25T02:53:03Z</td>
-<td><div class="percentage-bar-container"><div class="percentage-bar" style="float: right; width: 2.17%; background-color: red;">-2.17%</div></div></td>
-<td>1.02</td>
-</tr>
-<tr class="blurred-row">
-<td>Raydium</td>
-<td>$7.64011</td>
-<td>$16.91416</td>
-<td>2021-09-12T20:20:00Z</td>
-<td><div class="percentage-bar-container"><div class="percentage-bar" style="float: right; width: 54.75%; background-color: red;">-54.75%</div></div></td>
-<td>2.21</td>
-</tr>
-<tr class="blurred-row">
-<td>Optimism</td>
-<td>$1.63641</td>
-<td>$4.86788</td>
-<td>2024-03-06T08:31:06Z</td>
-<td><div class="percentage-bar-container"><div class="percentage-bar" style="float: right; width: 66.33%; background-color: red;">-66.33%</div></div></td>
-<td>2.97</td>
-</tr>
-<tr class="blurred-row">
-<td>Bonk</td>
-<td>$0.00003</td>
-<td>$0.00006</td>
-<td>2024-11-20T04:03:20Z</td>
-<td><div class="percentage-bar-container"><div class="percentage-bar" style="float: right; width: 50.96%; background-color: red;">-50.96%</div></div></td>
-<td>2.04</td>
-</tr>
-<tr class="blurred-row">
-<td>Stacks</td>
-<td>$1.39505</td>
-<td>$3.84317</td>
-<td>2024-04-01T12:22:17Z</td>
-<td><div class="percentage-bar-container"><div class="percentage-bar" style="float: right; width: 63.67%; background-color: red;">-63.67%</div></div></td>
-<td>2.75</td>
-</tr>
-<tr class="blurred-row">
-<td>THETA</td>
-<td>$2.02553</td>
-<td>$16.58521</td>
-<td>2021-04-16T13:10:00Z</td>
-<td><div class="percentage-bar-container"><div class="percentage-bar" style="float: right; width: 87.77%; background-color: red;">-87.77%</div></div></td>
-<td>8.19</td>
-</tr>
-<tr class="blurred-row">
-<td>Worldcoin</td>
-<td>$2.09253</td>
-<td>$11.85062</td>
-<td>2024-03-10T00:13:10Z</td>
-<td><div class="percentage-bar-container"><div class="percentage-bar" style="float: right; width: 82.3%; background-color: red;">-82.30%</div></div></td>
-<td>5.66</td>
-</tr>
-<tr class="blurred-row">
-<td>Lido DAO</td>
-<td>$2.17113</td>
-<td>$6.95936</td>
-<td>2021-09-10T06:00:00Z</td>
-<td><div class="percentage-bar-container"><div class="percentage-bar" style="float: right; width: 68.78%; background-color: red;">-68.78%</div></div></td>
-<td>3.21</td>
-</tr>
-<tr class="blurred-row">
-<td>Injective Protocol</td>
-<td>$21.11068</td>
-<td>$52.70699</td>
-<td>2024-03-14T15:07:06Z</td>
-<td><div class="percentage-bar-container"><div class="percentage-bar" style="float: right; width: 59.89%; background-color: red;">-59.89%</div></div></td>
-<td>2.50</td>
-</tr>
-<tr class="blurred-row">
-<td>Rocket Pool ETH</td>
-<td>$3,730.47536</td>
-<td>$4,590.01430</td>
-<td>2024-12-16T18:57:22Z</td>
-<td><div class="percentage-bar-container"><div class="percentage-bar" style="float: right; width: 18.67%; background-color: red;">-18.67%</div></div></td>
-<td>1.23</td>
-</tr>
-<tr class="blurred-row">
-<td>Arbitrum</td>
-<td>$0.71089</td>
-<td>$2.39950</td>
-<td>2024-01-12T12:32:04Z</td>
-<td><div class="percentage-bar-container"><div class="percentage-bar" style="float: right; width: 70.35%; background-color: red;">-70.35%</div></div></td>
-<td>3.38</td>
-</tr>
-<tr class="blurred-row">
-<td>Binance Staked SOL</td>
-<td>$261.63825</td>
-<td>$277.46438</td>
-<td>2025-01-24T14:47:03Z</td>
-<td><div class="percentage-bar-container"><div class="percentage-bar" style="float: right; width: 5.65%; background-color: red;">-5.65%</div></div></td>
-<td>1.06</td>
-</tr>
-<tr class="blurred-row">
-<td>First Digital USD</td>
-<td>$1.00061</td>
-<td>$1.02611</td>
-<td>2024-04-13T20:10:07Z</td>
-<td><div class="percentage-bar-container"><div class="percentage-bar" style="float: right; width: 2.47%; background-color: red;">-2.47%</div></div></td>
-<td>1.03</td>
-</tr>
-<tr class="blurred-row">
-<td>The Graph</td>
-<td>$0.19043</td>
-<td>$2.65929</td>
-<td>2021-02-20T14:40:00Z</td>
-<td><div class="percentage-bar-container"><div class="percentage-bar" style="float: right; width: 92.83%; background-color: red;">-92.83%</div></div></td>
-<td>13.96</td>
-</tr>
-<tr class="blurred-row">
-<td>Immutable X</td>
-<td>$1.23252</td>
-<td>$3.76133</td>
-<td>2024-03-12T03:40:08Z</td>
-<td><div class="percentage-bar-container"><div class="percentage-bar" style="float: right; width: 67.18%; background-color: red;">-67.18%</div></div></td>
-<td>3.05</td>
-</tr>
-<tr class="blurred-row">
-<td>Sonic</td>
-<td>$0.53589</td>
-<td>$0.84626</td>
-<td>2025-01-15T21:47:03Z</td>
-<td><div class="percentage-bar-container"><div class="percentage-bar" style="float: right; width: 36.66%; background-color: red;">-36.66%</div></div></td>
-<td>1.58</td>
-</tr>
-<tr class="blurred-row">
-<td>Pudgy Penguins</td>
-<td>$0.02655</td>
-<td>$0.05339</td>
-<td>2024-12-17T14:15:00Z</td>
-<td><div class="percentage-bar-container"><div class="percentage-bar" style="float: right; width: 50.32%; background-color: red;">-50.32%</div></div></td>
-<td>2.01</td>
-</tr>
-<tr class="blurred-row">
-<td>HEX (Pulsechain)</td>
-<td>$0.01614</td>
-<td>$0.03301</td>
-<td>2024-12-05T04:39:20Z</td>
-<td><div class="percentage-bar-container"><div class="percentage-bar" style="float: right; width: 51.09%; background-color: red;">-51.09%</div></div></td>
-<td>2.04</td>
-</tr>
-<tr class="blurred-row">
-<td>KuCoin Token</td>
-<td>$13.33123</td>
-<td>$28.80593</td>
-<td>2021-12-01T15:05:00Z</td>
-<td><div class="percentage-bar-container"><div class="percentage-bar" style="float: right; width: 53.74%; background-color: red;">-53.74%</div></div></td>
-<td>2.16</td>
-</tr>
-<tr class="blurred-row">
-<td>Movement</td>
-<td>$0.70055</td>
-<td>$1.21305</td>
-<td>2024-12-26T00:33:23Z</td>
-<td><div class="percentage-bar-container"><div class="percentage-bar" style="float: right; width: 42.25%; background-color: red;">-42.25%</div></div></td>
-<td>1.73</td>
-</tr>
-<tr class="blurred-row">
-<td>Jupiter Exchange Token</td>
-<td>$1.14466</td>
-<td>$1.84199</td>
-<td>2024-04-01T04:16:10Z</td>
-<td><div class="percentage-bar-container"><div class="percentage-bar" style="float: right; width: 37.76%; background-color: red;">-37.76%</div></div></td>
-<td>1.61</td>
-</tr>
-<tr class="blurred-row">
-<td>Fantom</td>
-<td>$0.53965</td>
-<td>$3.52667</td>
-<td>2021-10-26T10:00:00Z</td>
-<td><div class="percentage-bar-container"><div class="percentage-bar" style="float: right; width: 84.71%; background-color: red;">-84.71%</div></div></td>
-<td>6.54</td>
-</tr>
-<tr class="blurred-row">
-<td>Flare Network</td>
-<td>$0.02586</td>
-<td>$0.05486</td>
-<td>2024-02-26T14:37:11Z</td>
-<td><div class="percentage-bar-container"><div class="percentage-bar" style="float: right; width: 52.89%; background-color: red;">-52.89%</div></div></td>
-<td>2.12</td>
-</tr>
-<tr class="blurred-row">
-<td>Solv Protocol solvBTC</td>
-<td>$104,928.28440</td>
-<td>$109,019.62440</td>
-<td>2025-01-20T07:02:05Z</td>
-<td><div class="percentage-bar-container"><div class="percentage-bar" style="float: right; width: 3.7%; background-color: red;">-3.70%</div></div></td>
-<td>1.04</td>
-</tr>
-<tr class="blurred-row">
-<td>Marinade Staked Sol</td>
-<td>$320.29204</td>
-<td>$361.19815</td>
-<td>2025-01-19T11:38:04Z</td>
-<td><div class="percentage-bar-container"><div class="percentage-bar" style="float: right; width: 11.15%; background-color: red;">-11.15%</div></div></td>
-<td>1.13</td>
-</tr>
-<tr class="blurred-row">
-<td>JasmyCoin</td>
-<td>$0.02775</td>
-<td>$0.32453</td>
-<td>2021-11-03T02:57:31Z</td>
-<td><div class="percentage-bar-container"><div class="percentage-bar" style="float: right; width: 91.44%; background-color: red;">-91.44%</div></div></td>
-<td>11.69</td>
-</tr>
-<tr class="blurred-row">
-<td>The Sandbox</td>
-<td>$0.55671</td>
-<td>$8.59644</td>
-<td>2021-11-25T07:00:00Z</td>
-<td><div class="percentage-bar-container"><div class="percentage-bar" style="float: right; width: 93.52%; background-color: red;">-93.52%</div></div></td>
-<td>15.44</td>
-</tr>
-<tr class="blurred-row">
-<td>Fartcoin</td>
-<td>$1.33150</td>
-<td>$2.66432</td>
-<td>2025-01-19T22:59:03Z</td>
-<td><div class="percentage-bar-container"><div class="percentage-bar" style="float: right; width: 49.9%; background-color: red;">-49.90%</div></div></td>
-<td>2.00</td>
-</tr>
-<tr class="blurred-row">
-<td>Floki Inu</td>
-<td>$0.00014</td>
-<td>$0.00035</td>
-<td>2021-11-04T14:25:00Z</td>
-<td><div class="percentage-bar-container"><div class="percentage-bar" style="float: right; width: 60.68%; background-color: red;">-60.68%</div></div></td>
-<td>2.55</td>
-</tr>
-<tr class="blurred-row">
-<td>XDC Network</td>
-<td>$0.10615</td>
-<td>$0.19451</td>
-<td>2021-08-21T04:10:00Z</td>
-<td><div class="percentage-bar-container"><div class="percentage-bar" style="float: right; width: 45.38%; background-color: red;">-45.38%</div></div></td>
-<td>1.83</td>
-</tr>
-<tr class="blurred-row">
-<td>Quant</td>
-<td>$107.07148</td>
-<td>$426.18009</td>
-<td>2021-09-11T09:15:00Z</td>
-<td><div class="percentage-bar-container"><div class="percentage-bar" style="float: right; width: 74.81%; background-color: red;">-74.81%</div></div></td>
-<td>3.98</td>
-</tr>
-<tr class="blurred-row">
-<td>dogwifhat</td>
-<td>$1.28393</td>
-<td>$4.83405</td>
-<td>2024-03-31T08:40:08Z</td>
-<td><div class="percentage-bar-container"><div class="percentage-bar" style="float: right; width: 73.42%; background-color: red;">-73.42%</div></div></td>
-<td>3.77</td>
-</tr>
-<tr class="blurred-row">
-<td>Gala</td>
-<td>$0.03268</td>
-<td>$0.83431</td>
-<td>2021-11-26T01:55:00Z</td>
-<td><div class="percentage-bar-container"><div class="percentage-bar" style="float: right; width: 96.08%; background-color: red;">-96.08%</div></div></td>
-<td>25.53</td>
-</tr>
-<tr class="blurred-row">
-<td>Kaia</td>
-<td>$0.20661</td>
-<td>$0.41233</td>
-<td>2024-12-03T00:06:21Z</td>
-<td><div class="percentage-bar-container"><div class="percentage-bar" style="float: right; width: 49.86%; background-color: red;">-49.86%</div></div></td>
-<td>2.00</td>
-</tr>
-<tr class="blurred-row">
-<td>Onyxcoin</td>
-<td>$0.03940</td>
-<td>$0.18391</td>
-<td>2022-05-27T13:00:00Z</td>
-<td><div class="percentage-bar-container"><div class="percentage-bar" style="float: right; width: 78.22%; background-color: red;">-78.22%</div></div></td>
-<td>4.67</td>
-</tr>
-<tr class="blurred-row">
-<td>Lido Staked SOL</td>
-<td>$308.67957</td>
-<td>$353.63841</td>
-<td>2025-01-19T11:47:04Z</td>
-<td><div class="percentage-bar-container"><div class="percentage-bar" style="float: right; width: 12.59%; background-color: red;">-12.59%</div></div></td>
-<td>1.15</td>
-</tr>
-<tr class="blurred-row">
-<td>Tezos</td>
-<td>$1.16307</td>
-<td>$12.18940</td>
-<td>2017-12-17T15:34:00Z</td>
-<td><div class="percentage-bar-container"><div class="percentage-bar" style="float: right; width: 90.46%; background-color: red;">-90.46%</div></div></td>
-<td>10.48</td>
-</tr>
-<tr class="blurred-row">
-<td>Fasttoken</td>
-<td>$3.90711</td>
-<td>$3.91455</td>
-<td>2025-01-26T14:02:04Z</td>
-<td><div class="percentage-bar-container"><div class="percentage-bar" style="float: right; width: 0.12%; background-color: red;">-0.12%</div></div></td>
-<td>1.00</td>
-</tr>
-<tr class="blurred-row">
-<td>Ethena</td>
-<td>$0.81931</td>
-<td>$1.51960</td>
-<td>2024-04-11T10:04:07Z</td>
-<td><div class="percentage-bar-container"><div class="percentage-bar" style="float: right; width: 46.03%; background-color: red;">-46.03%</div></div></td>
-<td>1.85</td>
-</tr>
-<tr class="blurred-row">
-<td>Ethereum Name Service</td>
-<td>$33.96155</td>
-<td>$60.52824</td>
-<td>2021-12-03T14:45:00Z</td>
-<td><div class="percentage-bar-container"><div class="percentage-bar" style="float: right; width: 43.82%; background-color: red;">-43.82%</div></div></td>
-<td>1.78</td>
-</tr>
-<tr class="blurred-row">
-<td>DeXe</td>
-<td>$19.84406</td>
-<td>$25.70884</td>
-<td>2021-12-04T15:10:00Z</td>
-<td><div class="percentage-bar-container"><div class="percentage-bar" style="float: right; width: 22.71%; background-color: red;">-22.71%</div></div></td>
-<td>1.30</td>
-</tr>
-<tr class="blurred-row">
-<td>AIOZ Network</td>
-<td>$0.95846</td>
-<td>$1.31957</td>
-<td>2024-12-01T22:57:21Z</td>
-<td><div class="percentage-bar-container"><div class="percentage-bar" style="float: right; width: 27.95%; background-color: red;">-27.95%</div></div></td>
-<td>1.38</td>
-</tr>
-<tr class="blurred-row">
-<td>Maker</td>
-<td>$1,230.54374</td>
-<td>$6,302.62947</td>
-<td>2021-05-03T21:50:00Z</td>
-<td><div class="percentage-bar-container"><div class="percentage-bar" style="float: right; width: 80.43%; background-color: red;">-80.43%</div></div></td>
-<td>5.12</td>
-</tr>
-<tr class="blurred-row">
-<td>Wrapped BNB</td>
-<td>$683.62812</td>
-<td>$786.27891</td>
-<td>2024-12-04T11:09:21Z</td>
-<td><div class="percentage-bar-container"><div class="percentage-bar" style="float: right; width: 12.99%; background-color: red;">-12.99%</div></div></td>
-<td>1.15</td>
-</tr>
-<tr class="blurred-row">
-<td>BitTorrent</td>
-<td>$0.00000</td>
-<td>$0.00000</td>
-<td>2022-03-31T10:45:00Z</td>
-<td><div class="percentage-bar-container"><div class="percentage-bar" style="float: right; width: 53.84%; background-color: red;">-53.84%</div></div></td>
-<td>2.17</td>
-</tr>
-<tr class="blurred-row">
-<td>Polygon</td>
-<td>$0.44464</td>
-<td>$2.91460</td>
-<td>2021-12-27T02:05:00Z</td>
-<td><div class="percentage-bar-container"><div class="percentage-bar" style="float: right; width: 84.74%; background-color: red;">-84.74%</div></div></td>
-<td>6.55</td>
-</tr>
-<tr class="blurred-row">
-<td>Flow</td>
-<td>$0.69154</td>
-<td>$43.85849</td>
-<td>2021-04-19T13:30:00Z</td>
-<td><div class="percentage-bar-container"><div class="percentage-bar" style="float: right; width: 98.42%; background-color: red;">-98.42%</div></div></td>
-<td>63.42</td>
-</tr>
-<tr class="blurred-row">
-<td>Bitcoin SV</td>
-<td>$52.03775</td>
-<td>$495.93745</td>
-<td>2021-04-16T17:05:00Z</td>
-<td><div class="percentage-bar-container"><div class="percentage-bar" style="float: right; width: 89.5%; background-color: red;">-89.50%</div></div></td>
-<td>9.53</td>
-</tr>
-<tr class="blurred-row">
-<td>Fellaz</td>
-<td>$2.15061</td>
-<td>$6.93180</td>
-<td>2024-05-28T23:01:07Z</td>
-<td><div class="percentage-bar-container"><div class="percentage-bar" style="float: right; width: 68.98%; background-color: red;">-68.98%</div></div></td>
-<td>3.22</td>
-</tr>
-<tr class="blurred-row">
-<td>Curve DAO Token</td>
-<td>$0.80978</td>
-<td>$6.73730</td>
-<td>2022-01-04T05:35:00Z</td>
-<td><div class="percentage-bar-container"><div class="percentage-bar" style="float: right; width: 87.97%; background-color: red;">-87.97%</div></div></td>
-<td>8.32</td>
-</tr>
-<tr class="blurred-row">
-<td>NEO</td>
-<td>$14.18464</td>
-<td>$196.85300</td>
-<td>2018-01-15T20:29:00Z</td>
-<td><div class="percentage-bar-container"><div class="percentage-bar" style="float: right; width: 92.79%; background-color: red;">-92.79%</div></div></td>
-<td>13.88</td>
-</tr>
-<tr class="blurred-row">
-<td>Arweave</td>
-<td>$14.71071</td>
-<td>$97.31752</td>
-<td>2021-08-31T02:25:00Z</td>
-<td><div class="percentage-bar-container"><div class="percentage-bar" style="float: right; width: 84.88%; background-color: red;">-84.88%</div></div></td>
-<td>6.62</td>
-</tr>
-<tr class="blurred-row">
-<td>Nexo</td>
-<td>$1.45267</td>
-<td>$4.07458</td>
-<td>2021-05-12T14:30:00Z</td>
-<td><div class="percentage-bar-container"><div class="percentage-bar" style="float: right; width: 64.34%; background-color: red;">-64.34%</div></div></td>
-<td>2.80</td>
-</tr>
-<tr class="blurred-row">
-<td>Decentraland</td>
-<td>$0.47361</td>
-<td>$5.85265</td>
-<td>2021-11-25T09:45:00Z</td>
-<td><div class="percentage-bar-container"><div class="percentage-bar" style="float: right; width: 91.9%; background-color: red;">-91.90%</div></div></td>
-<td>12.36</td>
-</tr>
-<tr class="blurred-row">
-<td>IOTA</td>
-<td>$0.32786</td>
-<td>$5.69002</td>
-<td>2017-12-19T20:09:00Z</td>
-<td><div class="percentage-bar-container"><div class="percentage-bar" style="float: right; width: 94.23%; background-color: red;">-94.23%</div></div></td>
-<td>17.36</td>
-</tr>
-<tr class="blurred-row">
-<td>Beam Token</td>
-<td>$0.01795</td>
-<td>$0.04434</td>
-<td>2024-03-10T10:40:07Z</td>
-<td><div class="percentage-bar-container"><div class="percentage-bar" style="float: right; width: 59.47%; background-color: red;">-59.47%</div></div></td>
-<td>2.47</td>
-</tr>
-<tr class="blurred-row">
-<td>ai16z</td>
-<td>$0.81313</td>
-<td>$2.47995</td>
-<td>2025-01-02T06:51:20Z</td>
-<td><div class="percentage-bar-container"><div class="percentage-bar" style="float: right; width: 67.16%; background-color: red;">-67.16%</div></div></td>
-<td>3.05</td>
-</tr>
-<tr class="blurred-row">
-<td>Axie Infinity</td>
-<td>$5.80094</td>
-<td>$164.87565</td>
-<td>2021-11-06T19:30:00Z</td>
-<td><div class="percentage-bar-container"><div class="percentage-bar" style="float: right; width: 96.48%; background-color: red;">-96.48%</div></div></td>
-<td>28.42</td>
-</tr>
-<tr class="blurred-row">
-<td>THORChain</td>
-<td>$2.59843</td>
-<td>$21.28983</td>
-<td>2021-05-19T00:40:00Z</td>
-<td><div class="percentage-bar-container"><div class="percentage-bar" style="float: right; width: 87.75%; background-color: red;">-87.75%</div></div></td>
-<td>8.19</td>
-</tr>
-<tr class="blurred-row">
-<td>MultiversX (Elrond)</td>
-<td>$30.73560</td>
-<td>$541.04203</td>
-<td>2021-11-23T10:00:00Z</td>
-<td><div class="percentage-bar-container"><div class="percentage-bar" style="float: right; width: 94.31%; background-color: red;">-94.31%</div></div></td>
-<td>17.60</td>
-</tr>
-<tr class="blurred-row">
-<td>Pulsechain</td>
-<td>$0.00006</td>
-<td>$0.00053</td>
-<td>2023-05-23T04:01:56Z</td>
-<td><div class="percentage-bar-container"><div class="percentage-bar" style="float: right; width: 89.61%; background-color: red;">-89.61%</div></div></td>
-<td>9.64</td>
-</tr>
-<tr class="blurred-row">
-<td>PulseX</td>
-<td>$0.00004</td>
-<td>$0.00015</td>
-<td>2023-05-22T09:58:59Z</td>
-<td><div class="percentage-bar-container"><div class="percentage-bar" style="float: right; width: 74.54%; background-color: red;">-74.54%</div></div></td>
-<td>3.93</td>
-</tr>
-<tr class="blurred-row">
-<td>EOS</td>
-<td>$0.79899</td>
-<td>$22.89040</td>
-<td>2018-04-29T07:39:00Z</td>
-<td><div class="percentage-bar-container"><div class="percentage-bar" style="float: right; width: 96.51%; background-color: red;">-96.51%</div></div></td>
-<td>28.65</td>
-</tr>
-<tr class="blurred-row">
-<td>Core DAO</td>
-<td>$0.83723</td>
-<td>$4.91353</td>
-<td>2023-02-09T07:00:00Z</td>
-<td><div class="percentage-bar-container"><div class="percentage-bar" style="float: right; width: 82.94%; background-color: red;">-82.94%</div></div></td>
-<td>5.87</td>
-</tr>
-<tr class="blurred-row">
-<td>Zcash</td>
-<td>$46.57728</td>
-<td>$5,941.80000</td>
-<td>2016-10-29T15:59:00Z</td>
-<td><div class="percentage-bar-container"><div class="percentage-bar" style="float: right; width: 99.22%; background-color: red;">-99.22%</div></div></td>
-<td>127.57</td>
-</tr>
-<tr class="blurred-row">
-<td>Celestia</td>
-<td>$4.57428</td>
-<td>$20.93212</td>
-<td>2024-02-10T14:55:10Z</td>
-<td><div class="percentage-bar-container"><div class="percentage-bar" style="float: right; width: 78.11%; background-color: red;">-78.11%</div></div></td>
-<td>4.58</td>
-</tr>
-<tr class="blurred-row">
-<td>USDD</td>
-<td>$0.99996</td>
-<td>$1.02265</td>
-<td>2023-11-29T01:59:00Z</td>
-<td><div class="percentage-bar-container"><div class="percentage-bar" style="float: right; width: 2.2%; background-color: red;">-2.20%</div></div></td>
-<td>1.02</td>
-</tr>
-<tr class="blurred-row">
-<td>FTX Token</td>
-<td>$2.17725</td>
-<td>$84.90071</td>
-<td>2021-09-09T14:30:00Z</td>
-<td><div class="percentage-bar-container"><div class="percentage-bar" style="float: right; width: 97.43%; background-color: red;">-97.43%</div></div></td>
-<td>38.99</td>
-</tr>
-<tr class="blurred-row">
-<td>Akash Network</td>
-<td>$2.86471</td>
-<td>$10.34992</td>
-<td>2021-09-12T12:30:00Z</td>
-<td><div class="percentage-bar-container"><div class="percentage-bar" style="float: right; width: 72.28%; background-color: red;">-72.28%</div></div></td>
-<td>3.61</td>
-</tr>
-<tr class="blurred-row">
-<td>Reserve Rights</td>
-<td>$0.01337</td>
-<td>$0.12031</td>
-<td>2021-04-16T17:45:00Z</td>
-<td><div class="percentage-bar-container"><div class="percentage-bar" style="float: right; width: 88.88%; background-color: red;">-88.88%</div></div></td>
-<td>9.00</td>
-</tr>
-<tr class="blurred-row">
-<td>Conflux Network</td>
-<td>$0.15238</td>
-<td>$0.97212</td>
-<td>2021-05-12T17:05:00Z</td>
-<td><div class="percentage-bar-container"><div class="percentage-bar" style="float: right; width: 84.31%; background-color: red;">-84.31%</div></div></td>
-<td>6.38</td>
-</tr>
-<tr class="blurred-row">
-<td>Chiliz</td>
-<td>$0.07527</td>
-<td>$0.89121</td>
-<td>2021-03-13T07:25:00Z</td>
-<td><div class="percentage-bar-container"><div class="percentage-bar" style="float: right; width: 91.54%; background-color: red;">-91.54%</div></div></td>
-<td>11.84</td>
-</tr>
-<tr class="blurred-row">
-<td>Tether Gold</td>
-<td>$2,755.89984</td>
-<td>$3,159.28960</td>
-<td>2021-05-26T11:12:41Z</td>
-<td><div class="percentage-bar-container"><div class="percentage-bar" style="float: right; width: 12.78%; background-color: red;">-12.78%</div></div></td>
-<td>1.15</td>
-</tr>
-<tr class="blurred-row">
-<td>eCash</td>
-<td>$0.00003</td>
-<td>$0.00039</td>
-<td>2021-09-04T17:05:00Z</td>
-<td><div class="percentage-bar-container"><div class="percentage-bar" style="float: right; width: 91.27%; background-color: red;">-91.27%</div></div></td>
-<td>11.49</td>
-</tr>
-<tr class="blurred-row">
-<td>Toshi</td>
-<td>$0.00157</td>
-<td>$0.01264</td>
-<td>2024-07-29T13:33:20Z</td>
-<td><div class="percentage-bar-container"><div class="percentage-bar" style="float: right; width: 87.51%; background-color: red;">-87.51%</div></div></td>
-<td>8.04</td>
-</tr>
-<tr class="blurred-row">
-<td>Amp</td>
-<td>$0.00815</td>
-<td>$0.12152</td>
-<td>2021-06-16T15:45:00Z</td>
-<td><div class="percentage-bar-container"><div class="percentage-bar" style="float: right; width: 93.4%; background-color: red;">-93.40%</div></div></td>
-<td>14.91</td>
-</tr>
-<tr class="blurred-row">
-<td>Helium</td>
-<td>$3.83505</td>
-<td>$54.71947</td>
-<td>2021-11-12T23:05:00Z</td>
-<td><div class="percentage-bar-container"><div class="percentage-bar" style="float: right; width: 92.99%; background-color: red;">-92.99%</div></div></td>
-<td>14.27</td>
-</tr>
-<tr class="blurred-row">
-<td>Frax</td>
-<td>$0.99743</td>
-<td>$1.05024</td>
-<td>2021-09-19T17:05:00Z</td>
-<td><div class="percentage-bar-container"><div class="percentage-bar" style="float: right; width: 5.01%; background-color: red;">-5.01%</div></div></td>
-<td>1.05</td>
-</tr>
-<tr class="blurred-row">
-<td>Sei</td>
-<td>$0.35642</td>
-<td>$1.46819</td>
-<td>2023-08-15T12:00:00Z</td>
-<td><div class="percentage-bar-container"><div class="percentage-bar" style="float: right; width: 75.67%; background-color: red;">-75.67%</div></div></td>
-<td>4.12</td>
-</tr>
-<tr class="blurred-row">
-<td>Telcoin</td>
-<td>$0.00689</td>
-<td>$0.06473</td>
-<td>2021-05-11T00:20:00Z</td>
-<td><div class="percentage-bar-container"><div class="percentage-bar" style="float: right; width: 89.36%; background-color: red;">-89.36%</div></div></td>
-<td>9.39</td>
-</tr>
-<tr class="blurred-row">
-<td>Pendle</td>
-<td>$3.85556</td>
-<td>$7.52091</td>
-<td>2024-04-11T08:28:06Z</td>
-<td><div class="percentage-bar-container"><div class="percentage-bar" style="float: right; width: 48.68%; background-color: red;">-48.68%</div></div></td>
-<td>1.95</td>
-</tr>
-<tr class="blurred-row">
-<td>Ronin Token</td>
-<td>$1.64103</td>
-<td>$4.46423</td>
-<td>2024-03-13T05:37:13Z</td>
-<td><div class="percentage-bar-container"><div class="percentage-bar" style="float: right; width: 63.2%; background-color: red;">-63.20%</div></div></td>
-<td>2.72</td>
-</tr>
-<tr class="blurred-row">
-<td>Mina Protocol</td>
-<td>$0.50497</td>
-<td>$6.45649</td>
-<td>2021-09-14T10:15:00Z</td>
-<td><div class="percentage-bar-container"><div class="percentage-bar" style="float: right; width: 92.17%; background-color: red;">-92.17%</div></div></td>
-<td>12.79</td>
-</tr>
-<tr class="blurred-row">
-<td>ApeCoin</td>
-<td>$1.00899</td>
-<td>$26.83731</td>
-<td>2022-04-28T21:40:00Z</td>
-<td><div class="percentage-bar-container"><div class="percentage-bar" style="float: right; width: 96.23%; background-color: red;">-96.23%</div></div></td>
-<td>26.60</td>
-</tr>
-<tr class="blurred-row">
-<td>Coinbase Wrapped Staked ETH</td>
-<td>$3,621.09577</td>
-<td>$4,442.84046</td>
-<td>2024-12-16T18:54:20Z</td>
-<td><div class="percentage-bar-container"><div class="percentage-bar" style="float: right; width: 18.5%; background-color: red;">-18.50%</div></div></td>
-<td>1.23</td>
-</tr>
-<tr class="blurred-row">
-<td>PancakeSwap</td>
-<td>$2.07810</td>
-<td>$44.14143</td>
-<td>2021-04-30T10:05:00Z</td>
-<td><div class="percentage-bar-container"><div class="percentage-bar" style="float: right; width: 95.29%; background-color: red;">-95.29%</div></div></td>
-<td>21.24</td>
-</tr>
-<tr class="blurred-row">
-<td>Gnosis</td>
-<td>$230.34993</td>
-<td>$656.60212</td>
-<td>2021-11-08T18:00:00Z</td>
-<td><div class="percentage-bar-container"><div class="percentage-bar" style="float: right; width: 64.93%; background-color: red;">-64.93%</div></div></td>
-<td>2.85</td>
-</tr>
-<tr class="blurred-row">
-<td>Gigachad</td>
-<td>$0.06135</td>
-<td>$0.09528</td>
-<td>2025-01-03T14:50:06Z</td>
-<td><div class="percentage-bar-container"><div class="percentage-bar" style="float: right; width: 35.61%; background-color: red;">-35.61%</div></div></td>
-<td>1.55</td>
-</tr>
-<tr class="blurred-row">
-<td>Ether.fi Staked BTC</td>
-<td>$104,928.80060</td>
-<td>$108,624.25510</td>
-<td>2025-01-20T09:11:03Z</td>
-<td><div class="percentage-bar-container"><div class="percentage-bar" style="float: right; width: 3.34%; background-color: red;">-3.34%</div></div></td>
-<td>1.04</td>
-</tr>
-<tr class="blurred-row">
-<td>DeepBook Protocol</td>
-<td>$0.23398</td>
-<td>$0.34253</td>
-<td>2025-01-18T20:23:03Z</td>
-<td><div class="percentage-bar-container"><div class="percentage-bar" style="float: right; width: 31.61%; background-color: red;">-31.61%</div></div></td>
-<td>1.46</td>
-</tr>
-<tr class="blurred-row">
-<td>zkSync</td>
-<td>$0.15495</td>
-<td>$1.12267</td>
-<td>2024-06-13T08:04:07Z</td>
-<td><div class="percentage-bar-container"><div class="percentage-bar" style="float: right; width: 86.17%; background-color: red;">-86.17%</div></div></td>
-<td>7.25</td>
-</tr>
-<tr class="blurred-row">
-<td>Terra Classic</td>
-<td>$0.00008</td>
-<td>$119.41794</td>
-<td>2022-04-05T11:45:00Z</td>
-<td><div class="percentage-bar-container"><div class="percentage-bar" style="float: right; width: 100.0%; background-color: red;">-100.00%</div></div></td>
-<td>1461886.92</td>
-</tr>
-<tr class="blurred-row">
-<td>PAX Gold</td>
-<td>$2,771.08113</td>
-<td>$192,278.69600</td>
-<td>2019-10-04T03:10:00Z</td>
-<td><div class="percentage-bar-container"><div class="percentage-bar" style="float: right; width: 98.56%; background-color: red;">-98.56%</div></div></td>
-<td>69.39</td>
-</tr>
-<tr class="blurred-row">
-<td>Echelon Prime</td>
-<td>$10.25279</td>
-<td>$28.05636</td>
-<td>2024-03-21T11:28:08Z</td>
-<td><div class="percentage-bar-container"><div class="percentage-bar" style="float: right; width: 63.45%; background-color: red;">-63.45%</div></div></td>
-<td>2.74</td>
-</tr>
-<tr class="blurred-row">
-<td>Mog Coin</td>
-<td>$0.00000</td>
-<td>$0.00000</td>
-<td>2024-12-07T03:03:20Z</td>
-<td><div class="percentage-bar-container"><div class="percentage-bar" style="float: right; width: 65.57%; background-color: red;">-65.57%</div></div></td>
-<td>2.91</td>
-</tr>
-<tr class="blurred-row">
-<td>Axelar</td>
-<td>$0.63204</td>
-<td>$2.67929</td>
-<td>2024-03-03T07:22:12Z</td>
-<td><div class="percentage-bar-container"><div class="percentage-bar" style="float: right; width: 76.37%; background-color: red;">-76.37%</div></div></td>
-<td>4.24</td>
-</tr>
-<tr class="blurred-row">
-<td>Synthetix Network Token</td>
-<td>$1.62159</td>
-<td>$28.86225</td>
-<td>2021-02-14T01:10:00Z</td>
-<td><div class="percentage-bar-container"><div class="percentage-bar" style="float: right; width: 94.38%; background-color: red;">-94.38%</div></div></td>
-<td>17.80</td>
-</tr>
-<tr class="blurred-row">
-<td>Notcoin</td>
-<td>$0.00513</td>
-<td>$0.02881</td>
-<td>2024-06-02T18:01:07Z</td>
-<td><div class="percentage-bar-container"><div class="percentage-bar" style="float: right; width: 82.16%; background-color: red;">-82.16%</div></div></td>
-<td>5.61</td>
-</tr>
-<tr class="blurred-row">
-<td>Beldex</td>
-<td>$0.07846</td>
-<td>$8.48334</td>
-<td>2022-05-16T05:15:00Z</td>
-<td><div class="percentage-bar-container"><div class="percentage-bar" style="float: right; width: 99.07%; background-color: red;">-99.07%</div></div></td>
-<td>108.13</td>
-</tr>
-<tr class="blurred-row">
-<td>aixbt by Virtuals</td>
-<td>$0.61043</td>
-<td>$0.95035</td>
-<td>2025-01-15T20:17:03Z</td>
-<td><div class="percentage-bar-container"><div class="percentage-bar" style="float: right; width: 35.68%; background-color: red;">-35.68%</div></div></td>
-<td>1.56</td>
-</tr>
-<tr class="blurred-row">
-<td>SNEK</td>
-<td>$0.00684</td>
-<td>$0.00935</td>
-<td>2024-12-03T02:45:21Z</td>
-<td><div class="percentage-bar-container"><div class="percentage-bar" style="float: right; width: 26.61%; background-color: red;">-26.61%</div></div></td>
-<td>1.37</td>
-</tr>
-<tr class="blurred-row">
-<td>DYDX Chain</td>
-<td>$1.17743</td>
-<td>$4.15657</td>
-<td>2024-03-13T02:01:12Z</td>
-<td><div class="percentage-bar-container"><div class="percentage-bar" style="float: right; width: 71.63%; background-color: red;">-71.63%</div></div></td>
-<td>3.53</td>
-</tr>
-<tr class="blurred-row">
-<td>APENFT</td>
-<td>$0.00000</td>
-<td>$0.00001</td>
-<td>2021-09-05T00:10:00Z</td>
-<td><div class="percentage-bar-container"><div class="percentage-bar" style="float: right; width: 93.42%; background-color: red;">-93.42%</div></div></td>
-<td>15.19</td>
-</tr>
-<tr class="blurred-row">
-<td>Kava</td>
-<td>$0.45862</td>
-<td>$9.17019</td>
-<td>2021-08-30T11:05:00Z</td>
-<td><div class="percentage-bar-container"><div class="percentage-bar" style="float: right; width: 95.0%; background-color: red;">-95.00%</div></div></td>
-<td>20.00</td>
-</tr>
-<tr class="blurred-row">
-<td>TrueUSD</td>
-<td>$0.99856</td>
-<td>$1.36449</td>
-<td>2018-05-16T10:29:00Z</td>
-<td><div class="percentage-bar-container"><div class="percentage-bar" style="float: right; width: 26.79%; background-color: red;">-26.79%</div></div></td>
-<td>1.37</td>
-</tr>
-<tr class="blurred-row">
-<td>Aragon</td>
-<td>$11.29320</td>
-<td>$15.05232</td>
-<td>2021-04-06T09:30:00Z</td>
-<td><div class="percentage-bar-container"><div class="percentage-bar" style="float: right; width: 24.97%; background-color: red;">-24.97%</div></div></td>
-<td>1.33</td>
-</tr>
-<tr class="blurred-row">
-<td>Lombard Staked BTC</td>
-<td>$105,051.09860</td>
-<td>$108,823.27320</td>
-<td>2025-01-20T09:11:03Z</td>
-<td><div class="percentage-bar-container"><div class="percentage-bar" style="float: right; width: 3.41%; background-color: red;">-3.41%</div></div></td>
-<td>1.04</td>
-</tr>
-<tr class="blurred-row">
-<td>SuperVerse</td>
-<td>$0.98857</td>
-<td>$2.26434</td>
-<td>2024-12-12T13:00:20Z</td>
-<td><div class="percentage-bar-container"><div class="percentage-bar" style="float: right; width: 56.28%; background-color: red;">-56.28%</div></div></td>
-<td>2.29</td>
-</tr>
-<tr class="blurred-row">
-<td>Pyth Network</td>
-<td>$0.31950</td>
-<td>$1.15094</td>
-<td>2024-03-16T06:58:08Z</td>
-<td><div class="percentage-bar-container"><div class="percentage-bar" style="float: right; width: 72.2%; background-color: red;">-72.20%</div></div></td>
-<td>3.60</td>
-</tr>
-<tr class="blurred-row">
-<td>Bitcoin Avalanche Bridged (BTC.b)</td>
-<td>$105,083.10770</td>
-<td>$311,890.10230</td>
-<td>2024-11-05T11:21:21Z</td>
-<td><div class="percentage-bar-container"><div class="percentage-bar" style="float: right; width: 66.3%; background-color: red;">-66.30%</div></div></td>
-<td>2.97</td>
-</tr>
-<tr class="blurred-row">
-<td>Cheelee</td>
-<td>$8.07674</td>
-<td>$22.45181</td>
-<td>2024-07-22T19:24:21Z</td>
-<td><div class="percentage-bar-container"><div class="percentage-bar" style="float: right; width: 64.02%; background-color: red;">-64.02%</div></div></td>
-<td>2.78</td>
-</tr>
-<tr class="blurred-row">
-<td>Safe</td>
-<td>$0.85383</td>
-<td>$3.06362</td>
-<td>2024-04-23T10:52:07Z</td>
-<td><div class="percentage-bar-container"><div class="percentage-bar" style="float: right; width: 72.1%; background-color: red;">-72.10%</div></div></td>
-<td>3.59</td>
-</tr>
-<tr class="blurred-row">
-<td>VeThor Token</td>
-<td>$0.00537</td>
-<td>$3.07254</td>
-<td>2018-08-03T14:20:00Z</td>
-<td><div class="percentage-bar-container"><div class="percentage-bar" style="float: right; width: 99.82%; background-color: red;">-99.82%</div></div></td>
-<td>572.38</td>
-</tr>
-<tr class="blurred-row">
-<td>Trust Wallet Token</td>
-<td>$1.06656</td>
-<td>$2.73925</td>
-<td>2022-11-14T15:45:00Z</td>
-<td><div class="percentage-bar-container"><div class="percentage-bar" style="float: right; width: 61.04%; background-color: red;">-61.04%</div></div></td>
-<td>2.57</td>
-</tr>
-<tr class="blurred-row">
-<td>Blur</td>
-<td>$0.20503</td>
-<td>$1.37954</td>
-<td>2023-02-19T06:37:51Z</td>
-<td><div class="percentage-bar-container"><div class="percentage-bar" style="float: right; width: 85.11%; background-color: red;">-85.11%</div></div></td>
-<td>6.73</td>
-</tr>
-<tr class="blurred-row">
-<td>Oasis Network</td>
-<td>$0.06593</td>
-<td>$0.59834</td>
-<td>2022-01-15T03:30:00Z</td>
-<td><div class="percentage-bar-container"><div class="percentage-bar" style="float: right; width: 88.96%; background-color: red;">-88.96%</div></div></td>
-<td>9.08</td>
-</tr>
-<tr class="blurred-row">
-<td>Kusama</td>
-<td>$28.14132</td>
-<td>$621.75480</td>
-<td>2021-05-18T05:00:00Z</td>
-<td><div class="percentage-bar-container"><div class="percentage-bar" style="float: right; width: 95.47%; background-color: red;">-95.47%</div></div></td>
-<td>22.09</td>
-</tr>
-<tr class="blurred-row">
-<td>Theta Fuel</td>
-<td>$0.06483</td>
-<td>$0.68450</td>
-<td>2021-06-09T06:46:15Z</td>
-<td><div class="percentage-bar-container"><div class="percentage-bar" style="float: right; width: 90.52%; background-color: red;">-90.52%</div></div></td>
-<td>10.56</td>
-</tr>
-<tr class="blurred-row">
-<td>LayerZero</td>
-<td>$3.90450</td>
-<td>$7.50597</td>
-<td>2024-12-06T14:12:22Z</td>
-<td><div class="percentage-bar-container"><div class="percentage-bar" style="float: right; width: 47.92%; background-color: red;">-47.92%</div></div></td>
-<td>1.92</td>
-</tr>
-<tr class="blurred-row">
-<td>Popcat</td>
-<td>$0.44124</td>
-<td>$2.06602</td>
-<td>2024-11-17T15:45:20Z</td>
-<td><div class="percentage-bar-container"><div class="percentage-bar" style="float: right; width: 78.58%; background-color: red;">-78.58%</div></div></td>
-<td>4.68</td>
-</tr>
-<tr class="blurred-row">
-<td>Livepeer</td>
-<td>$11.99232</td>
-<td>$99.95288</td>
-<td>2021-11-09T16:55:00Z</td>
-<td><div class="percentage-bar-container"><div class="percentage-bar" style="float: right; width: 87.99%; background-color: red;">-87.99%</div></div></td>
-<td>8.33</td>
-</tr>
-<tr class="blurred-row">
-<td>Ordinals</td>
-<td>$20.52727</td>
-<td>$96.35821</td>
-<td>2024-03-05T01:43:07Z</td>
-<td><div class="percentage-bar-container"><div class="percentage-bar" style="float: right; width: 78.66%; background-color: red;">-78.66%</div></div></td>
-<td>4.69</td>
-</tr>
-<tr class="blurred-row">
-<td>Dash</td>
-<td>$34.96574</td>
-<td>$1,642.22000</td>
-<td>2017-12-20T14:59:00Z</td>
-<td><div class="percentage-bar-container"><div class="percentage-bar" style="float: right; width: 97.87%; background-color: red;">-97.87%</div></div></td>
-<td>46.97</td>
-</tr>
-<tr class="blurred-row">
-<td>Nervos Network</td>
-<td>$0.00935</td>
-<td>$0.04404</td>
-<td>2021-03-31T18:50:00Z</td>
-<td><div class="percentage-bar-container"><div class="percentage-bar" style="float: right; width: 78.72%; background-color: red;">-78.72%</div></div></td>
-<td>4.71</td>
-</tr>
-<tr class="blurred-row">
-<td>Turbo</td>
-<td>$0.00605</td>
-<td>$0.01431</td>
-<td>2024-12-11T21:54:21Z</td>
-<td><div class="percentage-bar-container"><div class="percentage-bar" style="float: right; width: 57.68%; background-color: red;">-57.68%</div></div></td>
-<td>2.36</td>
-</tr>
-<tr class="blurred-row">
-<td>Wormhole</td>
-<td>$0.22995</td>
-<td>$1.61238</td>
-<td>2024-04-03T17:31:09Z</td>
-<td><div class="percentage-bar-container"><div class="percentage-bar" style="float: right; width: 85.72%; background-color: red;">-85.72%</div></div></td>
-<td>7.01</td>
-</tr>
-<tr class="blurred-row">
-<td>1INCH</td>
-<td>$0.32176</td>
-<td>$8.38468</td>
-<td>2021-10-27T08:10:00Z</td>
-<td><div class="percentage-bar-container"><div class="percentage-bar" style="float: right; width: 96.16%; background-color: red;">-96.16%</div></div></td>
-<td>26.06</td>
-</tr>
-<tr class="blurred-row">
-<td>Melania Meme</td>
-<td>$2.51754</td>
-<td>$13.51170</td>
-<td>2025-01-20T07:02:05Z</td>
-<td><div class="percentage-bar-container"><div class="percentage-bar" style="float: right; width: 81.33%; background-color: red;">-81.33%</div></div></td>
-<td>5.37</td>
-</tr>
-<tr class="blurred-row">
-<td>Creditcoin</td>
-<td>$1.02210</td>
-<td>$5.05853</td>
-<td>2021-08-27T15:55:00Z</td>
-<td><div class="percentage-bar-container"><div class="percentage-bar" style="float: right; width: 79.79%; background-color: red;">-79.79%</div></div></td>
-<td>4.95</td>
-</tr>
-<tr class="blurred-row">
-<td>Astar</td>
-<td>$0.05367</td>
-<td>$0.19895</td>
-<td>2024-01-21T04:16:59Z</td>
-<td><div class="percentage-bar-container"><div class="percentage-bar" style="float: right; width: 72.99%; background-color: red;">-72.99%</div></div></td>
-<td>3.71</td>
-</tr>
-<tr class="blurred-row">
-<td>Wrapped Pulse</td>
-<td>$0.00006</td>
-<td>$0.00030</td>
-<td>2023-05-22T10:10:57Z</td>
-<td><div class="percentage-bar-container"><div class="percentage-bar" style="float: right; width: 81.77%; background-color: red;">-81.77%</div></div></td>
-<td>5.49</td>
-</tr>
-<tr class="blurred-row">
-<td>Griffain</td>
-<td>$0.39631</td>
-<td>$0.63235</td>
-<td>2025-01-22T03:32:05Z</td>
-<td><div class="percentage-bar-container"><div class="percentage-bar" style="float: right; width: 37.23%; background-color: red;">-37.23%</div></div></td>
-<td>1.60</td>
-</tr>
-<tr class="blurred-row">
-<td>Holo</td>
-<td>$0.00224</td>
-<td>$0.03109</td>
-<td>2021-04-05T15:45:00Z</td>
-<td><div class="percentage-bar-container"><div class="percentage-bar" style="float: right; width: 92.79%; background-color: red;">-92.79%</div></div></td>
-<td>13.89</td>
-</tr>
-<tr class="blurred-row">
-<td>DOG•GO•TO•THE•MOON</td>
-<td>$0.00389</td>
-<td>$0.00997</td>
-<td>2024-12-11T16:09:22Z</td>
-<td><div class="percentage-bar-container"><div class="percentage-bar" style="float: right; width: 60.93%; background-color: red;">-60.93%</div></div></td>
-<td>2.56</td>
-</tr>
-<tr class="blurred-row">
-<td>Vader</td>
-<td>$0.06282</td>
-<td>$0.12331</td>
-<td>2025-01-15T20:17:03Z</td>
-<td><div class="percentage-bar-container"><div class="percentage-bar" style="float: right; width: 49.03%; background-color: red;">-49.03%</div></div></td>
-<td>1.96</td>
-</tr>
-<tr class="blurred-row">
-<td>0x</td>
-<td>$0.45161</td>
-<td>$2.53141</td>
-<td>2018-01-09T17:04:00Z</td>
-<td><div class="percentage-bar-container"><div class="percentage-bar" style="float: right; width: 82.15%; background-color: red;">-82.15%</div></div></td>
-<td>5.61</td>
-</tr>
-<tr class="blurred-row">
-<td>Morpho</td>
-<td>$3.09189</td>
-<td>$4.17725</td>
-<td>2025-01-17T12:47:03Z</td>
-<td><div class="percentage-bar-container"><div class="percentage-bar" style="float: right; width: 25.93%; background-color: red;">-25.93%</div></div></td>
-<td>1.35</td>
-</tr>
-<tr class="blurred-row">
-<td>Zilliqa</td>
-<td>$0.01994</td>
-<td>$0.02381</td>
-<td>2025-01-18T00:29:03Z</td>
-<td><div class="percentage-bar-container"><div class="percentage-bar" style="float: right; width: 16.13%; background-color: red;">-16.13%</div></div></td>
-<td>1.19</td>
-</tr>
-<tr class="blurred-row">
-<td>JUST</td>
-<td>$0.03837</td>
-<td>$0.19206</td>
-<td>2021-04-05T04:10:00Z</td>
-<td><div class="percentage-bar-container"><div class="percentage-bar" style="float: right; width: 80.02%; background-color: red;">-80.02%</div></div></td>
-<td>5.01</td>
-</tr>
-<tr class="blurred-row">
-<td>MX Token</td>
-<td>$3.91767</td>
-<td>$618.21001</td>
-<td>2021-01-13T13:30:00Z</td>
-<td><div class="percentage-bar-container"><div class="percentage-bar" style="float: right; width: 99.37%; background-color: red;">-99.37%</div></div></td>
-<td>157.80</td>
-</tr>
-<tr class="blurred-row">
-<td>Vine Coin</td>
-<td>$0.37368</td>
-<td>$0.46978</td>
-<td>2025-01-26T10:02:04Z</td>
-<td><div class="percentage-bar-container"><div class="percentage-bar" style="float: right; width: 20.38%; background-color: red;">-20.38%</div></div></td>
-<td>1.26</td>
-</tr>
-<tr class="blurred-row">
-<td>Verus</td>
-<td>$4.75331</td>
-<td>$6.64006</td>
-<td>2024-12-05T10:42:23Z</td>
-<td><div class="percentage-bar-container"><div class="percentage-bar" style="float: right; width: 28.45%; background-color: red;">-28.45%</div></div></td>
-<td>1.40</td>
-</tr>
-<tr class="blurred-row">
-<td>Mimble Wimble Coin</td>
-<td>$33.57849</td>
-<td>$33.63047</td>
-<td>2025-01-26T04:32:04Z</td>
-<td><div class="percentage-bar-container"><div class="percentage-bar" style="float: right; width: 0.09%; background-color: red;">-0.09%</div></div></td>
-<td>1.00</td>
-</tr>
-<tr class="blurred-row">
-<td>Freysa</td>
-<td>$0.04456</td>
-<td>$0.08009</td>
-<td>2025-01-06T16:32:05Z</td>
-<td><div class="percentage-bar-container"><div class="percentage-bar" style="float: right; width: 44.33%; background-color: red;">-44.33%</div></div></td>
-<td>1.80</td>
-</tr>
-<tr class="blurred-row">
-<td>Akuma Inu</td>
-<td>$0.00053</td>
-<td>$0.00135</td>
-<td>2025-01-10T18:53:03Z</td>
-<td><div class="percentage-bar-container"><div class="percentage-bar" style="float: right; width: 60.48%; background-color: red;">-60.48%</div></div></td>
-<td>2.53</td>
-</tr>
-<tr class="blurred-row">
-<td>DYDX (ETH)</td>
-<td>$1.17682</td>
-<td>$14.82516</td>
-<td>2021-12-02T03:35:00Z</td>
-<td><div class="percentage-bar-container"><div class="percentage-bar" style="float: right; width: 92.05%; background-color: red;">-92.05%</div></div></td>
-<td>12.60</td>
-</tr>
-<tr class="blurred-row">
-<td>Basic Attention Token</td>
-<td>$0.23637</td>
-<td>$1.91328</td>
-<td>2021-11-28T00:20:00Z</td>
-<td><div class="percentage-bar-container"><div class="percentage-bar" style="float: right; width: 87.68%; background-color: red;">-87.68%</div></div></td>
-<td>8.09</td>
-</tr>
-<tr class="blurred-row">
-<td>Golem</td>
-<td>$0.34467</td>
-<td>$1.25353</td>
-<td>2018-01-08T08:24:00Z</td>
-<td><div class="percentage-bar-container"><div class="percentage-bar" style="float: right; width: 72.48%; background-color: red;">-72.48%</div></div></td>
-<td>3.64</td>
-</tr>
-<tr class="blurred-row">
-<td>Convex Finance</td>
-<td>$3.54046</td>
-<td>$60.50552</td>
-<td>2022-01-01T18:10:00Z</td>
-<td><div class="percentage-bar-container"><div class="percentage-bar" style="float: right; width: 94.14%; background-color: red;">-94.14%</div></div></td>
-<td>17.09</td>
-</tr>
-<tr class="blurred-row">
-<td>SwissBorg</td>
-<td>$0.34234</td>
-<td>$1.64234</td>
-<td>2021-05-04T17:15:00Z</td>
-<td><div class="percentage-bar-container"><div class="percentage-bar" style="float: right; width: 79.15%; background-color: red;">-79.15%</div></div></td>
-<td>4.80</td>
-</tr>
-<tr class="blurred-row">
-<td>eHEX (Ethereum)</td>
-<td>$0.00333</td>
-<td>$0.51106</td>
-<td>2021-09-19T06:35:00Z</td>
-<td><div class="percentage-bar-container"><div class="percentage-bar" style="float: right; width: 99.35%; background-color: red;">-99.35%</div></div></td>
-<td>153.44</td>
-</tr>
-<tr class="blurred-row">
-<td>IoTeX</td>
-<td>$0.03462</td>
-<td>$0.29305</td>
-<td>2021-11-04T15:55:00Z</td>
-<td><div class="percentage-bar-container"><div class="percentage-bar" style="float: right; width: 88.18%; background-color: red;">-88.18%</div></div></td>
-<td>8.47</td>
-</tr>
-<tr class="blurred-row">
-<td>WOO</td>
-<td>$0.17631</td>
-<td>$1.77363</td>
-<td>2021-11-15T13:35:00Z</td>
-<td><div class="percentage-bar-container"><div class="percentage-bar" style="float: right; width: 90.05%; background-color: red;">-90.05%</div></div></td>
-<td>10.06</td>
-</tr>
-<tr class="blurred-row">
-<td>Baby Doge Coin</td>
-<td>$0.00000</td>
-<td>$0.00000</td>
-<td>2021-07-04T16:40:00Z</td>
-<td><div class="percentage-bar-container"><div class="percentage-bar" style="float: right; width: 88.11%; background-color: red;">-88.11%</div></div></td>
-<td>8.43</td>
-</tr>
-<tr class="blurred-row">
-<td>BIO Protocol</td>
-<td>$0.24991</td>
-<td>$0.89480</td>
-<td>2025-01-03T13:14:06Z</td>
-<td><div class="percentage-bar-container"><div class="percentage-bar" style="float: right; width: 72.07%; background-color: red;">-72.07%</div></div></td>
-<td>3.58</td>
-</tr>
-<tr class="blurred-row">
-<td>Ocean Protocol</td>
-<td>$0.52562</td>
-<td>$1.94072</td>
-<td>2021-04-10T09:25:00Z</td>
-<td><div class="percentage-bar-container"><div class="percentage-bar" style="float: right; width: 72.91%; background-color: red;">-72.91%</div></div></td>
-<td>3.69</td>
-</tr>
-<tr class="blurred-row">
-<td>Celo</td>
-<td>$0.57567</td>
-<td>$10.02158</td>
-<td>2021-08-30T14:25:00Z</td>
-<td><div class="percentage-bar-container"><div class="percentage-bar" style="float: right; width: 94.25%; background-color: red;">-94.25%</div></div></td>
-<td>17.41</td>
-</tr>
-<tr class="blurred-row">
-<td>Animecoin</td>
-<td>$0.05726</td>
-<td>$0.08957</td>
-<td>2025-01-23T22:53:03Z</td>
-<td><div class="percentage-bar-container"><div class="percentage-bar" style="float: right; width: 36.12%; background-color: red;">-36.12%</div></div></td>
-<td>1.56</td>
-</tr>
-<tr class="blurred-row">
-<td>Gas</td>
-<td>$4.84602</td>
-<td>$97.49300</td>
-<td>2018-01-15T20:19:00Z</td>
-<td><div class="percentage-bar-container"><div class="percentage-bar" style="float: right; width: 95.03%; background-color: red;">-95.03%</div></div></td>
-<td>20.12</td>
-</tr>
-<tr class="blurred-row">
-<td>Peanut the Squirrel</td>
-<td>$0.31461</td>
-<td>$2.38837</td>
-<td>2024-11-14T02:00:21Z</td>
-<td><div class="percentage-bar-container"><div class="percentage-bar" style="float: right; width: 86.81%; background-color: red;">-86.81%</div></div></td>
-<td>7.59</td>
-</tr>
-<tr class="blurred-row">
-<td>AI Rig Complex</td>
-<td>$0.31230</td>
-<td>$0.63347</td>
-<td>2025-01-22T03:35:03Z</td>
-<td><div class="percentage-bar-container"><div class="percentage-bar" style="float: right; width: 50.7%; background-color: red;">-50.70%</div></div></td>
-<td>2.03</td>
-</tr>
-<tr class="blurred-row">
-<td>Siacoin</td>
-<td>$0.00540</td>
-<td>$0.00833</td>
-<td>2024-12-06T12:51:20Z</td>
-<td><div class="percentage-bar-container"><div class="percentage-bar" style="float: right; width: 35.09%; background-color: red;">-35.09%</div></div></td>
-<td>1.54</td>
-</tr>
-<tr class="blurred-row">
-<td>SKALE</td>
-<td>$0.05622</td>
-<td>$1.23025</td>
-<td>2021-03-12T04:20:00Z</td>
-<td><div class="percentage-bar-container"><div class="percentage-bar" style="float: right; width: 95.37%; background-color: red;">-95.37%</div></div></td>
-<td>21.88</td>
-</tr>
-<tr class="blurred-row">
-<td>Sushi</td>
-<td>$1.34552</td>
-<td>$23.35594</td>
-<td>2021-03-13T22:15:00Z</td>
-<td><div class="percentage-bar-container"><div class="percentage-bar" style="float: right; width: 94.23%; background-color: red;">-94.23%</div></div></td>
-<td>17.36</td>
-</tr>
-<tr class="blurred-row">
-<td>Horizen</td>
-<td>$19.69421</td>
-<td>$167.76339</td>
-<td>2021-05-08T05:50:00Z</td>
-<td><div class="percentage-bar-container"><div class="percentage-bar" style="float: right; width: 88.25%; background-color: red;">-88.25%</div></div></td>
-<td>8.52</td>
-</tr>
-<tr class="blurred-row">
-<td>Vana</td>
-<td>$9.94413</td>
-<td>$17.06131</td>
-<td>2025-01-07T13:32:05Z</td>
-<td><div class="percentage-bar-container"><div class="percentage-bar" style="float: right; width: 41.6%; background-color: red;">-41.60%</div></div></td>
-<td>1.72</td>
-</tr>
-<tr class="blurred-row">
-<td>Harmony</td>
-<td>$0.02130</td>
-<td>$0.38340</td>
-<td>2021-10-26T09:20:00Z</td>
-<td><div class="percentage-bar-container"><div class="percentage-bar" style="float: right; width: 94.43%; background-color: red;">-94.43%</div></div></td>
-<td>18.00</td>
-</tr>
-<tr class="blurred-row">
-<td>Memecoin</td>
-<td>$0.00822</td>
-<td>$0.05703</td>
-<td>2024-03-04T17:25:11Z</td>
-<td><div class="percentage-bar-container"><div class="percentage-bar" style="float: right; width: 85.57%; background-color: red;">-85.57%</div></div></td>
-<td>6.94</td>
-</tr>
-<tr class="blurred-row">
-<td>io.net</td>
-<td>$3.14313</td>
-<td>$6.44118</td>
-<td>2024-06-12T21:16:08Z</td>
-<td><div class="percentage-bar-container"><div class="percentage-bar" style="float: right; width: 51.16%; background-color: red;">-51.16%</div></div></td>
-<td>2.05</td>
-</tr>
-<tr class="blurred-row">
-<td>Qtum</td>
-<td>$2.98859</td>
-<td>$106.87600</td>
-<td>2018-01-07T02:24:00Z</td>
-<td><div class="percentage-bar-container"><div class="percentage-bar" style="float: right; width: 97.2%; background-color: red;">-97.20%</div></div></td>
-<td>35.76</td>
-</tr>
-<tr class="blurred-row">
-<td>Enjin Coin</td>
-<td>$0.16567</td>
-<td>$4.83883</td>
-<td>2021-11-25T09:40:00Z</td>
-<td><div class="percentage-bar-container"><div class="percentage-bar" style="float: right; width: 96.57%; background-color: red;">-96.57%</div></div></td>
-<td>29.21</td>
-</tr>
-<tr class="blurred-row">
-<td>Osmosis</td>
-<td>$0.42495</td>
-<td>$3.22099</td>
-<td>2022-10-28T07:10:00Z</td>
-<td><div class="percentage-bar-container"><div class="percentage-bar" style="float: right; width: 86.81%; background-color: red;">-86.81%</div></div></td>
-<td>7.58</td>
-</tr>
-<tr class="blurred-row">
-<td>PayPal USD</td>
-<td>$1.00039</td>
-<td>$1.01275</td>
-<td>2024-01-03T12:04:59Z</td>
-<td><div class="percentage-bar-container"><div class="percentage-bar" style="float: right; width: 1.22%; background-color: red;">-1.22%</div></div></td>
-<td>1.01</td>
-</tr>
-<tr class="blurred-row">
-<td>OriginTrail</td>
-<td>$0.72480</td>
-<td>$3.23984</td>
-<td>2021-11-03T18:20:00Z</td>
-<td><div class="percentage-bar-container"><div class="percentage-bar" style="float: right; width: 77.8%; background-color: red;">-77.80%</div></div></td>
-<td>4.47</td>
-</tr>
-<tr class="blurred-row">
-<td>would</td>
-<td>$0.29202</td>
-<td>$0.44512</td>
-<td>2024-12-31T20:24:22Z</td>
-<td><div class="percentage-bar-container"><div class="percentage-bar" style="float: right; width: 34.41%; background-color: red;">-34.41%</div></div></td>
-<td>1.52</td>
-</tr>
-<tr class="blurred-row">
-<td>Ethereum PoW</td>
-<td>$2.64471</td>
-<td>$66.50614</td>
-<td>2022-09-02T12:50:00Z</td>
-<td><div class="percentage-bar-container"><div class="percentage-bar" style="float: right; width: 96.02%; background-color: red;">-96.02%</div></div></td>
-<td>25.15</td>
-</tr>
-<tr class="blurred-row">
-<td>aelf</td>
-<td>$0.38095</td>
-<td>$2.76568</td>
-<td>2018-01-07T14:24:00Z</td>
-<td><div class="percentage-bar-container"><div class="percentage-bar" style="float: right; width: 86.22%; background-color: red;">-86.22%</div></div></td>
-<td>7.26</td>
-</tr>
-<tr class="blurred-row">
-<td>GMT</td>
-<td>$0.10548</td>
-<td>$0.44737</td>
-<td>2024-01-07T19:53:01Z</td>
-<td><div class="percentage-bar-container"><div class="percentage-bar" style="float: right; width: 76.36%; background-color: red;">-76.36%</div></div></td>
-<td>4.24</td>
-</tr>
-<tr class="blurred-row">
-<td>Ravencoin</td>
-<td>$0.01904</td>
-<td>$0.28489</td>
-<td>2021-02-20T10:30:00Z</td>
-<td><div class="percentage-bar-container"><div class="percentage-bar" style="float: right; width: 93.31%; background-color: red;">-93.31%</div></div></td>
-<td>14.96</td>
-</tr>
-<tr class="blurred-row">
-<td>Starknet</td>
-<td>$0.37876</td>
-<td>$3.58935</td>
-<td>2024-02-20T13:07:07Z</td>
-<td><div class="percentage-bar-container"><div class="percentage-bar" style="float: right; width: 89.43%; background-color: red;">-89.43%</div></div></td>
-<td>9.48</td>
-</tr>
-<tr class="blurred-row">
-<td>Magic Eden</td>
-<td>$2.05296</td>
-<td>$5.44249</td>
-<td>2024-12-11T14:42:23Z</td>
-<td><div class="percentage-bar-container"><div class="percentage-bar" style="float: right; width: 62.23%; background-color: red;">-62.23%</div></div></td>
-<td>2.65</td>
-</tr>
-<tr class="blurred-row">
-<td>Metars Genesis</td>
-<td>$3.16652</td>
-<td>$10.98798</td>
-<td>2024-12-13T03:12:21Z</td>
-<td><div class="percentage-bar-container"><div class="percentage-bar" style="float: right; width: 71.15%; background-color: red;">-71.15%</div></div></td>
-<td>3.47</td>
-</tr>
-<tr class="blurred-row">
-<td>Chia</td>
-<td>$19.12836</td>
-<td>$1,648.55685</td>
-<td>2021-05-15T01:00:00Z</td>
-<td><div class="percentage-bar-container"><div class="percentage-bar" style="float: right; width: 98.84%; background-color: red;">-98.84%</div></div></td>
-<td>86.18</td>
-</tr>
-<tr class="blurred-row">
-<td>Plume</td>
-<td>$0.12918</td>
-<td>$0.21151</td>
-<td>2025-01-22T01:11:03Z</td>
-<td><div class="percentage-bar-container"><div class="percentage-bar" style="float: right; width: 39.17%; background-color: red;">-39.17%</div></div></td>
-<td>1.64</td>
-</tr>
-<tr class="blurred-row">
-<td>Kadena</td>
-<td>$0.86942</td>
-<td>$32.22358</td>
-<td>2022-04-14T00:05:00Z</td>
-<td><div class="percentage-bar-container"><div class="percentage-bar" style="float: right; width: 97.3%; background-color: red;">-97.30%</div></div></td>
-<td>37.06</td>
-</tr>
-<tr class="blurred-row">
-<td>Tribe</td>
-<td>$0.46843</td>
-<td>$2.62472</td>
-<td>2024-09-20T04:15:21Z</td>
-<td><div class="percentage-bar-container"><div class="percentage-bar" style="float: right; width: 82.14%; background-color: red;">-82.14%</div></div></td>
-<td>5.60</td>
-</tr>
-<tr class="blurred-row">
-<td>Wrapped Beacon ETH</td>
-<td>$3,530.40341</td>
-<td>$4,332.49223</td>
-<td>2024-12-16T18:54:20Z</td>
-<td><div class="percentage-bar-container"><div class="percentage-bar" style="float: right; width: 18.45%; background-color: red;">-18.45%</div></div></td>
-<td>1.23</td>
-</tr>
-<tr class="blurred-row">
-<td>Clearpool</td>
-<td>$0.35591</td>
-<td>$0.58863</td>
-<td>2024-12-14T14:30:20Z</td>
-<td><div class="percentage-bar-container"><div class="percentage-bar" style="float: right; width: 39.36%; background-color: red;">-39.36%</div></div></td>
-<td>1.65</td>
-</tr>
-<tr class="blurred-row">
-<td>Alchemix USD</td>
-<td>$0.98928</td>
-<td>$30.68622</td>
-<td>2024-07-29T12:27:20Z</td>
-<td><div class="percentage-bar-container"><div class="percentage-bar" style="float: right; width: 96.78%; background-color: red;">-96.78%</div></div></td>
-<td>31.02</td>
-</tr>
-<tr class="blurred-row">
-<td>Manta Network</td>
-<td>$0.66354</td>
-<td>$4.06353</td>
-<td>2024-03-12T19:52:13Z</td>
-<td><div class="percentage-bar-container"><div class="percentage-bar" style="float: right; width: 83.66%; background-color: red;">-83.66%</div></div></td>
-<td>6.12</td>
-</tr>
-<tr class="blurred-row">
-<td>yearn.finance</td>
-<td>$7,447.77036</td>
-<td>$91,384.35060</td>
-<td>2021-05-12T00:55:00Z</td>
-<td><div class="percentage-bar-container"><div class="percentage-bar" style="float: right; width: 91.85%; background-color: red;">-91.85%</div></div></td>
-<td>12.27</td>
-</tr>
-<tr class="blurred-row">
-<td>Constellation</td>
-<td>$0.08656</td>
-<td>$0.45508</td>
-<td>2021-08-26T14:50:00Z</td>
-<td><div class="percentage-bar-container"><div class="percentage-bar" style="float: right; width: 80.91%; background-color: red;">-80.91%</div></div></td>
-<td>5.26</td>
-</tr>
-<tr class="blurred-row">
-<td>Terra</td>
-<td>$0.34627</td>
-<td>$11.96837</td>
-<td>2022-05-30T21:25:00Z</td>
-<td><div class="percentage-bar-container"><div class="percentage-bar" style="float: right; width: 97.1%; background-color: red;">-97.10%</div></div></td>
-<td>34.56</td>
-</tr>
-<tr class="blurred-row">
-<td>Compound</td>
-<td>$75.69838</td>
-<td>$913.48773</td>
-<td>2021-05-12T02:15:00Z</td>
-<td><div class="percentage-bar-container"><div class="percentage-bar" style="float: right; width: 91.71%; background-color: red;">-91.71%</div></div></td>
-<td>12.07</td>
-</tr>
-<tr class="blurred-row">
-<td>Bazaars</td>
-<td>$20.68164</td>
-<td>$25.89640</td>
-<td>2024-12-12T15:09:20Z</td>
-<td><div class="percentage-bar-container"><div class="percentage-bar" style="float: right; width: 20.1%; background-color: red;">-20.10%</div></div></td>
-<td>1.25</td>
-</tr>
-<tr class="blurred-row">
-<td>Mask Network</td>
-<td>$2.39958</td>
-<td>$7.17747</td>
-<td>2023-03-29T20:37:57Z</td>
-<td><div class="percentage-bar-container"><div class="percentage-bar" style="float: right; width: 66.53%; background-color: red;">-66.53%</div></div></td>
-<td>2.99</td>
-</tr>
-</tbody>
+      <h2 style="text-align:center;">Cryptocurrency Prices</h2>
+
+      <div class="password-section">
+        <label for="crypto-password">Enter Password to View All Rows:</label><br>
+        <input type="password" id="crypto-password" placeholder="Enter password">
+        <button onclick="unlockRows()">Unlock</button>
+      </div>
+
+      <div class="crypto-table-container">
+        <table class="dataframe crypto-table display" id="cryptoTable">
+  <thead>
+    <tr style="text-align: right;">
+      <th>Coin ID</th>
+      <th>Name</th>
+      <th>Symbol</th>
+      <th>Rank</th>
+      <th>Current Price (USD)</th>
+      <th>Market Cap (USD)</th>
+      <th>Last Updated</th>
+      <th>ATH Price (USD)</th>
+      <th>ATH Date</th>
+      <th>Percent from Price ATH</th>
+      <th>Multiply to Price ATH</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>btc-bitcoin</td>
+      <td>Bitcoin</td>
+      <td>BTC</td>
+      <td>1</td>
+      <td>1.050696e+05</td>
+      <td>2082002681708</td>
+      <td>2025-01-26T20:54:27Z</td>
+      <td>1.090215e+05</td>
+      <td>2025-01-20T07:11:03Z</td>
+      <td>-3.58</td>
+      <td>1.04</td>
+    </tr>
+    <tr>
+      <td>eth-ethereum</td>
+      <td>Ethereum</td>
+      <td>ETH</td>
+      <td>2</td>
+      <td>3.335116e+03</td>
+      <td>401635727770</td>
+      <td>2025-01-26T20:54:27Z</td>
+      <td>4.864113e+03</td>
+      <td>2021-11-10T16:05:00Z</td>
+      <td>-31.40</td>
+      <td>1.46</td>
+    </tr>
+    <tr>
+      <td>xrp-xrp</td>
+      <td>XRP</td>
+      <td>XRP</td>
+      <td>3</td>
+      <td>3.129589e+00</td>
+      <td>180393305010</td>
+      <td>2025-01-26T20:54:27Z</td>
+      <td>3.841940e+00</td>
+      <td>2018-01-04T07:14:00Z</td>
+      <td>-18.46</td>
+      <td>1.23</td>
+    </tr>
+    <tr>
+      <td>usdt-tether</td>
+      <td>Tether</td>
+      <td>USDT</td>
+      <td>4</td>
+      <td>1.000590e+00</td>
+      <td>139412144010</td>
+      <td>2025-01-26T20:54:27Z</td>
+      <td>1.215490e+00</td>
+      <td>2015-02-25T17:04:00Z</td>
+      <td>-17.66</td>
+      <td>1.21</td>
+    </tr>
+    <tr>
+      <td>sol-solana</td>
+      <td>Solana</td>
+      <td>SOL</td>
+      <td>5</td>
+      <td>2.541573e+02</td>
+      <td>123673025538</td>
+      <td>2025-01-26T20:54:28Z</td>
+      <td>2.941632e+02</td>
+      <td>2025-01-19T11:17:03Z</td>
+      <td>-13.55</td>
+      <td>1.16</td>
+    </tr>
+    <tr>
+      <td>bnb-binance-coin</td>
+      <td>Binance Coin</td>
+      <td>BNB</td>
+      <td>6</td>
+      <td>6.835377e+02</td>
+      <td>98436770171</td>
+      <td>2025-01-26T20:54:27Z</td>
+      <td>7.865033e+02</td>
+      <td>2024-12-04T10:27:23Z</td>
+      <td>-13.05</td>
+      <td>1.15</td>
+    </tr>
+    <tr>
+      <td>usdc-usd-coin</td>
+      <td>USDC</td>
+      <td>USDC</td>
+      <td>7</td>
+      <td>1.000642e+00</td>
+      <td>52232255040</td>
+      <td>2025-01-26T20:54:27Z</td>
+      <td>1.906198e+00</td>
+      <td>2018-10-11T06:35:00Z</td>
+      <td>-47.49</td>
+      <td>1.90</td>
+    </tr>
+    <tr>
+      <td>doge-dogecoin</td>
+      <td>Dogecoin</td>
+      <td>DOGE</td>
+      <td>8</td>
+      <td>3.523205e-01</td>
+      <td>52068580083</td>
+      <td>2025-01-26T20:54:27Z</td>
+      <td>7.528703e-01</td>
+      <td>2021-05-08T05:00:00Z</td>
+      <td>-53.15</td>
+      <td>2.14</td>
+    </tr>
+    <tr>
+      <td>ada-cardano</td>
+      <td>Cardano</td>
+      <td>ADA</td>
+      <td>9</td>
+      <td>9.947720e-01</td>
+      <td>37345301825</td>
+      <td>2025-01-26T20:54:27Z</td>
+      <td>3.095028e+00</td>
+      <td>2021-09-02T06:00:00Z</td>
+      <td>-67.82</td>
+      <td>3.11</td>
+    </tr>
+    <tr>
+      <td>steth-lido-staked-ether</td>
+      <td>Lido Staked Ether</td>
+      <td>STETH</td>
+      <td>10</td>
+      <td>3.330301e+03</td>
+      <td>32618292165</td>
+      <td>2025-01-26T20:54:29Z</td>
+      <td>4.824293e+03</td>
+      <td>2021-11-10T16:05:00Z</td>
+      <td>-30.93</td>
+      <td>1.45</td>
+    </tr>
+    <tr>
+      <td>trx-tron</td>
+      <td>TRON</td>
+      <td>TRX</td>
+      <td>11</td>
+      <td>2.521909e-01</td>
+      <td>21780034978</td>
+      <td>2025-01-26T20:54:27Z</td>
+      <td>4.404408e-01</td>
+      <td>2024-12-04T00:12:23Z</td>
+      <td>-42.74</td>
+      <td>1.75</td>
+    </tr>
+    <tr>
+      <td>link-chainlink</td>
+      <td>Chainlink</td>
+      <td>LINK</td>
+      <td>12</td>
+      <td>2.624750e+01</td>
+      <td>16453246196</td>
+      <td>2025-01-26T20:54:27Z</td>
+      <td>5.301224e+01</td>
+      <td>2021-05-10T00:10:00Z</td>
+      <td>-50.44</td>
+      <td>2.02</td>
+    </tr>
+    <tr>
+      <td>avax-avalanche</td>
+      <td>Avalanche</td>
+      <td>AVAX</td>
+      <td>13</td>
+      <td>3.764947e+01</td>
+      <td>15496228425</td>
+      <td>2025-01-26T20:54:28Z</td>
+      <td>1.456652e+02</td>
+      <td>2021-11-21T14:15:00Z</td>
+      <td>-74.14</td>
+      <td>3.87</td>
+    </tr>
+    <tr>
+      <td>wbtc-wrapped-bitcoin</td>
+      <td>Wrapped Bitcoin</td>
+      <td>WBTC</td>
+      <td>14</td>
+      <td>1.048377e+05</td>
+      <td>13752402147</td>
+      <td>2025-01-26T20:54:28Z</td>
+      <td>1.085321e+05</td>
+      <td>2025-01-20T09:11:03Z</td>
+      <td>-3.35</td>
+      <td>1.04</td>
+    </tr>
+    <tr>
+      <td>xlm-stellar</td>
+      <td>Stellar</td>
+      <td>XLM</td>
+      <td>15</td>
+      <td>4.235016e-01</td>
+      <td>12925164121</td>
+      <td>2025-01-26T20:54:27Z</td>
+      <td>9.381440e-01</td>
+      <td>2018-01-04T08:19:00Z</td>
+      <td>-54.82</td>
+      <td>2.22</td>
+    </tr>
+    <tr>
+      <td>toncoin-the-open-network</td>
+      <td>Toncoin</td>
+      <td>TON</td>
+      <td>16</td>
+      <td>5.035047e+00</td>
+      <td>12820743496</td>
+      <td>2025-01-26T20:54:29Z</td>
+      <td>8.279612e+00</td>
+      <td>2024-06-15T00:36:22Z</td>
+      <td>-39.16</td>
+      <td>1.64</td>
+    </tr>
+    <tr>
+      <td>hbar-hedera-hashgraph</td>
+      <td>Hedera Hashgraph</td>
+      <td>HBAR</td>
+      <td>17</td>
+      <td>3.366901e-01</td>
+      <td>12690870249</td>
+      <td>2025-01-26T20:54:28Z</td>
+      <td>5.661406e-01</td>
+      <td>2021-09-15T10:40:00Z</td>
+      <td>-40.49</td>
+      <td>1.68</td>
+    </tr>
+    <tr>
+      <td>weth-weth</td>
+      <td>WETH</td>
+      <td>WETH</td>
+      <td>18</td>
+      <td>3.334205e+03</td>
+      <td>12556268369</td>
+      <td>2025-01-26T20:54:27Z</td>
+      <td>4.858355e+03</td>
+      <td>2021-11-10T16:00:00Z</td>
+      <td>-31.32</td>
+      <td>1.46</td>
+    </tr>
+    <tr>
+      <td>sui-sui</td>
+      <td>Sui</td>
+      <td>SUI</td>
+      <td>19</td>
+      <td>4.099960e+00</td>
+      <td>12339114230</td>
+      <td>2025-01-26T20:54:39Z</td>
+      <td>5.350861e+00</td>
+      <td>2025-01-04T22:53:04Z</td>
+      <td>-23.29</td>
+      <td>1.31</td>
+    </tr>
+    <tr>
+      <td>shib-shiba-inu</td>
+      <td>Shiba Inu</td>
+      <td>SHIB</td>
+      <td>20</td>
+      <td>1.987087e-05</td>
+      <td>11709205932</td>
+      <td>2025-01-26T20:54:28Z</td>
+      <td>8.837036e-05</td>
+      <td>2021-10-28T03:25:00Z</td>
+      <td>-77.49</td>
+      <td>4.45</td>
+    </tr>
+    <tr>
+      <td>bgb-bitget-token</td>
+      <td>Bitget Token</td>
+      <td>BGB</td>
+      <td>21</td>
+      <td>7.450358e+00</td>
+      <td>10430501514</td>
+      <td>2025-01-26T20:54:38Z</td>
+      <td>8.497569e+00</td>
+      <td>2024-12-27T11:42:21Z</td>
+      <td>-12.28</td>
+      <td>1.14</td>
+    </tr>
+    <tr>
+      <td>dot-polkadot</td>
+      <td>Polkadot</td>
+      <td>DOT</td>
+      <td>22</td>
+      <td>6.451887e+00</td>
+      <td>9431017991</td>
+      <td>2025-01-26T20:54:28Z</td>
+      <td>5.500430e+01</td>
+      <td>2021-11-04T14:00:00Z</td>
+      <td>-88.26</td>
+      <td>8.53</td>
+    </tr>
+    <tr>
+      <td>ltc-litecoin</td>
+      <td>Litecoin</td>
+      <td>LTC</td>
+      <td>23</td>
+      <td>1.221374e+02</td>
+      <td>9216988842</td>
+      <td>2025-01-26T20:54:27Z</td>
+      <td>4.127005e+02</td>
+      <td>2021-05-10T02:55:00Z</td>
+      <td>-70.39</td>
+      <td>3.38</td>
+    </tr>
+    <tr>
+      <td>leo-leo-token</td>
+      <td>LEO Token</td>
+      <td>LEO</td>
+      <td>24</td>
+      <td>9.276480e+00</td>
+      <td>8672951996</td>
+      <td>2025-01-26T20:54:28Z</td>
+      <td>9.755557e+00</td>
+      <td>2025-01-18T00:56:04Z</td>
+      <td>-4.75</td>
+      <td>1.05</td>
+    </tr>
+    <tr>
+      <td>bch-bitcoin-cash</td>
+      <td>Bitcoin Cash</td>
+      <td>BCH</td>
+      <td>25</td>
+      <td>4.366139e+02</td>
+      <td>8654142549</td>
+      <td>2025-01-26T20:54:27Z</td>
+      <td>4.355620e+03</td>
+      <td>2017-12-20T16:59:00Z</td>
+      <td>-89.97</td>
+      <td>9.98</td>
+    </tr>
+    <tr>
+      <td>hype-hyperliquid</td>
+      <td>Hyperliquid</td>
+      <td>HYPE</td>
+      <td>26</td>
+      <td>2.349037e+01</td>
+      <td>7844097097</td>
+      <td>2025-01-26T20:54:46Z</td>
+      <td>3.502036e+01</td>
+      <td>2024-12-21T07:36:20Z</td>
+      <td>-32.87</td>
+      <td>1.49</td>
+    </tr>
+    <tr>
+      <td>btcb-binance-bitcoin</td>
+      <td>Binance Bitcoin</td>
+      <td>BTCB</td>
+      <td>27</td>
+      <td>1.050968e+05</td>
+      <td>7683418276</td>
+      <td>2025-01-26T20:54:29Z</td>
+      <td>1.100041e+05</td>
+      <td>2025-01-20T06:59:03Z</td>
+      <td>-4.43</td>
+      <td>1.05</td>
+    </tr>
+    <tr>
+      <td>uni-uniswap</td>
+      <td>Uniswap</td>
+      <td>UNI</td>
+      <td>28</td>
+      <td>1.198174e+01</td>
+      <td>7194137707</td>
+      <td>2025-01-26T20:54:28Z</td>
+      <td>4.501251e+01</td>
+      <td>2021-05-03T04:15:00Z</td>
+      <td>-73.35</td>
+      <td>3.76</td>
+    </tr>
+    <tr>
+      <td>dai-dai</td>
+      <td>Dai</td>
+      <td>DAI</td>
+      <td>29</td>
+      <td>1.000946e+00</td>
+      <td>6733203026</td>
+      <td>2025-01-26T20:54:27Z</td>
+      <td>1.366780e+00</td>
+      <td>2018-02-03T10:29:00Z</td>
+      <td>-26.77</td>
+      <td>1.37</td>
+    </tr>
+    <tr>
+      <td>pepe-pepe</td>
+      <td>Pepe</td>
+      <td>PEPE</td>
+      <td>30</td>
+      <td>1.493916e-05</td>
+      <td>6284755561</td>
+      <td>2025-01-26T20:54:42Z</td>
+      <td>2.828525e-05</td>
+      <td>2024-12-09T16:33:23Z</td>
+      <td>-47.10</td>
+      <td>1.89</td>
+    </tr>
+    <tr>
+      <td>trump-official-trump</td>
+      <td>OFFICIAL TRUMP</td>
+      <td>TRUMP</td>
+      <td>31</td>
+      <td>2.900664e+01</td>
+      <td>5801328911</td>
+      <td>2025-01-26T20:54:47Z</td>
+      <td>7.526900e+01</td>
+      <td>2025-01-19T11:41:03Z</td>
+      <td>-61.39</td>
+      <td>2.59</td>
+    </tr>
+    <tr>
+      <td>usds-usds</td>
+      <td>Usds</td>
+      <td>USDS</td>
+      <td>32</td>
+      <td>1.001444e+00</td>
+      <td>5278401720</td>
+      <td>2025-01-26T20:54:46Z</td>
+      <td>1.582051e+00</td>
+      <td>2024-09-24T03:00:21Z</td>
+      <td>-36.70</td>
+      <td>1.58</td>
+    </tr>
+    <tr>
+      <td>near-near-protocol</td>
+      <td>Near Protocol</td>
+      <td>NEAR</td>
+      <td>33</td>
+      <td>4.981313e+00</td>
+      <td>5176365949</td>
+      <td>2025-01-26T20:54:28Z</td>
+      <td>2.039546e+01</td>
+      <td>2022-01-16T22:10:00Z</td>
+      <td>-75.56</td>
+      <td>4.09</td>
+    </tr>
+    <tr>
+      <td>aave-new</td>
+      <td>Aave</td>
+      <td>AAVE</td>
+      <td>34</td>
+      <td>3.301326e+02</td>
+      <td>4945057067</td>
+      <td>2025-01-26T20:54:28Z</td>
+      <td>6.660293e+02</td>
+      <td>2021-05-18T21:20:00Z</td>
+      <td>-50.39</td>
+      <td>2.02</td>
+    </tr>
+    <tr>
+      <td>apt-aptos</td>
+      <td>Aptos</td>
+      <td>APT</td>
+      <td>35</td>
+      <td>8.205436e+00</td>
+      <td>4701963490</td>
+      <td>2025-01-26T20:54:39Z</td>
+      <td>1.994634e+01</td>
+      <td>2023-01-30T08:50:00Z</td>
+      <td>-58.83</td>
+      <td>2.43</td>
+    </tr>
+    <tr>
+      <td>icp-internet-computer</td>
+      <td>Internet Computer</td>
+      <td>ICP</td>
+      <td>36</td>
+      <td>9.210051e+00</td>
+      <td>4421335097</td>
+      <td>2025-01-26T20:54:28Z</td>
+      <td>3.422294e+02</td>
+      <td>2021-05-13T05:35:00Z</td>
+      <td>-97.31</td>
+      <td>37.16</td>
+    </tr>
+    <tr>
+      <td>xmr-monero</td>
+      <td>Monero</td>
+      <td>XMR</td>
+      <td>37</td>
+      <td>2.246085e+02</td>
+      <td>4143296334</td>
+      <td>2025-01-26T20:54:27Z</td>
+      <td>5.197594e+02</td>
+      <td>2021-05-07T13:55:00Z</td>
+      <td>-56.78</td>
+      <td>2.31</td>
+    </tr>
+    <tr>
+      <td>wbt-whitebit</td>
+      <td>WhiteBIT Coin</td>
+      <td>WBT</td>
+      <td>38</td>
+      <td>2.868340e+01</td>
+      <td>4133808543</td>
+      <td>2025-01-26T20:54:38Z</td>
+      <td>2.884956e+01</td>
+      <td>2025-01-23T16:50:04Z</td>
+      <td>-0.56</td>
+      <td>1.01</td>
+    </tr>
+    <tr>
+      <td>etc-ethereum-classic</td>
+      <td>Ethereum Classic</td>
+      <td>ETC</td>
+      <td>39</td>
+      <td>2.683732e+01</td>
+      <td>4039115393</td>
+      <td>2025-01-26T20:54:27Z</td>
+      <td>1.670825e+02</td>
+      <td>2021-05-06T18:35:00Z</td>
+      <td>-83.93</td>
+      <td>6.23</td>
+    </tr>
+    <tr>
+      <td>mnt-mantle</td>
+      <td>Mantle</td>
+      <td>MNT</td>
+      <td>40</td>
+      <td>1.182198e+00</td>
+      <td>3977735386</td>
+      <td>2025-01-26T20:54:43Z</td>
+      <td>1.502650e+00</td>
+      <td>2024-04-08T01:46:07Z</td>
+      <td>-21.19</td>
+      <td>1.27</td>
+    </tr>
+    <tr>
+      <td>vet-vechain</td>
+      <td>VeChain</td>
+      <td>VET</td>
+      <td>41</td>
+      <td>4.708345e-02</td>
+      <td>3813054777</td>
+      <td>2025-01-26T20:54:27Z</td>
+      <td>9.551670e+00</td>
+      <td>2018-01-22T10:04:00Z</td>
+      <td>-99.51</td>
+      <td>202.87</td>
+    </tr>
+    <tr>
+      <td>om-mantra-dao</td>
+      <td>MANTRA</td>
+      <td>OM</td>
+      <td>42</td>
+      <td>4.645051e+00</td>
+      <td>3765891336</td>
+      <td>2025-01-26T20:54:28Z</td>
+      <td>5.002933e+00</td>
+      <td>2025-01-26T01:26:04Z</td>
+      <td>-7.13</td>
+      <td>1.08</td>
+    </tr>
+    <tr>
+      <td>cro-cryptocom-chain</td>
+      <td>Cronos</td>
+      <td>CRO</td>
+      <td>43</td>
+      <td>1.381244e-01</td>
+      <td>3670181723</td>
+      <td>2025-01-26T20:54:27Z</td>
+      <td>9.585537e-01</td>
+      <td>2021-11-24T16:05:00Z</td>
+      <td>-85.58</td>
+      <td>6.94</td>
+    </tr>
+    <tr>
+      <td>rndr-render-token</td>
+      <td>Render</td>
+      <td>RENDER</td>
+      <td>44</td>
+      <td>6.946792e+00</td>
+      <td>3596289988</td>
+      <td>2025-01-26T20:54:28Z</td>
+      <td>1.362973e+01</td>
+      <td>2024-03-17T16:31:07Z</td>
+      <td>-48.98</td>
+      <td>1.96</td>
+    </tr>
+    <tr>
+      <td>algo-algorand</td>
+      <td>Algorand</td>
+      <td>ALGO</td>
+      <td>45</td>
+      <td>4.007835e-01</td>
+      <td>3364612431</td>
+      <td>2025-01-26T20:54:28Z</td>
+      <td>2.645239e+00</td>
+      <td>2021-11-18T04:45:00Z</td>
+      <td>-84.82</td>
+      <td>6.60</td>
+    </tr>
+    <tr>
+      <td>kas-kaspa</td>
+      <td>Kaspa</td>
+      <td>KAS</td>
+      <td>46</td>
+      <td>1.319236e-01</td>
+      <td>3323076909</td>
+      <td>2025-01-26T20:54:38Z</td>
+      <td>2.075770e-01</td>
+      <td>2024-07-31T19:24:21Z</td>
+      <td>-36.39</td>
+      <td>1.57</td>
+    </tr>
+    <tr>
+      <td>okb-okb</td>
+      <td>OKB</td>
+      <td>OKB</td>
+      <td>47</td>
+      <td>5.460561e+01</td>
+      <td>3276336738</td>
+      <td>2025-01-26T20:54:28Z</td>
+      <td>7.391770e+01</td>
+      <td>2024-03-14T00:31:12Z</td>
+      <td>-26.11</td>
+      <td>1.35</td>
+    </tr>
+    <tr>
+      <td>fil-filecoin</td>
+      <td>Filecoin</td>
+      <td>FIL</td>
+      <td>48</td>
+      <td>5.100359e+00</td>
+      <td>3177561978</td>
+      <td>2025-01-26T20:54:27Z</td>
+      <td>2.369653e+02</td>
+      <td>2021-04-01T13:25:00Z</td>
+      <td>-97.85</td>
+      <td>46.46</td>
+    </tr>
+    <tr>
+      <td>fetch-ai</td>
+      <td>Artificial Superintelligence Alliance</td>
+      <td>FET</td>
+      <td>49</td>
+      <td>1.212408e+00</td>
+      <td>3164336531</td>
+      <td>2025-01-26T20:54:28Z</td>
+      <td>3.470638e+00</td>
+      <td>2024-03-28T16:04:13Z</td>
+      <td>-65.01</td>
+      <td>2.86</td>
+    </tr>
+    <tr>
+      <td>jitosol-jito-staked-sol</td>
+      <td>Jito Staked SOL</td>
+      <td>JITOSOL</td>
+      <td>50</td>
+      <td>2.995944e+02</td>
+      <td>2996317491</td>
+      <td>2025-01-26T20:54:39Z</td>
+      <td>3.386493e+02</td>
+      <td>2025-01-19T11:38:04Z</td>
+      <td>-11.49</td>
+      <td>1.13</td>
+    </tr>
+    <tr>
+      <td>tao-bittensor</td>
+      <td>BitTensor</td>
+      <td>TAO</td>
+      <td>51</td>
+      <td>4.514180e+02</td>
+      <td>2947740019</td>
+      <td>2025-01-26T20:54:39Z</td>
+      <td>7.691331e+02</td>
+      <td>2024-04-11T12:07:07Z</td>
+      <td>-41.26</td>
+      <td>1.70</td>
+    </tr>
+    <tr>
+      <td>pol-polygon-ecosystem-token</td>
+      <td>Polygon Ecosystem Token</td>
+      <td>POL</td>
+      <td>52</td>
+      <td>4.454913e-01</td>
+      <td>2472036889</td>
+      <td>2025-01-26T20:54:44Z</td>
+      <td>1.293952e+00</td>
+      <td>2024-03-13T18:43:07Z</td>
+      <td>-65.54</td>
+      <td>2.90</td>
+    </tr>
+    <tr>
+      <td>atom-cosmos</td>
+      <td>Cosmos</td>
+      <td>ATOM</td>
+      <td>53</td>
+      <td>6.322588e+00</td>
+      <td>2471716050</td>
+      <td>2025-01-26T20:54:28Z</td>
+      <td>4.455288e+01</td>
+      <td>2022-01-07T10:35:00Z</td>
+      <td>-85.80</td>
+      <td>7.05</td>
+    </tr>
+    <tr>
+      <td>virtual-virtual-protocol</td>
+      <td>Virtuals Protocol</td>
+      <td>VIRTUAL</td>
+      <td>54</td>
+      <td>2.405391e+00</td>
+      <td>2405391006</td>
+      <td>2025-01-26T20:54:44Z</td>
+      <td>5.096181e+00</td>
+      <td>2025-01-02T05:54:23Z</td>
+      <td>-52.69</td>
+      <td>2.12</td>
+    </tr>
+    <tr>
+      <td>gt-gatechain-token</td>
+      <td>Gatechain Token</td>
+      <td>GT</td>
+      <td>55</td>
+      <td>2.537395e+01</td>
+      <td>2309448196</td>
+      <td>2025-01-26T20:54:28Z</td>
+      <td>2.594632e+01</td>
+      <td>2025-01-25T02:53:03Z</td>
+      <td>-2.17</td>
+      <td>1.02</td>
+    </tr>
+    <tr>
+      <td>ray-raydium</td>
+      <td>Raydium</td>
+      <td>RAY</td>
+      <td>56</td>
+      <td>7.640112e+00</td>
+      <td>2222729220</td>
+      <td>2025-01-26T20:54:29Z</td>
+      <td>1.691416e+01</td>
+      <td>2021-09-12T20:20:00Z</td>
+      <td>-54.75</td>
+      <td>2.21</td>
+    </tr>
+    <tr>
+      <td>op-optimism</td>
+      <td>Optimism</td>
+      <td>OP</td>
+      <td>57</td>
+      <td>1.636413e+00</td>
+      <td>2211970318</td>
+      <td>2025-01-26T20:54:38Z</td>
+      <td>4.867880e+00</td>
+      <td>2024-03-06T08:31:06Z</td>
+      <td>-66.33</td>
+      <td>2.97</td>
+    </tr>
+    <tr>
+      <td>bonk-bonk</td>
+      <td>Bonk</td>
+      <td>BONK</td>
+      <td>58</td>
+      <td>2.892579e-05</td>
+      <td>2171615928</td>
+      <td>2025-01-26T20:54:39Z</td>
+      <td>5.905470e-05</td>
+      <td>2024-11-20T04:03:20Z</td>
+      <td>-50.96</td>
+      <td>2.04</td>
+    </tr>
+    <tr>
+      <td>stx-stacks</td>
+      <td>Stacks</td>
+      <td>STX</td>
+      <td>59</td>
+      <td>1.395048e+00</td>
+      <td>2094635588</td>
+      <td>2025-01-26T20:54:27Z</td>
+      <td>3.843169e+00</td>
+      <td>2024-04-01T12:22:17Z</td>
+      <td>-63.67</td>
+      <td>2.75</td>
+    </tr>
+    <tr>
+      <td>theta-theta-token</td>
+      <td>THETA</td>
+      <td>THETA</td>
+      <td>60</td>
+      <td>2.025535e+00</td>
+      <td>2025534691</td>
+      <td>2025-01-26T20:54:27Z</td>
+      <td>1.658521e+01</td>
+      <td>2021-04-16T13:10:00Z</td>
+      <td>-87.77</td>
+      <td>8.19</td>
+    </tr>
+    <tr>
+      <td>wld-worldcoin</td>
+      <td>Worldcoin</td>
+      <td>WLD</td>
+      <td>61</td>
+      <td>2.092531e+00</td>
+      <td>1993504597</td>
+      <td>2025-01-26T20:54:42Z</td>
+      <td>1.185062e+01</td>
+      <td>2024-03-10T00:13:10Z</td>
+      <td>-82.30</td>
+      <td>5.66</td>
+    </tr>
+    <tr>
+      <td>ldo-lido-dao</td>
+      <td>Lido DAO</td>
+      <td>LDO</td>
+      <td>62</td>
+      <td>2.171128e+00</td>
+      <td>1944730642</td>
+      <td>2025-01-26T20:54:29Z</td>
+      <td>6.959356e+00</td>
+      <td>2021-09-10T06:00:00Z</td>
+      <td>-68.78</td>
+      <td>3.21</td>
+    </tr>
+    <tr>
+      <td>inj-injective-protocol</td>
+      <td>Injective Protocol</td>
+      <td>INJ</td>
+      <td>63</td>
+      <td>2.111068e+01</td>
+      <td>1900852221</td>
+      <td>2025-01-26T20:54:28Z</td>
+      <td>5.270699e+01</td>
+      <td>2024-03-14T15:07:06Z</td>
+      <td>-59.89</td>
+      <td>2.50</td>
+    </tr>
+    <tr>
+      <td>reth-rocket-pool-eth</td>
+      <td>Rocket Pool ETH</td>
+      <td>RETH</td>
+      <td>64</td>
+      <td>3.730475e+03</td>
+      <td>1897745045</td>
+      <td>2025-01-26T20:54:32Z</td>
+      <td>4.590014e+03</td>
+      <td>2024-12-16T18:57:22Z</td>
+      <td>-18.67</td>
+      <td>1.23</td>
+    </tr>
+    <tr>
+      <td>arb-arbitrum</td>
+      <td>Arbitrum</td>
+      <td>ARB</td>
+      <td>65</td>
+      <td>7.108924e-01</td>
+      <td>1886665335</td>
+      <td>2025-01-26T20:54:41Z</td>
+      <td>2.399496e+00</td>
+      <td>2024-01-12T12:32:04Z</td>
+      <td>-70.35</td>
+      <td>3.38</td>
+    </tr>
+    <tr>
+      <td>bnsol-binance-staked-sol</td>
+      <td>Binance Staked SOL</td>
+      <td>BNSOL</td>
+      <td>66</td>
+      <td>2.616383e+02</td>
+      <td>1873169764</td>
+      <td>2025-01-26T20:54:47Z</td>
+      <td>2.774644e+02</td>
+      <td>2025-01-24T14:47:03Z</td>
+      <td>-5.65</td>
+      <td>1.06</td>
+    </tr>
+    <tr>
+      <td>fdusd-first-digital-usd</td>
+      <td>First Digital USD</td>
+      <td>FDUSD</td>
+      <td>67</td>
+      <td>1.000614e+00</td>
+      <td>1838770546</td>
+      <td>2025-01-26T20:54:43Z</td>
+      <td>1.026113e+00</td>
+      <td>2024-04-13T20:10:07Z</td>
+      <td>-2.47</td>
+      <td>1.03</td>
+    </tr>
+    <tr>
+      <td>grt-the-graph</td>
+      <td>The Graph</td>
+      <td>GRT</td>
+      <td>68</td>
+      <td>1.904305e-01</td>
+      <td>1818331897</td>
+      <td>2025-01-26T20:54:28Z</td>
+      <td>2.659292e+00</td>
+      <td>2021-02-20T14:40:00Z</td>
+      <td>-92.83</td>
+      <td>13.96</td>
+    </tr>
+    <tr>
+      <td>imx-immutable-x</td>
+      <td>Immutable X</td>
+      <td>IMX</td>
+      <td>69</td>
+      <td>1.232521e+00</td>
+      <td>1753901999</td>
+      <td>2025-01-26T20:54:36Z</td>
+      <td>3.761331e+00</td>
+      <td>2024-03-12T03:40:08Z</td>
+      <td>-67.18</td>
+      <td>3.05</td>
+    </tr>
+    <tr>
+      <td>s-sonic</td>
+      <td>Sonic</td>
+      <td>S</td>
+      <td>70</td>
+      <td>5.358889e-01</td>
+      <td>1701447205</td>
+      <td>2025-01-26T20:54:46Z</td>
+      <td>8.462564e-01</td>
+      <td>2025-01-15T21:47:03Z</td>
+      <td>-36.66</td>
+      <td>1.58</td>
+    </tr>
+    <tr>
+      <td>pengu-pudgy-penguins</td>
+      <td>Pudgy Penguins</td>
+      <td>PENGU</td>
+      <td>71</td>
+      <td>2.654731e-02</td>
+      <td>1668774189</td>
+      <td>2025-01-26T20:54:47Z</td>
+      <td>5.338790e-02</td>
+      <td>2024-12-17T14:15:00Z</td>
+      <td>-50.32</td>
+      <td>2.01</td>
+    </tr>
+    <tr>
+      <td>hex-hex-from-pulsechain</td>
+      <td>HEX (Pulsechain)</td>
+      <td>HEX</td>
+      <td>72</td>
+      <td>1.614232e-02</td>
+      <td>1627243590</td>
+      <td>2025-01-26T20:54:42Z</td>
+      <td>3.300549e-02</td>
+      <td>2024-12-05T04:39:20Z</td>
+      <td>-51.09</td>
+      <td>2.04</td>
+    </tr>
+    <tr>
+      <td>kcs-kucoin-token</td>
+      <td>KuCoin Token</td>
+      <td>KCS</td>
+      <td>73</td>
+      <td>1.333123e+01</td>
+      <td>1603175386</td>
+      <td>2025-01-26T20:54:27Z</td>
+      <td>2.880593e+01</td>
+      <td>2021-12-01T15:05:00Z</td>
+      <td>-53.74</td>
+      <td>2.16</td>
+    </tr>
+    <tr>
+      <td>move-movement</td>
+      <td>Movement</td>
+      <td>MOVE</td>
+      <td>74</td>
+      <td>7.005489e-01</td>
+      <td>1576234934</td>
+      <td>2025-01-26T20:54:46Z</td>
+      <td>1.213050e+00</td>
+      <td>2024-12-26T00:33:23Z</td>
+      <td>-42.25</td>
+      <td>1.73</td>
+    </tr>
+    <tr>
+      <td>jup-jupiter-exchange-token</td>
+      <td>Jupiter Exchange Token</td>
+      <td>JUP</td>
+      <td>75</td>
+      <td>1.144661e+00</td>
+      <td>1545292775</td>
+      <td>2025-01-26T20:54:45Z</td>
+      <td>1.841994e+00</td>
+      <td>2024-04-01T04:16:10Z</td>
+      <td>-37.76</td>
+      <td>1.61</td>
+    </tr>
+    <tr>
+      <td>ftm-fantom</td>
+      <td>Fantom</td>
+      <td>FTM</td>
+      <td>76</td>
+      <td>5.396455e-01</td>
+      <td>1512968816</td>
+      <td>2025-01-26T20:54:27Z</td>
+      <td>3.526674e+00</td>
+      <td>2021-10-26T10:00:00Z</td>
+      <td>-84.71</td>
+      <td>6.54</td>
+    </tr>
+    <tr>
+      <td>flr-flare-network</td>
+      <td>Flare Network</td>
+      <td>FLR</td>
+      <td>77</td>
+      <td>2.585521e-02</td>
+      <td>1476684046</td>
+      <td>2025-01-26T20:54:39Z</td>
+      <td>5.485748e-02</td>
+      <td>2024-02-26T14:37:11Z</td>
+      <td>-52.89</td>
+      <td>2.12</td>
+    </tr>
+    <tr>
+      <td>solvbtc-solv-protocol-solvbtc</td>
+      <td>Solv Protocol solvBTC</td>
+      <td>SOLVBTC</td>
+      <td>79</td>
+      <td>1.049283e+05</td>
+      <td>1424296533</td>
+      <td>2025-01-26T20:54:46Z</td>
+      <td>1.090196e+05</td>
+      <td>2025-01-20T07:02:05Z</td>
+      <td>-3.70</td>
+      <td>1.04</td>
+    </tr>
+    <tr>
+      <td>msol-marinade-staked-sol</td>
+      <td>Marinade Staked Sol</td>
+      <td>MSOL</td>
+      <td>78</td>
+      <td>3.202920e+02</td>
+      <td>1423942164</td>
+      <td>2025-01-26T20:54:30Z</td>
+      <td>3.611981e+02</td>
+      <td>2025-01-19T11:38:04Z</td>
+      <td>-11.15</td>
+      <td>1.13</td>
+    </tr>
+    <tr>
+      <td>jasmy-jasmycoin</td>
+      <td>JasmyCoin</td>
+      <td>JASMY</td>
+      <td>80</td>
+      <td>2.774951e-02</td>
+      <td>1370687120</td>
+      <td>2025-01-26T20:54:29Z</td>
+      <td>3.245257e-01</td>
+      <td>2021-11-03T02:57:31Z</td>
+      <td>-91.44</td>
+      <td>11.69</td>
+    </tr>
+    <tr>
+      <td>sand-the-sandbox</td>
+      <td>The Sandbox</td>
+      <td>SAND</td>
+      <td>82</td>
+      <td>5.567072e-01</td>
+      <td>1332886284</td>
+      <td>2025-01-26T20:54:28Z</td>
+      <td>8.596443e+00</td>
+      <td>2021-11-25T07:00:00Z</td>
+      <td>-93.52</td>
+      <td>15.44</td>
+    </tr>
+    <tr>
+      <td>fartcoin-fartcoin</td>
+      <td>Fartcoin</td>
+      <td>FARTCOIN</td>
+      <td>81</td>
+      <td>1.331495e+00</td>
+      <td>1331489763</td>
+      <td>2025-01-26T20:54:47Z</td>
+      <td>2.664315e+00</td>
+      <td>2025-01-19T22:59:03Z</td>
+      <td>-49.90</td>
+      <td>2.00</td>
+    </tr>
+    <tr>
+      <td>floki-floki-inu</td>
+      <td>Floki Inu</td>
+      <td>FLOKI</td>
+      <td>83</td>
+      <td>1.368660e-04</td>
+      <td>1323940872</td>
+      <td>2025-01-26T20:54:29Z</td>
+      <td>3.483804e-04</td>
+      <td>2021-11-04T14:25:00Z</td>
+      <td>-60.68</td>
+      <td>2.55</td>
+    </tr>
+    <tr>
+      <td>xdc-xdc-network</td>
+      <td>XDC Network</td>
+      <td>XDC</td>
+      <td>84</td>
+      <td>1.061546e-01</td>
+      <td>1306235217</td>
+      <td>2025-01-26T20:54:28Z</td>
+      <td>1.945103e-01</td>
+      <td>2021-08-21T04:10:00Z</td>
+      <td>-45.38</td>
+      <td>1.83</td>
+    </tr>
+    <tr>
+      <td>qnt-quant</td>
+      <td>Quant</td>
+      <td>QNT</td>
+      <td>85</td>
+      <td>1.070715e+02</td>
+      <td>1292645951</td>
+      <td>2025-01-26T20:54:27Z</td>
+      <td>4.261801e+02</td>
+      <td>2021-09-11T09:15:00Z</td>
+      <td>-74.81</td>
+      <td>3.98</td>
+    </tr>
+    <tr>
+      <td>wif-dogwifcoin</td>
+      <td>dogwifhat</td>
+      <td>WIF</td>
+      <td>86</td>
+      <td>1.283934e+00</td>
+      <td>1282555554</td>
+      <td>2025-01-26T20:54:44Z</td>
+      <td>4.834052e+00</td>
+      <td>2024-03-31T08:40:08Z</td>
+      <td>-73.42</td>
+      <td>3.77</td>
+    </tr>
+    <tr>
+      <td>gala-gala</td>
+      <td>Gala</td>
+      <td>GALA</td>
+      <td>87</td>
+      <td>3.267669e-02</td>
+      <td>1238178950</td>
+      <td>2025-01-26T20:54:28Z</td>
+      <td>8.343064e-01</td>
+      <td>2021-11-26T01:55:00Z</td>
+      <td>-96.08</td>
+      <td>25.53</td>
+    </tr>
+    <tr>
+      <td>kaia-kaia</td>
+      <td>Kaia</td>
+      <td>KAIA</td>
+      <td>89</td>
+      <td>2.066149e-01</td>
+      <td>1225061048</td>
+      <td>2025-01-26T20:54:46Z</td>
+      <td>4.123347e-01</td>
+      <td>2024-12-03T00:06:21Z</td>
+      <td>-49.86</td>
+      <td>2.00</td>
+    </tr>
+    <tr>
+      <td>xcn-chain</td>
+      <td>Onyxcoin</td>
+      <td>XCN</td>
+      <td>88</td>
+      <td>3.939748e-02</td>
+      <td>1213059953</td>
+      <td>2025-01-26T20:54:37Z</td>
+      <td>1.839097e-01</td>
+      <td>2022-05-27T13:00:00Z</td>
+      <td>-78.22</td>
+      <td>4.67</td>
+    </tr>
+    <tr>
+      <td>stsol-lido-staked-sol</td>
+      <td>Lido Staked SOL</td>
+      <td>STSOL</td>
+      <td>90</td>
+      <td>3.086796e+02</td>
+      <td>1203977174</td>
+      <td>2025-01-26T20:54:30Z</td>
+      <td>3.536384e+02</td>
+      <td>2025-01-19T11:47:04Z</td>
+      <td>-12.59</td>
+      <td>1.15</td>
+    </tr>
+    <tr>
+      <td>xtz-tezos</td>
+      <td>Tezos</td>
+      <td>XTZ</td>
+      <td>91</td>
+      <td>1.163070e+00</td>
+      <td>1194464476</td>
+      <td>2025-01-26T20:54:27Z</td>
+      <td>1.218940e+01</td>
+      <td>2017-12-17T15:34:00Z</td>
+      <td>-90.46</td>
+      <td>10.48</td>
+    </tr>
+    <tr>
+      <td>ftn-fasttoken</td>
+      <td>Fasttoken</td>
+      <td>FTN</td>
+      <td>92</td>
+      <td>3.907111e+00</td>
+      <td>1191083740</td>
+      <td>2025-01-26T20:54:39Z</td>
+      <td>3.914550e+00</td>
+      <td>2025-01-26T14:02:04Z</td>
+      <td>-0.12</td>
+      <td>1.00</td>
+    </tr>
+    <tr>
+      <td>ena-ethena</td>
+      <td>Ethena</td>
+      <td>ENA</td>
+      <td>93</td>
+      <td>8.193137e-01</td>
+      <td>1167521993</td>
+      <td>2025-01-26T20:54:45Z</td>
+      <td>1.519604e+00</td>
+      <td>2024-04-11T10:04:07Z</td>
+      <td>-46.03</td>
+      <td>1.85</td>
+    </tr>
+    <tr>
+      <td>ens-ethereum-name-service</td>
+      <td>Ethereum Name Service</td>
+      <td>ENS</td>
+      <td>94</td>
+      <td>3.396155e+01</td>
+      <td>1159364626</td>
+      <td>2025-01-26T20:54:30Z</td>
+      <td>6.052824e+01</td>
+      <td>2021-12-03T14:45:00Z</td>
+      <td>-43.82</td>
+      <td>1.78</td>
+    </tr>
+    <tr>
+      <td>dexe-dexe</td>
+      <td>DeXe</td>
+      <td>DEXE</td>
+      <td>95</td>
+      <td>1.984406e+01</td>
+      <td>1133160369</td>
+      <td>2025-01-26T20:54:29Z</td>
+      <td>2.570884e+01</td>
+      <td>2021-12-04T15:10:00Z</td>
+      <td>-22.71</td>
+      <td>1.30</td>
+    </tr>
+    <tr>
+      <td>aioz-aioz-network</td>
+      <td>AIOZ Network</td>
+      <td>AIOZ</td>
+      <td>97</td>
+      <td>9.584638e-01</td>
+      <td>1105020700</td>
+      <td>2025-01-26T20:54:29Z</td>
+      <td>1.319571e+00</td>
+      <td>2024-12-01T22:57:21Z</td>
+      <td>-27.95</td>
+      <td>1.38</td>
+    </tr>
+    <tr>
+      <td>mkr-maker</td>
+      <td>Maker</td>
+      <td>MKR</td>
+      <td>96</td>
+      <td>1.230544e+03</td>
+      <td>1095524794</td>
+      <td>2025-01-26T20:54:27Z</td>
+      <td>6.302629e+03</td>
+      <td>2021-05-03T21:50:00Z</td>
+      <td>-80.43</td>
+      <td>5.12</td>
+    </tr>
+    <tr>
+      <td>wbnb-wrapped-bnb</td>
+      <td>Wrapped BNB</td>
+      <td>WBNB</td>
+      <td>98</td>
+      <td>6.836281e+02</td>
+      <td>1082079403</td>
+      <td>2025-01-26T20:54:29Z</td>
+      <td>7.862789e+02</td>
+      <td>2024-12-04T11:09:21Z</td>
+      <td>-12.99</td>
+      <td>1.15</td>
+    </tr>
+    <tr>
+      <td>bttc-bittorrent-chain</td>
+      <td>BitTorrent</td>
+      <td>BTT</td>
+      <td>99</td>
+      <td>1.074984e-06</td>
+      <td>1040849447</td>
+      <td>2025-01-26T20:54:31Z</td>
+      <td>2.330945e-06</td>
+      <td>2022-03-31T10:45:00Z</td>
+      <td>-53.84</td>
+      <td>2.17</td>
+    </tr>
+    <tr>
+      <td>matic-polygon</td>
+      <td>Polygon</td>
+      <td>MATIC</td>
+      <td>100</td>
+      <td>4.446412e-01</td>
+      <td>1036994138</td>
+      <td>2025-01-26T20:54:28Z</td>
+      <td>2.914599e+00</td>
+      <td>2021-12-27T02:05:00Z</td>
+      <td>-84.74</td>
+      <td>6.55</td>
+    </tr>
+    <tr>
+      <td>flow-flow</td>
+      <td>Flow</td>
+      <td>FLOW</td>
+      <td>101</td>
+      <td>6.915401e-01</td>
+      <td>1036665758</td>
+      <td>2025-01-26T20:54:28Z</td>
+      <td>4.385849e+01</td>
+      <td>2021-04-19T13:30:00Z</td>
+      <td>-98.42</td>
+      <td>63.42</td>
+    </tr>
+    <tr>
+      <td>bsv-bitcoin-sv</td>
+      <td>Bitcoin SV</td>
+      <td>BSV</td>
+      <td>102</td>
+      <td>5.203775e+01</td>
+      <td>1031211823</td>
+      <td>2025-01-26T20:54:27Z</td>
+      <td>4.959374e+02</td>
+      <td>2021-04-16T17:05:00Z</td>
+      <td>-89.50</td>
+      <td>9.53</td>
+    </tr>
+    <tr>
+      <td>flz-fellaz</td>
+      <td>Fellaz</td>
+      <td>FLZ</td>
+      <td>103</td>
+      <td>2.150609e+00</td>
+      <td>1014818676</td>
+      <td>2025-01-26T20:54:38Z</td>
+      <td>6.931797e+00</td>
+      <td>2024-05-28T23:01:07Z</td>
+      <td>-68.98</td>
+      <td>3.22</td>
+    </tr>
+    <tr>
+      <td>crv-curve-dao-token</td>
+      <td>Curve DAO Token</td>
+      <td>CRV</td>
+      <td>104</td>
+      <td>8.097759e-01</td>
+      <td>1000819370</td>
+      <td>2025-01-26T20:54:28Z</td>
+      <td>6.737298e+00</td>
+      <td>2022-01-04T05:35:00Z</td>
+      <td>-87.97</td>
+      <td>8.32</td>
+    </tr>
+    <tr>
+      <td>neo-neo</td>
+      <td>NEO</td>
+      <td>NEO</td>
+      <td>105</td>
+      <td>1.418464e+01</td>
+      <td>1000567855</td>
+      <td>2025-01-26T20:54:27Z</td>
+      <td>1.968530e+02</td>
+      <td>2018-01-15T20:29:00Z</td>
+      <td>-92.79</td>
+      <td>13.88</td>
+    </tr>
+    <tr>
+      <td>ar-arweave</td>
+      <td>Arweave</td>
+      <td>AR</td>
+      <td>106</td>
+      <td>1.471071e+01</td>
+      <td>965794414</td>
+      <td>2025-01-26T20:54:27Z</td>
+      <td>9.731752e+01</td>
+      <td>2021-08-31T02:25:00Z</td>
+      <td>-84.88</td>
+      <td>6.62</td>
+    </tr>
+    <tr>
+      <td>nexo-nexo</td>
+      <td>Nexo</td>
+      <td>NEXO</td>
+      <td>107</td>
+      <td>1.452674e+00</td>
+      <td>938639570</td>
+      <td>2025-01-26T20:54:27Z</td>
+      <td>4.074581e+00</td>
+      <td>2021-05-12T14:30:00Z</td>
+      <td>-64.34</td>
+      <td>2.80</td>
+    </tr>
+    <tr>
+      <td>mana-decentraland</td>
+      <td>Decentraland</td>
+      <td>MANA</td>
+      <td>108</td>
+      <td>4.736076e-01</td>
+      <td>919866832</td>
+      <td>2025-01-26T20:54:27Z</td>
+      <td>5.852653e+00</td>
+      <td>2021-11-25T09:45:00Z</td>
+      <td>-91.90</td>
+      <td>12.36</td>
+    </tr>
+    <tr>
+      <td>miota-iota</td>
+      <td>IOTA</td>
+      <td>IOTA</td>
+      <td>109</td>
+      <td>3.278579e-01</td>
+      <td>911290993</td>
+      <td>2025-01-26T20:54:27Z</td>
+      <td>5.690020e+00</td>
+      <td>2017-12-19T20:09:00Z</td>
+      <td>-94.23</td>
+      <td>17.36</td>
+    </tr>
+    <tr>
+      <td>beam-beam-eth</td>
+      <td>Beam Token</td>
+      <td>BEAM</td>
+      <td>110</td>
+      <td>1.794518e-02</td>
+      <td>910198158</td>
+      <td>2025-01-26T20:54:44Z</td>
+      <td>4.433585e-02</td>
+      <td>2024-03-10T10:40:07Z</td>
+      <td>-59.47</td>
+      <td>2.47</td>
+    </tr>
+    <tr>
+      <td>ai16z-ai16z</td>
+      <td>ai16z</td>
+      <td>AI16Z</td>
+      <td>111</td>
+      <td>8.131292e-01</td>
+      <td>894441601</td>
+      <td>2025-01-26T20:54:46Z</td>
+      <td>2.479952e+00</td>
+      <td>2025-01-02T06:51:20Z</td>
+      <td>-67.16</td>
+      <td>3.05</td>
+    </tr>
+    <tr>
+      <td>axs-axie-infinity</td>
+      <td>Axie Infinity</td>
+      <td>AXS</td>
+      <td>112</td>
+      <td>5.800943e+00</td>
+      <td>891318959</td>
+      <td>2025-01-26T20:54:28Z</td>
+      <td>1.648756e+02</td>
+      <td>2021-11-06T19:30:00Z</td>
+      <td>-96.48</td>
+      <td>28.42</td>
+    </tr>
+    <tr>
+      <td>rune-thorchain</td>
+      <td>THORChain</td>
+      <td>RUNE</td>
+      <td>113</td>
+      <td>2.598427e+00</td>
+      <td>880340786</td>
+      <td>2025-01-26T20:54:28Z</td>
+      <td>2.128983e+01</td>
+      <td>2021-05-19T00:40:00Z</td>
+      <td>-87.75</td>
+      <td>8.19</td>
+    </tr>
+    <tr>
+      <td>egld-elrond</td>
+      <td>MultiversX (Elrond)</td>
+      <td>EGLD</td>
+      <td>114</td>
+      <td>3.073560e+01</td>
+      <td>856426416</td>
+      <td>2025-01-26T20:54:28Z</td>
+      <td>5.410420e+02</td>
+      <td>2021-11-23T10:00:00Z</td>
+      <td>-94.31</td>
+      <td>17.60</td>
+    </tr>
+    <tr>
+      <td>pls-pulsechain</td>
+      <td>Pulsechain</td>
+      <td>PLS</td>
+      <td>115</td>
+      <td>5.514093e-05</td>
+      <td>816902695</td>
+      <td>2025-01-26T20:54:38Z</td>
+      <td>5.315154e-04</td>
+      <td>2023-05-23T04:01:56Z</td>
+      <td>-89.61</td>
+      <td>9.64</td>
+    </tr>
+    <tr>
+      <td>plsx-pulsex</td>
+      <td>PulseX</td>
+      <td>PLSX</td>
+      <td>116</td>
+      <td>3.811949e-05</td>
+      <td>803024712</td>
+      <td>2025-01-26T20:54:32Z</td>
+      <td>1.497440e-04</td>
+      <td>2023-05-22T09:58:59Z</td>
+      <td>-74.54</td>
+      <td>3.93</td>
+    </tr>
+    <tr>
+      <td>eos-eos</td>
+      <td>EOS</td>
+      <td>EOS</td>
+      <td>117</td>
+      <td>7.989935e-01</td>
+      <td>794044755</td>
+      <td>2025-01-26T20:54:27Z</td>
+      <td>2.289040e+01</td>
+      <td>2018-04-29T07:39:00Z</td>
+      <td>-96.51</td>
+      <td>28.65</td>
+    </tr>
+    <tr>
+      <td>core-core-dao</td>
+      <td>Core DAO</td>
+      <td>CORE</td>
+      <td>118</td>
+      <td>8.372329e-01</td>
+      <td>771768087</td>
+      <td>2025-01-26T20:54:39Z</td>
+      <td>4.913534e+00</td>
+      <td>2023-02-09T07:00:00Z</td>
+      <td>-82.94</td>
+      <td>5.87</td>
+    </tr>
+    <tr>
+      <td>zec-zcash</td>
+      <td>Zcash</td>
+      <td>ZEC</td>
+      <td>119</td>
+      <td>4.657728e+01</td>
+      <td>760526298</td>
+      <td>2025-01-26T20:54:27Z</td>
+      <td>5.941800e+03</td>
+      <td>2016-10-29T15:59:00Z</td>
+      <td>-99.22</td>
+      <td>127.57</td>
+    </tr>
+    <tr>
+      <td>tia-celestia</td>
+      <td>Celestia</td>
+      <td>TIA</td>
+      <td>120</td>
+      <td>4.574278e+00</td>
+      <td>735404695</td>
+      <td>2025-01-26T20:54:44Z</td>
+      <td>2.093212e+01</td>
+      <td>2024-02-10T14:55:10Z</td>
+      <td>-78.11</td>
+      <td>4.58</td>
+    </tr>
+    <tr>
+      <td>usdd-usdd</td>
+      <td>USDD</td>
+      <td>USDD</td>
+      <td>121</td>
+      <td>9.999621e-01</td>
+      <td>723294386</td>
+      <td>2025-01-26T20:54:38Z</td>
+      <td>1.022649e+00</td>
+      <td>2023-11-29T01:59:00Z</td>
+      <td>-2.20</td>
+      <td>1.02</td>
+    </tr>
+    <tr>
+      <td>ftt-ftx-token</td>
+      <td>FTX Token</td>
+      <td>FTT</td>
+      <td>122</td>
+      <td>2.177248e+00</td>
+      <td>716086251</td>
+      <td>2025-01-26T20:54:28Z</td>
+      <td>8.490071e+01</td>
+      <td>2021-09-09T14:30:00Z</td>
+      <td>-97.43</td>
+      <td>38.99</td>
+    </tr>
+    <tr>
+      <td>akt-akash-network</td>
+      <td>Akash Network</td>
+      <td>AKT</td>
+      <td>123</td>
+      <td>2.864707e+00</td>
+      <td>711271500</td>
+      <td>2025-01-26T20:54:28Z</td>
+      <td>1.034992e+01</td>
+      <td>2021-09-12T12:30:00Z</td>
+      <td>-72.28</td>
+      <td>3.61</td>
+    </tr>
+    <tr>
+      <td>rsr-reserve-rights</td>
+      <td>Reserve Rights</td>
+      <td>RSR</td>
+      <td>124</td>
+      <td>1.336773e-02</td>
+      <td>707513277</td>
+      <td>2025-01-26T20:54:28Z</td>
+      <td>1.203112e-01</td>
+      <td>2021-04-16T17:45:00Z</td>
+      <td>-88.88</td>
+      <td>9.00</td>
+    </tr>
+    <tr>
+      <td>cfx-conflux-network</td>
+      <td>Conflux Network</td>
+      <td>CFX</td>
+      <td>125</td>
+      <td>1.523789e-01</td>
+      <td>705368615</td>
+      <td>2025-01-26T20:54:28Z</td>
+      <td>9.721230e-01</td>
+      <td>2021-05-12T17:05:00Z</td>
+      <td>-84.31</td>
+      <td>6.38</td>
+    </tr>
+    <tr>
+      <td>chz-chiliz</td>
+      <td>Chiliz</td>
+      <td>CHZ</td>
+      <td>126</td>
+      <td>7.527055e-02</td>
+      <td>686604740</td>
+      <td>2025-01-26T20:54:28Z</td>
+      <td>8.912127e-01</td>
+      <td>2021-03-13T07:25:00Z</td>
+      <td>-91.54</td>
+      <td>11.84</td>
+    </tr>
+    <tr>
+      <td>xaut-tether-gold</td>
+      <td>Tether Gold</td>
+      <td>XAUT</td>
+      <td>127</td>
+      <td>2.755900e+03</td>
+      <td>679395453</td>
+      <td>2025-01-26T20:54:28Z</td>
+      <td>3.159290e+03</td>
+      <td>2021-05-26T11:12:41Z</td>
+      <td>-12.78</td>
+      <td>1.15</td>
+    </tr>
+    <tr>
+      <td>xec-ecash</td>
+      <td>eCash</td>
+      <td>XEC</td>
+      <td>128</td>
+      <td>3.368729e-05</td>
+      <td>667571543</td>
+      <td>2025-01-26T20:54:29Z</td>
+      <td>3.870885e-04</td>
+      <td>2021-09-04T17:05:00Z</td>
+      <td>-91.27</td>
+      <td>11.49</td>
+    </tr>
+    <tr>
+      <td>toshi-toshi</td>
+      <td>Toshi</td>
+      <td>TOSHI</td>
+      <td>129</td>
+      <td>1.573138e-03</td>
+      <td>661803318</td>
+      <td>2025-01-26T20:54:44Z</td>
+      <td>1.264109e-02</td>
+      <td>2024-07-29T13:33:20Z</td>
+      <td>-87.51</td>
+      <td>8.04</td>
+    </tr>
+    <tr>
+      <td>amp-amp</td>
+      <td>Amp</td>
+      <td>AMP</td>
+      <td>132</td>
+      <td>8.149518e-03</td>
+      <td>657850094</td>
+      <td>2025-01-26T20:54:27Z</td>
+      <td>1.215150e-01</td>
+      <td>2021-06-16T15:45:00Z</td>
+      <td>-93.40</td>
+      <td>14.91</td>
+    </tr>
+    <tr>
+      <td>hnt-helium</td>
+      <td>Helium</td>
+      <td>HNT</td>
+      <td>130</td>
+      <td>3.835054e+00</td>
+      <td>653769872</td>
+      <td>2025-01-26T20:54:28Z</td>
+      <td>5.471947e+01</td>
+      <td>2021-11-12T23:05:00Z</td>
+      <td>-92.99</td>
+      <td>14.27</td>
+    </tr>
+    <tr>
+      <td>frax-frax</td>
+      <td>Frax</td>
+      <td>FRAX</td>
+      <td>131</td>
+      <td>9.974291e-01</td>
+      <td>647763830</td>
+      <td>2025-01-26T20:54:29Z</td>
+      <td>1.050237e+00</td>
+      <td>2021-09-19T17:05:00Z</td>
+      <td>-5.01</td>
+      <td>1.05</td>
+    </tr>
+    <tr>
+      <td>sei-sei</td>
+      <td>Sei</td>
+      <td>SEI</td>
+      <td>133</td>
+      <td>3.564171e-01</td>
+      <td>641550795</td>
+      <td>2025-01-26T20:54:42Z</td>
+      <td>1.468191e+00</td>
+      <td>2023-08-15T12:00:00Z</td>
+      <td>-75.67</td>
+      <td>4.12</td>
+    </tr>
+    <tr>
+      <td>tel-telcoin</td>
+      <td>Telcoin</td>
+      <td>TEL</td>
+      <td>135</td>
+      <td>6.893334e-03</td>
+      <td>631770066</td>
+      <td>2025-01-26T20:54:27Z</td>
+      <td>6.472968e-02</td>
+      <td>2021-05-11T00:20:00Z</td>
+      <td>-89.36</td>
+      <td>9.39</td>
+    </tr>
+    <tr>
+      <td>pendle-pendle</td>
+      <td>Pendle</td>
+      <td>PENDLE</td>
+      <td>134</td>
+      <td>3.855557e+00</td>
+      <td>631598266</td>
+      <td>2025-01-26T20:54:28Z</td>
+      <td>7.520911e+00</td>
+      <td>2024-04-11T08:28:06Z</td>
+      <td>-48.68</td>
+      <td>1.95</td>
+    </tr>
+    <tr>
+      <td>ron-ronin-token</td>
+      <td>Ronin Token</td>
+      <td>RON</td>
+      <td>136</td>
+      <td>1.641030e+00</td>
+      <td>625789256</td>
+      <td>2025-01-26T20:54:36Z</td>
+      <td>4.464230e+00</td>
+      <td>2024-03-13T05:37:13Z</td>
+      <td>-63.20</td>
+      <td>2.72</td>
+    </tr>
+    <tr>
+      <td>mina-mina-protocol</td>
+      <td>Mina Protocol</td>
+      <td>MINA</td>
+      <td>137</td>
+      <td>5.049746e-01</td>
+      <td>611353566</td>
+      <td>2025-01-26T20:54:29Z</td>
+      <td>6.456490e+00</td>
+      <td>2021-09-14T10:15:00Z</td>
+      <td>-92.17</td>
+      <td>12.79</td>
+    </tr>
+    <tr>
+      <td>ape-apecoin</td>
+      <td>ApeCoin</td>
+      <td>APE</td>
+      <td>138</td>
+      <td>1.008992e+00</td>
+      <td>610334940</td>
+      <td>2025-01-26T20:54:38Z</td>
+      <td>2.683731e+01</td>
+      <td>2022-04-28T21:40:00Z</td>
+      <td>-96.23</td>
+      <td>26.60</td>
+    </tr>
+    <tr>
+      <td>cbeth-coinbase-wrapped-staked-eth</td>
+      <td>Coinbase Wrapped Staked ETH</td>
+      <td>CBETH</td>
+      <td>139</td>
+      <td>3.621096e+03</td>
+      <td>605841912</td>
+      <td>2025-01-26T20:54:38Z</td>
+      <td>4.442840e+03</td>
+      <td>2024-12-16T18:54:20Z</td>
+      <td>-18.50</td>
+      <td>1.23</td>
+    </tr>
+    <tr>
+      <td>cake-pancakeswap</td>
+      <td>PancakeSwap</td>
+      <td>CAKE</td>
+      <td>140</td>
+      <td>2.078100e+00</td>
+      <td>603082720</td>
+      <td>2025-01-26T20:54:28Z</td>
+      <td>4.414143e+01</td>
+      <td>2021-04-30T10:05:00Z</td>
+      <td>-95.29</td>
+      <td>21.24</td>
+    </tr>
+    <tr>
+      <td>gno-gnosis</td>
+      <td>Gnosis</td>
+      <td>GNO</td>
+      <td>141</td>
+      <td>2.303499e+02</td>
+      <td>596511412</td>
+      <td>2025-01-26T20:54:27Z</td>
+      <td>6.566021e+02</td>
+      <td>2021-11-08T18:00:00Z</td>
+      <td>-64.93</td>
+      <td>2.85</td>
+    </tr>
+    <tr>
+      <td>giga-gigachad</td>
+      <td>Gigachad</td>
+      <td>GIGA</td>
+      <td>142</td>
+      <td>6.134977e-02</td>
+      <td>589211550</td>
+      <td>2025-01-26T20:54:45Z</td>
+      <td>9.528304e-02</td>
+      <td>2025-01-03T14:50:06Z</td>
+      <td>-35.61</td>
+      <td>1.55</td>
+    </tr>
+    <tr>
+      <td>ebtc-etherfi-staked-btc</td>
+      <td>Ether.fi Staked BTC</td>
+      <td>EBTC</td>
+      <td>143</td>
+      <td>1.049288e+05</td>
+      <td>587916070</td>
+      <td>2025-01-26T20:54:46Z</td>
+      <td>1.086243e+05</td>
+      <td>2025-01-20T09:11:03Z</td>
+      <td>-3.34</td>
+      <td>1.04</td>
+    </tr>
+    <tr>
+      <td>deep-deepbook-protocol</td>
+      <td>DeepBook Protocol</td>
+      <td>DEEP</td>
+      <td>144</td>
+      <td>2.339817e-01</td>
+      <td>584954243</td>
+      <td>2025-01-26T20:54:46Z</td>
+      <td>3.425330e-01</td>
+      <td>2025-01-18T20:23:03Z</td>
+      <td>-31.61</td>
+      <td>1.46</td>
+    </tr>
+    <tr>
+      <td>zk-zksync</td>
+      <td>zkSync</td>
+      <td>ZK</td>
+      <td>145</td>
+      <td>1.549465e-01</td>
+      <td>569428444</td>
+      <td>2025-01-26T20:54:46Z</td>
+      <td>1.122667e+00</td>
+      <td>2024-06-13T08:04:07Z</td>
+      <td>-86.17</td>
+      <td>7.25</td>
+    </tr>
+    <tr>
+      <td>luna-terra</td>
+      <td>Terra Classic</td>
+      <td>LUNC</td>
+      <td>146</td>
+      <td>8.168753e-05</td>
+      <td>554608401</td>
+      <td>2025-01-26T20:54:28Z</td>
+      <td>1.194179e+02</td>
+      <td>2022-04-05T11:45:00Z</td>
+      <td>-100.00</td>
+      <td>1461886.92</td>
+    </tr>
+    <tr>
+      <td>paxg-pax-gold</td>
+      <td>PAX Gold</td>
+      <td>PAXG</td>
+      <td>147</td>
+      <td>2.771081e+03</td>
+      <td>546418403</td>
+      <td>2025-01-26T20:54:28Z</td>
+      <td>1.922787e+05</td>
+      <td>2019-10-04T03:10:00Z</td>
+      <td>-98.56</td>
+      <td>69.39</td>
+    </tr>
+    <tr>
+      <td>prime-echelon-prime</td>
+      <td>Echelon Prime</td>
+      <td>PRIME</td>
+      <td>148</td>
+      <td>1.025279e+01</td>
+      <td>542869079</td>
+      <td>2025-01-26T20:54:39Z</td>
+      <td>2.805636e+01</td>
+      <td>2024-03-21T11:28:08Z</td>
+      <td>-63.45</td>
+      <td>2.74</td>
+    </tr>
+    <tr>
+      <td>mog-mog-coin</td>
+      <td>Mog Coin</td>
+      <td>MOG</td>
+      <td>149</td>
+      <td>1.378358e-06</td>
+      <td>538345382</td>
+      <td>2025-01-26T20:54:43Z</td>
+      <td>4.012813e-06</td>
+      <td>2024-12-07T03:03:20Z</td>
+      <td>-65.57</td>
+      <td>2.91</td>
+    </tr>
+    <tr>
+      <td>ico-axelar</td>
+      <td>Axelar</td>
+      <td>AXL</td>
+      <td>150</td>
+      <td>6.320402e-01</td>
+      <td>536558784</td>
+      <td>2025-01-26T20:54:28Z</td>
+      <td>2.679291e+00</td>
+      <td>2024-03-03T07:22:12Z</td>
+      <td>-76.37</td>
+      <td>4.24</td>
+    </tr>
+    <tr>
+      <td>snx-synthetix-network-token</td>
+      <td>Synthetix Network Token</td>
+      <td>SNX</td>
+      <td>151</td>
+      <td>1.621588e+00</td>
+      <td>531506599</td>
+      <td>2025-01-26T20:54:27Z</td>
+      <td>2.886225e+01</td>
+      <td>2021-02-14T01:10:00Z</td>
+      <td>-94.38</td>
+      <td>17.80</td>
+    </tr>
+    <tr>
+      <td>not-notcoin</td>
+      <td>Notcoin</td>
+      <td>NOT</td>
+      <td>152</td>
+      <td>5.133062e-03</td>
+      <td>527170803</td>
+      <td>2025-01-26T20:54:46Z</td>
+      <td>2.880778e-02</td>
+      <td>2024-06-02T18:01:07Z</td>
+      <td>-82.16</td>
+      <td>5.61</td>
+    </tr>
+    <tr>
+      <td>bdx-beldex</td>
+      <td>Beldex</td>
+      <td>BDX</td>
+      <td>153</td>
+      <td>7.845707e-02</td>
+      <td>524223969</td>
+      <td>2025-01-26T20:54:28Z</td>
+      <td>8.483341e+00</td>
+      <td>2022-05-16T05:15:00Z</td>
+      <td>-99.07</td>
+      <td>108.13</td>
+    </tr>
+    <tr>
+      <td>aixbt-aixbt-by-virtuals</td>
+      <td>aixbt by Virtuals</td>
+      <td>AIXBT</td>
+      <td>154</td>
+      <td>6.104298e-01</td>
+      <td>522291486</td>
+      <td>2025-01-26T20:54:47Z</td>
+      <td>9.503463e-01</td>
+      <td>2025-01-15T20:17:03Z</td>
+      <td>-35.68</td>
+      <td>1.56</td>
+    </tr>
+    <tr>
+      <td>snek-snek-crd</td>
+      <td>SNEK</td>
+      <td>SNEK</td>
+      <td>155</td>
+      <td>6.838064e-03</td>
+      <td>508688540</td>
+      <td>2025-01-26T20:54:44Z</td>
+      <td>9.349939e-03</td>
+      <td>2024-12-03T02:45:21Z</td>
+      <td>-26.61</td>
+      <td>1.37</td>
+    </tr>
+    <tr>
+      <td>dydx-dydx-chain</td>
+      <td>DYDX Chain</td>
+      <td>DYDX</td>
+      <td>156</td>
+      <td>1.177428e+00</td>
+      <td>501578644</td>
+      <td>2025-01-26T20:54:45Z</td>
+      <td>4.156573e+00</td>
+      <td>2024-03-13T02:01:12Z</td>
+      <td>-71.63</td>
+      <td>3.53</td>
+    </tr>
+    <tr>
+      <td>nft-apenft</td>
+      <td>APENFT</td>
+      <td>NFT</td>
+      <td>157</td>
+      <td>5.015483e-07</td>
+      <td>501543238</td>
+      <td>2025-01-26T20:54:29Z</td>
+      <td>7.620904e-06</td>
+      <td>2021-09-05T00:10:00Z</td>
+      <td>-93.42</td>
+      <td>15.19</td>
+    </tr>
+    <tr>
+      <td>kava-kava</td>
+      <td>Kava</td>
+      <td>KAVA</td>
+      <td>158</td>
+      <td>4.586210e-01</td>
+      <td>496619458</td>
+      <td>2025-01-26T20:54:28Z</td>
+      <td>9.170190e+00</td>
+      <td>2021-08-30T11:05:00Z</td>
+      <td>-95.00</td>
+      <td>20.00</td>
+    </tr>
+    <tr>
+      <td>tusd-trueusd</td>
+      <td>TrueUSD</td>
+      <td>TUSD</td>
+      <td>159</td>
+      <td>9.985592e-01</td>
+      <td>494887511</td>
+      <td>2025-01-26T20:54:27Z</td>
+      <td>1.364490e+00</td>
+      <td>2018-05-16T10:29:00Z</td>
+      <td>-26.79</td>
+      <td>1.37</td>
+    </tr>
+    <tr>
+      <td>ant-aragon</td>
+      <td>Aragon</td>
+      <td>ANT</td>
+      <td>160</td>
+      <td>1.129320e+01</td>
+      <td>487779233</td>
+      <td>2025-01-26T20:54:27Z</td>
+      <td>1.505232e+01</td>
+      <td>2021-04-06T09:30:00Z</td>
+      <td>-24.97</td>
+      <td>1.33</td>
+    </tr>
+    <tr>
+      <td>lbtc-lombard-staked-btc</td>
+      <td>Lombard Staked BTC</td>
+      <td>LBTC</td>
+      <td>161</td>
+      <td>1.050511e+05</td>
+      <td>483340105</td>
+      <td>2025-01-26T20:54:46Z</td>
+      <td>1.088233e+05</td>
+      <td>2025-01-20T09:11:03Z</td>
+      <td>-3.41</td>
+      <td>1.04</td>
+    </tr>
+    <tr>
+      <td>super-superfarm</td>
+      <td>SuperVerse</td>
+      <td>SUPER</td>
+      <td>162</td>
+      <td>9.885669e-01</td>
+      <td>482397006</td>
+      <td>2025-01-26T20:54:29Z</td>
+      <td>2.264341e+00</td>
+      <td>2024-12-12T13:00:20Z</td>
+      <td>-56.28</td>
+      <td>2.29</td>
+    </tr>
+    <tr>
+      <td>pyth-pyth-network</td>
+      <td>Pyth Network</td>
+      <td>PYTH</td>
+      <td>163</td>
+      <td>3.194993e-01</td>
+      <td>479249008</td>
+      <td>2025-01-26T20:54:43Z</td>
+      <td>1.150936e+00</td>
+      <td>2024-03-16T06:58:08Z</td>
+      <td>-72.20</td>
+      <td>3.60</td>
+    </tr>
+    <tr>
+      <td>btcb-bitcoin-avalanche-bridged-btcb</td>
+      <td>Bitcoin Avalanche Bridged (BTC.b)</td>
+      <td>BTC.B</td>
+      <td>164</td>
+      <td>1.050831e+05</td>
+      <td>475816311</td>
+      <td>2025-01-26T20:54:38Z</td>
+      <td>3.118901e+05</td>
+      <td>2024-11-05T11:21:21Z</td>
+      <td>-66.30</td>
+      <td>2.97</td>
+    </tr>
+    <tr>
+      <td>cheelee-cheelee</td>
+      <td>Cheelee</td>
+      <td>CHEEL</td>
+      <td>165</td>
+      <td>8.076738e+00</td>
+      <td>458755355</td>
+      <td>2025-01-26T20:54:39Z</td>
+      <td>2.245181e+01</td>
+      <td>2024-07-22T19:24:21Z</td>
+      <td>-64.02</td>
+      <td>2.78</td>
+    </tr>
+    <tr>
+      <td>safe-safe</td>
+      <td>Safe</td>
+      <td>SAFE</td>
+      <td>166</td>
+      <td>8.538324e-01</td>
+      <td>450327525</td>
+      <td>2025-01-26T20:54:45Z</td>
+      <td>3.063622e+00</td>
+      <td>2024-04-23T10:52:07Z</td>
+      <td>-72.10</td>
+      <td>3.59</td>
+    </tr>
+    <tr>
+      <td>vtho-vethor-token</td>
+      <td>VeThor Token</td>
+      <td>VTHO</td>
+      <td>167</td>
+      <td>5.368039e-03</td>
+      <td>445728341</td>
+      <td>2025-01-26T20:54:27Z</td>
+      <td>3.072539e+00</td>
+      <td>2018-08-03T14:20:00Z</td>
+      <td>-99.82</td>
+      <td>572.38</td>
+    </tr>
+    <tr>
+      <td>twt-trust-wallet-token</td>
+      <td>Trust Wallet Token</td>
+      <td>TWT</td>
+      <td>168</td>
+      <td>1.066559e+00</td>
+      <td>444381807</td>
+      <td>2025-01-26T20:54:30Z</td>
+      <td>2.739245e+00</td>
+      <td>2022-11-14T15:45:00Z</td>
+      <td>-61.04</td>
+      <td>2.57</td>
+    </tr>
+    <tr>
+      <td>blur-blur</td>
+      <td>Blur</td>
+      <td>BLUR</td>
+      <td>169</td>
+      <td>2.050345e-01</td>
+      <td>443837655</td>
+      <td>2025-01-26T20:54:39Z</td>
+      <td>1.379536e+00</td>
+      <td>2023-02-19T06:37:51Z</td>
+      <td>-85.11</td>
+      <td>6.73</td>
+    </tr>
+    <tr>
+      <td>rose-oasis-network</td>
+      <td>Oasis Network</td>
+      <td>ROSE</td>
+      <td>170</td>
+      <td>6.592694e-02</td>
+      <td>443674830</td>
+      <td>2025-01-26T20:54:28Z</td>
+      <td>5.983430e-01</td>
+      <td>2022-01-15T03:30:00Z</td>
+      <td>-88.96</td>
+      <td>9.08</td>
+    </tr>
+    <tr>
+      <td>ksm-kusama</td>
+      <td>Kusama</td>
+      <td>KSM</td>
+      <td>171</td>
+      <td>2.814132e+01</td>
+      <td>442998428</td>
+      <td>2025-01-26T20:54:28Z</td>
+      <td>6.217548e+02</td>
+      <td>2021-05-18T05:00:00Z</td>
+      <td>-95.47</td>
+      <td>22.09</td>
+    </tr>
+    <tr>
+      <td>tfuel-theta-fuel</td>
+      <td>Theta Fuel</td>
+      <td>TFUEL</td>
+      <td>172</td>
+      <td>6.483287e-02</td>
+      <td>442397570</td>
+      <td>2025-01-26T20:54:28Z</td>
+      <td>6.845000e-01</td>
+      <td>2021-06-09T06:46:15Z</td>
+      <td>-90.52</td>
+      <td>10.56</td>
+    </tr>
+    <tr>
+      <td>zro-layerzero</td>
+      <td>LayerZero</td>
+      <td>ZRO</td>
+      <td>173</td>
+      <td>3.904499e+00</td>
+      <td>433996224</td>
+      <td>2025-01-26T20:54:43Z</td>
+      <td>7.505969e+00</td>
+      <td>2024-12-06T14:12:22Z</td>
+      <td>-47.92</td>
+      <td>1.92</td>
+    </tr>
+    <tr>
+      <td>popcat-popcat</td>
+      <td>Popcat</td>
+      <td>POPCAT</td>
+      <td>174</td>
+      <td>4.412374e-01</td>
+      <td>432403249</td>
+      <td>2025-01-26T20:54:45Z</td>
+      <td>2.066016e+00</td>
+      <td>2024-11-17T15:45:20Z</td>
+      <td>-78.58</td>
+      <td>4.68</td>
+    </tr>
+    <tr>
+      <td>lpt-livepeer</td>
+      <td>Livepeer</td>
+      <td>LPT</td>
+      <td>176</td>
+      <td>1.199232e+01</td>
+      <td>431267772</td>
+      <td>2025-01-26T20:54:28Z</td>
+      <td>9.995288e+01</td>
+      <td>2021-11-09T16:55:00Z</td>
+      <td>-87.99</td>
+      <td>8.33</td>
+    </tr>
+    <tr>
+      <td>ordi-ordinals</td>
+      <td>Ordinals</td>
+      <td>ORDI</td>
+      <td>175</td>
+      <td>2.052727e+01</td>
+      <td>431072730</td>
+      <td>2025-01-26T20:54:42Z</td>
+      <td>9.635821e+01</td>
+      <td>2024-03-05T01:43:07Z</td>
+      <td>-78.66</td>
+      <td>4.69</td>
+    </tr>
+    <tr>
+      <td>dash-dash</td>
+      <td>Dash</td>
+      <td>DASH</td>
+      <td>177</td>
+      <td>3.496574e+01</td>
+      <td>423900508</td>
+      <td>2025-01-26T20:54:27Z</td>
+      <td>1.642220e+03</td>
+      <td>2017-12-20T14:59:00Z</td>
+      <td>-97.87</td>
+      <td>46.97</td>
+    </tr>
+    <tr>
+      <td>ckb-nervos-network</td>
+      <td>Nervos Network</td>
+      <td>CKB</td>
+      <td>178</td>
+      <td>9.353283e-03</td>
+      <td>421597370</td>
+      <td>2025-01-26T20:54:28Z</td>
+      <td>4.404110e-02</td>
+      <td>2021-03-31T18:50:00Z</td>
+      <td>-78.72</td>
+      <td>4.71</td>
+    </tr>
+    <tr>
+      <td>turbo-turbo</td>
+      <td>Turbo</td>
+      <td>TURBO</td>
+      <td>179</td>
+      <td>6.053852e-03</td>
+      <td>417715813</td>
+      <td>2025-01-26T20:54:42Z</td>
+      <td>1.430687e-02</td>
+      <td>2024-12-11T21:54:21Z</td>
+      <td>-57.68</td>
+      <td>2.36</td>
+    </tr>
+    <tr>
+      <td>w-wormhole</td>
+      <td>Wormhole</td>
+      <td>W</td>
+      <td>180</td>
+      <td>2.299536e-01</td>
+      <td>413916408</td>
+      <td>2025-01-26T20:54:45Z</td>
+      <td>1.612379e+00</td>
+      <td>2024-04-03T17:31:09Z</td>
+      <td>-85.72</td>
+      <td>7.01</td>
+    </tr>
+    <tr>
+      <td>1inch-1inch</td>
+      <td>1INCH</td>
+      <td>1INCH</td>
+      <td>181</td>
+      <td>3.217618e-01</td>
+      <td>411464135</td>
+      <td>2025-01-26T20:54:28Z</td>
+      <td>8.384676e+00</td>
+      <td>2021-10-27T08:10:00Z</td>
+      <td>-96.16</td>
+      <td>26.06</td>
+    </tr>
+    <tr>
+      <td>melania-melania-meme</td>
+      <td>Melania Meme</td>
+      <td>MELANIA</td>
+      <td>182</td>
+      <td>2.517537e+00</td>
+      <td>408377218</td>
+      <td>2025-01-26T20:54:47Z</td>
+      <td>1.351170e+01</td>
+      <td>2025-01-20T07:02:05Z</td>
+      <td>-81.33</td>
+      <td>5.37</td>
+    </tr>
+    <tr>
+      <td>ctc-creditcoin</td>
+      <td>Creditcoin</td>
+      <td>CTC</td>
+      <td>183</td>
+      <td>1.022098e+00</td>
+      <td>405859666</td>
+      <td>2025-01-26T20:54:29Z</td>
+      <td>5.058532e+00</td>
+      <td>2021-08-27T15:55:00Z</td>
+      <td>-79.79</td>
+      <td>4.95</td>
+    </tr>
+    <tr>
+      <td>astr-astar</td>
+      <td>Astar</td>
+      <td>ASTR</td>
+      <td>184</td>
+      <td>5.367326e-02</td>
+      <td>401968865</td>
+      <td>2025-01-26T20:54:31Z</td>
+      <td>1.989509e-01</td>
+      <td>2024-01-21T04:16:59Z</td>
+      <td>-72.99</td>
+      <td>3.71</td>
+    </tr>
+    <tr>
+      <td>wpls-wrapped-pulse</td>
+      <td>Wrapped Pulse</td>
+      <td>WPLS</td>
+      <td>185</td>
+      <td>5.531172e-05</td>
+      <td>401292269</td>
+      <td>2025-01-26T20:54:42Z</td>
+      <td>3.034585e-04</td>
+      <td>2023-05-22T10:10:57Z</td>
+      <td>-81.77</td>
+      <td>5.49</td>
+    </tr>
+    <tr>
+      <td>griffain-test-griffaincom</td>
+      <td>Griffain</td>
+      <td>GRIFFAIN</td>
+      <td>186</td>
+      <td>3.963101e-01</td>
+      <td>396262991</td>
+      <td>2025-01-26T20:54:47Z</td>
+      <td>6.323460e-01</td>
+      <td>2025-01-22T03:32:05Z</td>
+      <td>-37.23</td>
+      <td>1.60</td>
+    </tr>
+    <tr>
+      <td>hot-holo</td>
+      <td>Holo</td>
+      <td>HOT</td>
+      <td>187</td>
+      <td>2.237728e-03</td>
+      <td>389491665</td>
+      <td>2025-01-26T20:54:27Z</td>
+      <td>3.109212e-02</td>
+      <td>2021-04-05T15:45:00Z</td>
+      <td>-92.79</td>
+      <td>13.89</td>
+    </tr>
+    <tr>
+      <td>-doggotothemoon</td>
+      <td>DOG•GO•TO•THE•MOON</td>
+      <td>DOG</td>
+      <td>188</td>
+      <td>3.890712e-03</td>
+      <td>389071201</td>
+      <td>2025-01-26T20:54:46Z</td>
+      <td>9.965039e-03</td>
+      <td>2024-12-11T16:09:22Z</td>
+      <td>-60.93</td>
+      <td>2.56</td>
+    </tr>
+    <tr>
+      <td>vader-vader</td>
+      <td>Vader</td>
+      <td>VADER</td>
+      <td>189</td>
+      <td>6.282221e-02</td>
+      <td>383565069</td>
+      <td>2025-01-26T20:54:32Z</td>
+      <td>1.233081e-01</td>
+      <td>2025-01-15T20:17:03Z</td>
+      <td>-49.03</td>
+      <td>1.96</td>
+    </tr>
+    <tr>
+      <td>zrx-0x</td>
+      <td>0x</td>
+      <td>ZRX</td>
+      <td>190</td>
+      <td>4.516127e-01</td>
+      <td>383146697</td>
+      <td>2025-01-26T20:54:27Z</td>
+      <td>2.531410e+00</td>
+      <td>2018-01-09T17:04:00Z</td>
+      <td>-82.15</td>
+      <td>5.61</td>
+    </tr>
+    <tr>
+      <td>morpho-morpho</td>
+      <td>Morpho</td>
+      <td>MORPHO</td>
+      <td>192</td>
+      <td>3.091890e+00</td>
+      <td>382665465</td>
+      <td>2025-01-26T20:54:42Z</td>
+      <td>4.177247e+00</td>
+      <td>2025-01-17T12:47:03Z</td>
+      <td>-25.93</td>
+      <td>1.35</td>
+    </tr>
+    <tr>
+      <td>zil-zilliqa</td>
+      <td>Zilliqa</td>
+      <td>ZIL</td>
+      <td>191</td>
+      <td>1.994040e-02</td>
+      <td>382461972</td>
+      <td>2025-01-26T20:54:27Z</td>
+      <td>2.380712e-02</td>
+      <td>2025-01-18T00:29:03Z</td>
+      <td>-16.13</td>
+      <td>1.19</td>
+    </tr>
+    <tr>
+      <td>jst-just</td>
+      <td>JUST</td>
+      <td>JST</td>
+      <td>193</td>
+      <td>3.837147e-02</td>
+      <td>379877600</td>
+      <td>2025-01-26T20:54:28Z</td>
+      <td>1.920592e-01</td>
+      <td>2021-04-05T04:10:00Z</td>
+      <td>-80.02</td>
+      <td>5.01</td>
+    </tr>
+    <tr>
+      <td>mx-mx-token</td>
+      <td>MX Token</td>
+      <td>MX</td>
+      <td>194</td>
+      <td>3.917670e+00</td>
+      <td>379159321</td>
+      <td>2025-01-26T20:54:28Z</td>
+      <td>6.182100e+02</td>
+      <td>2021-01-13T13:30:00Z</td>
+      <td>-99.37</td>
+      <td>157.80</td>
+    </tr>
+    <tr>
+      <td>vine-vine-coin</td>
+      <td>Vine Coin</td>
+      <td>VINE</td>
+      <td>195</td>
+      <td>3.736767e-01</td>
+      <td>373674471</td>
+      <td>2025-01-26T20:54:47Z</td>
+      <td>4.697766e-01</td>
+      <td>2025-01-26T10:02:04Z</td>
+      <td>-20.38</td>
+      <td>1.26</td>
+    </tr>
+    <tr>
+      <td>vrsc-verus-coin</td>
+      <td>Verus</td>
+      <td>VRSC</td>
+      <td>196</td>
+      <td>4.753307e+00</td>
+      <td>372318335</td>
+      <td>2025-01-26T20:54:27Z</td>
+      <td>6.640060e+00</td>
+      <td>2024-12-05T10:42:23Z</td>
+      <td>-28.45</td>
+      <td>1.40</td>
+    </tr>
+    <tr>
+      <td>mwc-mimblewimblecoin</td>
+      <td>Mimble Wimble Coin</td>
+      <td>MWC</td>
+      <td>197</td>
+      <td>3.357849e+01</td>
+      <td>368465597</td>
+      <td>2025-01-26T20:54:28Z</td>
+      <td>3.363047e+01</td>
+      <td>2025-01-26T04:32:04Z</td>
+      <td>-0.09</td>
+      <td>1.00</td>
+    </tr>
+    <tr>
+      <td>fai-freysa</td>
+      <td>Freysa</td>
+      <td>FAI</td>
+      <td>198</td>
+      <td>4.455689e-02</td>
+      <td>364907582</td>
+      <td>2025-01-26T20:54:46Z</td>
+      <td>8.008669e-02</td>
+      <td>2025-01-06T16:32:05Z</td>
+      <td>-44.33</td>
+      <td>1.80</td>
+    </tr>
+    <tr>
+      <td>akuma-akuma-inu</td>
+      <td>Akuma Inu</td>
+      <td>AKUMA</td>
+      <td>199</td>
+      <td>5.325593e-04</td>
+      <td>355039564</td>
+      <td>2025-01-26T20:54:46Z</td>
+      <td>1.348380e-03</td>
+      <td>2025-01-10T18:53:03Z</td>
+      <td>-60.48</td>
+      <td>2.53</td>
+    </tr>
+    <tr>
+      <td>dydx-dydx</td>
+      <td>DYDX (ETH)</td>
+      <td>DYDX</td>
+      <td>200</td>
+      <td>1.176822e+00</td>
+      <td>353965331</td>
+      <td>2025-01-26T20:54:30Z</td>
+      <td>1.482516e+01</td>
+      <td>2021-12-02T03:35:00Z</td>
+      <td>-92.05</td>
+      <td>12.60</td>
+    </tr>
+    <tr>
+      <td>bat-basic-attention-token</td>
+      <td>Basic Attention Token</td>
+      <td>BAT</td>
+      <td>201</td>
+      <td>2.363705e-01</td>
+      <td>353529482</td>
+      <td>2025-01-26T20:54:27Z</td>
+      <td>1.913276e+00</td>
+      <td>2021-11-28T00:20:00Z</td>
+      <td>-87.68</td>
+      <td>8.09</td>
+    </tr>
+    <tr>
+      <td>glm-golem</td>
+      <td>Golem</td>
+      <td>GLM</td>
+      <td>202</td>
+      <td>3.446735e-01</td>
+      <td>344673477</td>
+      <td>2025-01-26T20:54:27Z</td>
+      <td>1.253530e+00</td>
+      <td>2018-01-08T08:24:00Z</td>
+      <td>-72.48</td>
+      <td>3.64</td>
+    </tr>
+    <tr>
+      <td>cvx-convex-finance</td>
+      <td>Convex Finance</td>
+      <td>CVX</td>
+      <td>203</td>
+      <td>3.540456e+00</td>
+      <td>341208605</td>
+      <td>2025-01-26T20:54:29Z</td>
+      <td>6.050552e+01</td>
+      <td>2022-01-01T18:10:00Z</td>
+      <td>-94.14</td>
+      <td>17.09</td>
+    </tr>
+    <tr>
+      <td>chsb-swissborg</td>
+      <td>SwissBorg</td>
+      <td>BORG</td>
+      <td>204</td>
+      <td>3.423398e-01</td>
+      <td>336769848</td>
+      <td>2025-01-26T20:54:27Z</td>
+      <td>1.642344e+00</td>
+      <td>2021-05-04T17:15:00Z</td>
+      <td>-79.15</td>
+      <td>4.80</td>
+    </tr>
+    <tr>
+      <td>hex-hex</td>
+      <td>eHEX (Ethereum)</td>
+      <td>EHEX</td>
+      <td>205</td>
+      <td>3.330698e-03</td>
+      <td>335754506</td>
+      <td>2025-01-26T20:54:28Z</td>
+      <td>5.110646e-01</td>
+      <td>2021-09-19T06:35:00Z</td>
+      <td>-99.35</td>
+      <td>153.44</td>
+    </tr>
+    <tr>
+      <td>iotx-iotex</td>
+      <td>IoTeX</td>
+      <td>IOTX</td>
+      <td>206</td>
+      <td>3.461702e-02</td>
+      <td>326832030</td>
+      <td>2025-01-26T20:54:27Z</td>
+      <td>2.930535e-01</td>
+      <td>2021-11-04T15:55:00Z</td>
+      <td>-88.18</td>
+      <td>8.47</td>
+    </tr>
+    <tr>
+      <td>woo-wootrade</td>
+      <td>WOO</td>
+      <td>WOO</td>
+      <td>207</td>
+      <td>1.763068e-01</td>
+      <td>325085272</td>
+      <td>2025-01-26T20:54:28Z</td>
+      <td>1.773629e+00</td>
+      <td>2021-11-15T13:35:00Z</td>
+      <td>-90.05</td>
+      <td>10.06</td>
+    </tr>
+    <tr>
+      <td>babydoge-baby-doge-coin</td>
+      <td>Baby Doge Coin</td>
+      <td>BABYDOGE</td>
+      <td>208</td>
+      <td>2.244144e-09</td>
+      <td>324359803</td>
+      <td>2025-01-26T20:54:29Z</td>
+      <td>1.891070e-08</td>
+      <td>2021-07-04T16:40:00Z</td>
+      <td>-88.11</td>
+      <td>8.43</td>
+    </tr>
+    <tr>
+      <td>bio-bio-protocol</td>
+      <td>BIO Protocol</td>
+      <td>BIO</td>
+      <td>209</td>
+      <td>2.499130e-01</td>
+      <td>324019488</td>
+      <td>2025-01-26T20:54:47Z</td>
+      <td>8.948017e-01</td>
+      <td>2025-01-03T13:14:06Z</td>
+      <td>-72.07</td>
+      <td>3.58</td>
+    </tr>
+    <tr>
+      <td>ocean-ocean-protocol</td>
+      <td>Ocean Protocol</td>
+      <td>OCEAN</td>
+      <td>211</td>
+      <td>5.256207e-01</td>
+      <td>318838455</td>
+      <td>2025-01-26T20:54:28Z</td>
+      <td>1.940724e+00</td>
+      <td>2021-04-10T09:25:00Z</td>
+      <td>-72.91</td>
+      <td>3.69</td>
+    </tr>
+    <tr>
+      <td>celo-celo</td>
+      <td>Celo</td>
+      <td>CELO</td>
+      <td>210</td>
+      <td>5.756669e-01</td>
+      <td>318823547</td>
+      <td>2025-01-26T20:54:28Z</td>
+      <td>1.002158e+01</td>
+      <td>2021-08-30T14:25:00Z</td>
+      <td>-94.25</td>
+      <td>17.41</td>
+    </tr>
+    <tr>
+      <td>anime-animecoin</td>
+      <td>Animecoin</td>
+      <td>ANIME</td>
+      <td>212</td>
+      <td>5.725814e-02</td>
+      <td>317130183</td>
+      <td>2025-01-26T20:54:47Z</td>
+      <td>8.956529e-02</td>
+      <td>2025-01-23T22:53:03Z</td>
+      <td>-36.12</td>
+      <td>1.56</td>
+    </tr>
+    <tr>
+      <td>gas-gas</td>
+      <td>Gas</td>
+      <td>GAS</td>
+      <td>214</td>
+      <td>4.846016e+00</td>
+      <td>314953878</td>
+      <td>2025-01-26T20:54:27Z</td>
+      <td>9.749300e+01</td>
+      <td>2018-01-15T20:19:00Z</td>
+      <td>-95.03</td>
+      <td>20.12</td>
+    </tr>
+    <tr>
+      <td>pnut-peanut-the-squirrel</td>
+      <td>Peanut the Squirrel</td>
+      <td>PNUT</td>
+      <td>215</td>
+      <td>3.146055e-01</td>
+      <td>314561102</td>
+      <td>2025-01-26T20:54:46Z</td>
+      <td>2.388373e+00</td>
+      <td>2024-11-14T02:00:21Z</td>
+      <td>-86.81</td>
+      <td>7.59</td>
+    </tr>
+    <tr>
+      <td>arcsol-ai-rig-complex</td>
+      <td>AI Rig Complex</td>
+      <td>ARC</td>
+      <td>216</td>
+      <td>3.122963e-01</td>
+      <td>312295817</td>
+      <td>2025-01-26T20:54:47Z</td>
+      <td>6.334732e-01</td>
+      <td>2025-01-22T03:35:03Z</td>
+      <td>-50.70</td>
+      <td>2.03</td>
+    </tr>
+    <tr>
+      <td>sc-siacoin</td>
+      <td>Siacoin</td>
+      <td>SC</td>
+      <td>217</td>
+      <td>5.400767e-03</td>
+      <td>311842386</td>
+      <td>2025-01-26T20:54:27Z</td>
+      <td>8.325634e-03</td>
+      <td>2024-12-06T12:51:20Z</td>
+      <td>-35.09</td>
+      <td>1.54</td>
+    </tr>
+    <tr>
+      <td>skl-skale</td>
+      <td>SKALE</td>
+      <td>SKL</td>
+      <td>213</td>
+      <td>5.622450e-02</td>
+      <td>311421553</td>
+      <td>2025-01-26T20:54:28Z</td>
+      <td>1.230246e+00</td>
+      <td>2021-03-12T04:20:00Z</td>
+      <td>-95.37</td>
+      <td>21.88</td>
+    </tr>
+    <tr>
+      <td>sushi-sushi</td>
+      <td>Sushi</td>
+      <td>SUSHI</td>
+      <td>218</td>
+      <td>1.345521e+00</td>
+      <td>310388348</td>
+      <td>2025-01-26T20:54:28Z</td>
+      <td>2.335594e+01</td>
+      <td>2021-03-13T22:15:00Z</td>
+      <td>-94.23</td>
+      <td>17.36</td>
+    </tr>
+    <tr>
+      <td>zen-horizen</td>
+      <td>Horizen</td>
+      <td>ZEN</td>
+      <td>219</td>
+      <td>1.969421e+01</td>
+      <td>308589861</td>
+      <td>2025-01-26T20:54:27Z</td>
+      <td>1.677634e+02</td>
+      <td>2021-05-08T05:50:00Z</td>
+      <td>-88.25</td>
+      <td>8.52</td>
+    </tr>
+    <tr>
+      <td>vana-vana</td>
+      <td>Vana</td>
+      <td>VANA</td>
+      <td>220</td>
+      <td>9.944128e+00</td>
+      <td>306279134</td>
+      <td>2025-01-26T20:54:46Z</td>
+      <td>1.706131e+01</td>
+      <td>2025-01-07T13:32:05Z</td>
+      <td>-41.60</td>
+      <td>1.72</td>
+    </tr>
+    <tr>
+      <td>one-harmony</td>
+      <td>Harmony</td>
+      <td>ONE</td>
+      <td>221</td>
+      <td>2.129888e-02</td>
+      <td>304009800</td>
+      <td>2025-01-26T20:54:28Z</td>
+      <td>3.834035e-01</td>
+      <td>2021-10-26T09:20:00Z</td>
+      <td>-94.43</td>
+      <td>18.00</td>
+    </tr>
+    <tr>
+      <td>meme-memecoin</td>
+      <td>Memecoin</td>
+      <td>MEME</td>
+      <td>222</td>
+      <td>8.219669e-03</td>
+      <td>302435536</td>
+      <td>2025-01-26T20:54:44Z</td>
+      <td>5.702697e-02</td>
+      <td>2024-03-04T17:25:11Z</td>
+      <td>-85.57</td>
+      <td>6.94</td>
+    </tr>
+    <tr>
+      <td>io-ionet</td>
+      <td>io.net</td>
+      <td>IO</td>
+      <td>223</td>
+      <td>3.143129e+00</td>
+      <td>298597213</td>
+      <td>2025-01-26T20:54:46Z</td>
+      <td>6.441179e+00</td>
+      <td>2024-06-12T21:16:08Z</td>
+      <td>-51.16</td>
+      <td>2.05</td>
+    </tr>
+    <tr>
+      <td>qtum-qtum</td>
+      <td>Qtum</td>
+      <td>QTUM</td>
+      <td>224</td>
+      <td>2.988593e+00</td>
+      <td>298195321</td>
+      <td>2025-01-26T20:54:27Z</td>
+      <td>1.068760e+02</td>
+      <td>2018-01-07T02:24:00Z</td>
+      <td>-97.20</td>
+      <td>35.76</td>
+    </tr>
+    <tr>
+      <td>enj-enjin-coin</td>
+      <td>Enjin Coin</td>
+      <td>ENJ</td>
+      <td>225</td>
+      <td>1.656667e-01</td>
+      <td>297796728</td>
+      <td>2025-01-26T20:54:27Z</td>
+      <td>4.838832e+00</td>
+      <td>2021-11-25T09:40:00Z</td>
+      <td>-96.57</td>
+      <td>29.21</td>
+    </tr>
+    <tr>
+      <td>osmo-osmosis</td>
+      <td>Osmosis</td>
+      <td>OSMO</td>
+      <td>226</td>
+      <td>4.249488e-01</td>
+      <td>295287324</td>
+      <td>2025-01-26T20:54:29Z</td>
+      <td>3.220990e+00</td>
+      <td>2022-10-28T07:10:00Z</td>
+      <td>-86.81</td>
+      <td>7.58</td>
+    </tr>
+    <tr>
+      <td>pyusd-paypal-usd</td>
+      <td>PayPal USD</td>
+      <td>PYUSD</td>
+      <td>227</td>
+      <td>1.000393e+00</td>
+      <td>294310575</td>
+      <td>2025-01-26T20:54:43Z</td>
+      <td>1.012754e+00</td>
+      <td>2024-01-03T12:04:59Z</td>
+      <td>-1.22</td>
+      <td>1.01</td>
+    </tr>
+    <tr>
+      <td>trac-origintrail</td>
+      <td>OriginTrail</td>
+      <td>TRAC</td>
+      <td>229</td>
+      <td>7.247986e-01</td>
+      <td>292375680</td>
+      <td>2025-01-26T20:54:27Z</td>
+      <td>3.239841e+00</td>
+      <td>2021-11-03T18:20:00Z</td>
+      <td>-77.80</td>
+      <td>4.47</td>
+    </tr>
+    <tr>
+      <td>would-would</td>
+      <td>would</td>
+      <td>WOULD</td>
+      <td>228</td>
+      <td>2.920179e-01</td>
+      <td>291859289</td>
+      <td>2025-01-26T20:54:46Z</td>
+      <td>4.451246e-01</td>
+      <td>2024-12-31T20:24:22Z</td>
+      <td>-34.41</td>
+      <td>1.52</td>
+    </tr>
+    <tr>
+      <td>ethw-ethereum-pow</td>
+      <td>Ethereum PoW</td>
+      <td>ETHW</td>
+      <td>230</td>
+      <td>2.644712e+00</td>
+      <td>285150013</td>
+      <td>2025-01-26T20:54:38Z</td>
+      <td>6.650614e+01</td>
+      <td>2022-09-02T12:50:00Z</td>
+      <td>-96.02</td>
+      <td>25.15</td>
+    </tr>
+    <tr>
+      <td>elf-aelf</td>
+      <td>aelf</td>
+      <td>ELF</td>
+      <td>231</td>
+      <td>3.809492e-01</td>
+      <td>279611444</td>
+      <td>2025-01-26T20:54:27Z</td>
+      <td>2.765680e+00</td>
+      <td>2018-01-07T14:24:00Z</td>
+      <td>-86.22</td>
+      <td>7.26</td>
+    </tr>
+    <tr>
+      <td>gmt-stepn</td>
+      <td>GMT</td>
+      <td>GMT</td>
+      <td>232</td>
+      <td>1.054793e-01</td>
+      <td>277914160</td>
+      <td>2025-01-26T20:54:42Z</td>
+      <td>4.473656e-01</td>
+      <td>2024-01-07T19:53:01Z</td>
+      <td>-76.36</td>
+      <td>4.24</td>
+    </tr>
+    <tr>
+      <td>rvn-ravencoin</td>
+      <td>Ravencoin</td>
+      <td>RVN</td>
+      <td>233</td>
+      <td>1.904330e-02</td>
+      <td>276466700</td>
+      <td>2025-01-26T20:54:27Z</td>
+      <td>2.848946e-01</td>
+      <td>2021-02-20T10:30:00Z</td>
+      <td>-93.31</td>
+      <td>14.96</td>
+    </tr>
+    <tr>
+      <td>strk-starknet</td>
+      <td>Starknet</td>
+      <td>STRK</td>
+      <td>234</td>
+      <td>3.787648e-01</td>
+      <td>275740807</td>
+      <td>2025-01-26T20:54:45Z</td>
+      <td>3.589347e+00</td>
+      <td>2024-02-20T13:07:07Z</td>
+      <td>-89.43</td>
+      <td>9.48</td>
+    </tr>
+    <tr>
+      <td>me-magic-eden</td>
+      <td>Magic Eden</td>
+      <td>ME</td>
+      <td>235</td>
+      <td>2.052959e+00</td>
+      <td>268473770</td>
+      <td>2025-01-26T20:54:47Z</td>
+      <td>5.442494e+00</td>
+      <td>2024-12-11T14:42:23Z</td>
+      <td>-62.23</td>
+      <td>2.65</td>
+    </tr>
+    <tr>
+      <td>mrs-metars-genesis</td>
+      <td>Metars Genesis</td>
+      <td>MRS</td>
+      <td>236</td>
+      <td>3.166517e+00</td>
+      <td>266732536</td>
+      <td>2025-01-26T20:54:38Z</td>
+      <td>1.098798e+01</td>
+      <td>2024-12-13T03:12:21Z</td>
+      <td>-71.15</td>
+      <td>3.47</td>
+    </tr>
+    <tr>
+      <td>xch-chia-</td>
+      <td>Chia</td>
+      <td>XCH</td>
+      <td>237</td>
+      <td>1.912836e+01</td>
+      <td>265913334</td>
+      <td>2025-01-26T20:54:28Z</td>
+      <td>1.648557e+03</td>
+      <td>2021-05-15T01:00:00Z</td>
+      <td>-98.84</td>
+      <td>86.18</td>
+    </tr>
+    <tr>
+      <td>plume-plume</td>
+      <td>Plume</td>
+      <td>PLUME</td>
+      <td>239</td>
+      <td>1.291765e-01</td>
+      <td>258352900</td>
+      <td>2025-01-26T20:54:47Z</td>
+      <td>2.115079e-01</td>
+      <td>2025-01-22T01:11:03Z</td>
+      <td>-39.17</td>
+      <td>1.64</td>
+    </tr>
+    <tr>
+      <td>kda-kadena</td>
+      <td>Kadena</td>
+      <td>KDA</td>
+      <td>238</td>
+      <td>8.694179e-01</td>
+      <td>258227748</td>
+      <td>2025-01-26T20:54:28Z</td>
+      <td>3.222358e+01</td>
+      <td>2022-04-14T00:05:00Z</td>
+      <td>-97.30</td>
+      <td>37.06</td>
+    </tr>
+    <tr>
+      <td>tribe-tribe</td>
+      <td>Tribe</td>
+      <td>TRIBE</td>
+      <td>240</td>
+      <td>4.684347e-01</td>
+      <td>254236147</td>
+      <td>2025-01-26T20:54:30Z</td>
+      <td>2.624719e+00</td>
+      <td>2024-09-20T04:15:21Z</td>
+      <td>-82.14</td>
+      <td>5.60</td>
+    </tr>
+    <tr>
+      <td>wbeth-wrapped-beacon-eth</td>
+      <td>Wrapped Beacon ETH</td>
+      <td>WBETH</td>
+      <td>242</td>
+      <td>3.530403e+03</td>
+      <td>252709807</td>
+      <td>2025-01-26T20:54:42Z</td>
+      <td>4.332492e+03</td>
+      <td>2024-12-16T18:54:20Z</td>
+      <td>-18.45</td>
+      <td>1.23</td>
+    </tr>
+    <tr>
+      <td>cpool-clearpool</td>
+      <td>Clearpool</td>
+      <td>CPOOL</td>
+      <td>241</td>
+      <td>3.559117e-01</td>
+      <td>252243014</td>
+      <td>2025-01-26T20:54:30Z</td>
+      <td>5.886277e-01</td>
+      <td>2024-12-14T14:30:20Z</td>
+      <td>-39.36</td>
+      <td>1.65</td>
+    </tr>
+    <tr>
+      <td>alusd-alchemixusd</td>
+      <td>Alchemix USD</td>
+      <td>ALUSD</td>
+      <td>243</td>
+      <td>9.892799e-01</td>
+      <td>251313435</td>
+      <td>2025-01-26T20:54:29Z</td>
+      <td>3.068622e+01</td>
+      <td>2024-07-29T12:27:20Z</td>
+      <td>-96.78</td>
+      <td>31.02</td>
+    </tr>
+    <tr>
+      <td>manta-manta-network</td>
+      <td>Manta Network</td>
+      <td>MANTA</td>
+      <td>244</td>
+      <td>6.635430e-01</td>
+      <td>250601708</td>
+      <td>2025-01-26T20:54:45Z</td>
+      <td>4.063531e+00</td>
+      <td>2024-03-12T19:52:13Z</td>
+      <td>-83.66</td>
+      <td>6.12</td>
+    </tr>
+    <tr>
+      <td>yfi-yearnfinance</td>
+      <td>yearn.finance</td>
+      <td>YFI</td>
+      <td>245</td>
+      <td>7.447770e+03</td>
+      <td>249976964</td>
+      <td>2025-01-26T20:54:28Z</td>
+      <td>9.138435e+04</td>
+      <td>2021-05-12T00:55:00Z</td>
+      <td>-91.85</td>
+      <td>12.27</td>
+    </tr>
+    <tr>
+      <td>dag-constellation</td>
+      <td>Constellation</td>
+      <td>DAG</td>
+      <td>246</td>
+      <td>8.656009e-02</td>
+      <td>248725933</td>
+      <td>2025-01-26T20:54:27Z</td>
+      <td>4.550811e-01</td>
+      <td>2021-08-26T14:50:00Z</td>
+      <td>-80.91</td>
+      <td>5.26</td>
+    </tr>
+    <tr>
+      <td>luna-terra-v2</td>
+      <td>Terra</td>
+      <td>LUNA</td>
+      <td>247</td>
+      <td>3.462659e-01</td>
+      <td>245843396</td>
+      <td>2025-01-26T20:54:38Z</td>
+      <td>1.196837e+01</td>
+      <td>2022-05-30T21:25:00Z</td>
+      <td>-97.10</td>
+      <td>34.56</td>
+    </tr>
+    <tr>
+      <td>comp-compoundd</td>
+      <td>Compound</td>
+      <td>COMP</td>
+      <td>248</td>
+      <td>7.569838e+01</td>
+      <td>244271088</td>
+      <td>2025-01-26T20:54:28Z</td>
+      <td>9.134877e+02</td>
+      <td>2021-05-12T02:15:00Z</td>
+      <td>-91.71</td>
+      <td>12.07</td>
+    </tr>
+    <tr>
+      <td>bzr-bazaars</td>
+      <td>Bazaars</td>
+      <td>BZR</td>
+      <td>249</td>
+      <td>2.068164e+01</td>
+      <td>241403237</td>
+      <td>2025-01-26T20:54:38Z</td>
+      <td>2.589640e+01</td>
+      <td>2024-12-12T15:09:20Z</td>
+      <td>-20.10</td>
+      <td>1.25</td>
+    </tr>
+    <tr>
+      <td>mask-mask-network</td>
+      <td>Mask Network</td>
+      <td>MASK</td>
+      <td>250</td>
+      <td>2.399577e+00</td>
+      <td>239957687</td>
+      <td>2025-01-26T20:54:28Z</td>
+      <td>7.177470e+00</td>
+      <td>2023-03-29T20:37:57Z</td>
+      <td>-66.53</td>
+      <td>2.99</td>
+    </tr>
+  </tbody>
 </table>
-        </div>
-        
-        
+      </div>
+
+      
     <!-- jQuery -->
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-    <!-- DataTables JS & CSS -->
-    <link rel="stylesheet" type="text/css" 
+    <!-- DataTables -->
+    <link rel="stylesheet" type="text/css"
           href="https://cdn.datatables.net/1.13.4/css/jquery.dataTables.min.css"/>
     <script src="https://cdn.datatables.net/1.13.4/js/jquery.dataTables.min.js"></script>
 
     <script>
-        // Initialize DataTables once the document is ready
-        $(document).ready(function() {
-            // We disable paging & searching but keep ordering (sorting) enabled
-            $('#cryptoTable').DataTable({
-                "paging": false,
-                "info": false,
-                "ordering": true,
-                "searching": false
-            });
-        });
+        var isUnlocked = false;  // Tracks whether rows are unlocked or not
 
-        // Password unlock functionality
+        // Called after each DataTables draw event to blur rows, if still locked
+        function blurRowsIfLocked() {
+            if (!isUnlocked) {
+                // Select all data rows
+                var rows = $('#cryptoTable tbody tr');
+                // Remove blur from all, then re-apply it after the 20th row
+                rows.removeClass('blurred-row');
+                for (var i = 20; i < rows.length; i++) {
+                    $(rows[i]).addClass('blurred-row');
+                }
+            }
+        }
+
         function unlockRows() {
             var password = document.getElementById('crypto-password').value;
-            var correctPassword = 'cryptoath';
-            
-            if(password === correctPassword) {
-                var blurredRows = document.querySelectorAll('.blurred-row');
-                blurredRows.forEach(function(row) {
-                    row.classList.remove('blurred-row');
-                });
+            if(password === 'cryptoath') {
+                isUnlocked = true;
+                // Remove blur from all rows
+                $('#cryptoTable tbody tr').removeClass('blurred-row');
             } else {
                 alert('Incorrect Password. Please try again.');
             }
         }
+
+        $(document).ready(function() {
+            var table = $('#cryptoTable').DataTable({
+                paging: false,
+                info: false,
+                ordering: true,
+                searching: false,
+                // If you want no initial re-sorting by DataTables,
+                // you can specify "order": [] here:
+                order: []
+            });
+
+            // On every DataTables draw (including the initial),
+            // re-check if we should blur rows.
+            table.on('draw', function() {
+                blurRowsIfLocked();
+            });
+
+            // Blur initially
+            blurRowsIfLocked();
+        });
     </script>
     
     </body>
