@@ -67,30 +67,36 @@ def format_values(df):
 
 def create_percent_bar(percent_str):
     """
-    Converts 'Percent from Price ATH' value into an inline HTML progress bar
-    where the minus-percent text is always visible, anchored to the right.
-    Ensures no extra line breaks end up in the final cell.
+    Converts 'Percent from Price ATH' value into a horizontal bar, anchored to
+    the right with a minus sign. The percentage text is pinned on the left side
+    within the gray bar, ensuring it's always visible.
     """
     if not percent_str or percent_str == "N/A":
         return "N/A"
-    
-    try:
-        val = abs(float(percent_str))  # if negative, use abs for magnitude
-        # Optional: val = min(val, 100.0)  # cap at 100 if you like
 
-        # Make this a single line of HTML (no embedded \n)
+    try:
+        val = abs(float(percent_str))  # e.g., 31.85 for -31.85
+        # If you'd like to cap at 100, uncomment:
+        # val = min(val, 100.0)
+
+        # Single-line HTML to avoid literal \n characters
         bar_html = (
-            f'<div style="position: relative; background-color: #555; height: 20px; width: 100px; '
-            'margin: 0 auto; border-radius: 3px; overflow: hidden;">'
-            f'<div style="position: absolute; right: 0; top: 0; bottom: 0; width: {val}%; background-color: red; '
-            'border-radius: 3px;"></div>'
-            f'<div style="position: relative; text-align: center; z-index: 2; line-height: 20px; color: #fff; '
-            f'font-size: 12px;">-{val:.2f}%</div>'
+            '<div style="position: relative; width: 100px; height: 20px; '
+            'background-color: #555; border-radius: 3px; overflow: hidden;">'
+              f'<div style="position: absolute; right: 0; top: 0; bottom: 0; '
+              f'width: {val}%; background-color: red; border-radius: 3px;">'
+              '</div>'
+              '<!-- Text overlay -->'
+              '<div style="position: relative; z-index: 2; color: #fff; font-size: 12px; '
+              'line-height: 20px; padding-left: 5px; text-align: left;">'
+                f'-{val:.2f}%'
+              '</div>'
             '</div>'
         )
         return bar_html
     except:
         return str(percent_str)
+
 
 def fetch_data_from_google_sheets():
     """Fetch data from the specified Google Sheet and return a DataFrame."""
