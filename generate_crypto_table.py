@@ -4,26 +4,54 @@ import pandas as pd
 import os
 from bs4 import BeautifulSoup
 
-# Environment config
+# Environment variables
 SERVICE_ACCOUNT_FILE = os.getenv('SERVICE_ACCOUNT_FILE')
 SPREADSHEET_NAME = os.getenv('SPREADSHEET_NAME')
 WORKSHEET_NAME = os.getenv('WORKSHEET_NAME')
 
+def extract_last_updated_info(df):
+    """
+    Returns the latest 'Last Updated' value from the DataFrame (if present),
+    with any trailing 'Z' removed. Otherwise returns "N/A".
+    """
+    if 'Last Updated' not in df.columns:
+        return "N/A"
+    last_val = df['Last Updated'].max()
+    if pd.isnull(last_val):
+        return "N/A"
+    return str(last_val).replace("Z", "")
+
+def format_ath_date(x):
+    """
+    Parses a date/time string into YYYY-MM-DD format.
+    If invalid or missing, returns 'N/A'.
+    """
+    if pd.isnull(x):
+        return "N/A"
+    try:
+        dt = pd.to_datetime(x, errors='coerce', utc=True)
+        if pd.isnull(dt):
+            return "N/A"
+        return dt.strftime("%Y-%m-%d")
+    except:
+        return "N/A"
+
 def format_values(df):
     """
     Formats numerical columns:
-      - Current Price (USD) and ATH Price (USD): 5 decimal places
-      - Multiply to Price ATH: 2 decimal places
+      - Current Price (USD) & ATH Price (USD): 5 decimals
+      - Multiply to Price ATH: 2 decimals
+      - Converts 'ATH Date' to YYYY-MM-DD
     """
     def format_price_5dec(x):
         if pd.isnull(x):
             return "N/A"
         try:
-            return f"${float(x):,.6f}"
+            return f"${float(x):,.5f}"
         except:
             return str(x)
     
-    # Apply formatting if these columns exist
+    # Format numeric columns if they exist
     if 'Current Price (USD)' in df.columns:
         df['Current Price (USD)'] = df['Current Price (USD)'].apply(format_price_5dec)
     if 'ATH Price (USD)' in df.columns:
@@ -32,6 +60,8 @@ def format_values(df):
         df['Multiply to Price ATH'] = df['Multiply to Price ATH'].apply(
             lambda x: f"{float(x):.2f}" if pd.notnull(x) else "N/A"
         )
+    if 'ATH Date' in df.columns:
+        df['ATH Date'] = df['ATH Date'].apply(format_ath_date)
     
     return df
 
@@ -39,21 +69,20 @@ def create_percent_bar(percent_str):
     """
     Converts 'Percent from Price ATH' value into an inline HTML progress bar.
     The red bar starts from the RIGHT, showing how far below ATH the price is.
-    A minus sign is prefixed to the percentage.
+    A minus sign is prefixed to the percentage (e.g., -31.85%).
     """
     if not percent_str or percent_str == "N/A":
         return "N/A"
     
     try:
-        # Convert to float; if negative, we take the absolute value to get the magnitude.
+        # Convert to float; if negative, use absolute value for the magnitude
         val = abs(float(percent_str))
-        # If you want to cap at 100%, do: val = min(val, 100.0)
+        # If needed, cap it at 100.0 => val = min(val, 100.0)
 
-        # We place the bar on the right by using 'float: right;'
-        # Add a minus sign before the digits (e.g., -50.44%).
+        # Make sure the text is fully visible by not clipping the container
         bar_html = (
-            f'<div class="percentage-bar-container">'
-            f'<div class="percentage-bar" style="float: right; width: {val}%; background-color: red;">'
+            '<div class="percentage-bar-container" style="overflow: visible;">'
+            f'<div class="percentage-bar" style="float: right; width: {val}%; background-color: red; white-space: nowrap;">'
             f'-{val:.2f}%</div>'
             '</div>'
         )
@@ -75,14 +104,15 @@ def fetch_data_from_google_sheets():
 
 def generate_html_table(df):
     """
-    1) Keep only the required columns.
-    2) Format numeric columns.
-    3) Convert 'Percent from Price ATH' into an HTML bar.
-    4) Sort by 'Market Cap (USD)' descending if that column exists.
-    5) Convert the final DataFrame to HTML (unblurred).
-       Blurring & sorting restrictions are handled in JS.
+    1) Keep only the required columns:
+        ['Name','Current Price (USD)','ATH Price (USD)',
+         'ATH Date','Percent from Price ATH','Multiply to Price ATH']
+    2) Format numeric columns, parse 'ATH Date'
+    3) Convert 'Percent from Price ATH' to an HTML bar
+    4) Sort by 'Market Cap (USD)' descending if that column exists
+    5) Return HTML (no blur or disabling sorting here - all in JS)
     """
-    # Only these columns
+    # The columns we actually want in the final table:
     required_cols = [
         'Name',
         'Current Price (USD)',
@@ -92,44 +122,43 @@ def generate_html_table(df):
         'Multiply to Price ATH'
     ]
     
-    # If 'Market Cap (USD)' is present and you want to sort by it:
+    # If 'Market Cap (USD)' is present, we can sort by it descending
     if 'Market Cap (USD)' in df.columns:
         df['Market Cap (USD)'] = pd.to_numeric(df['Market Cap (USD)'], errors='coerce')
         df.sort_values('Market Cap (USD)', ascending=False, inplace=True)
     
-    # Filter to required columns, if present
+    # Filter to only the required columns if they exist
     existing_cols = [col for col in required_cols if col in df.columns]
     if not existing_cols:
         return "<p>No matching columns found in the sheet.</p>"
     
     df = df[existing_cols].copy()
     
-    # Format numeric columns
+    # Apply formatting (numbers, ATH date)
     df = format_values(df)
     
-    # Convert 'Percent from Price ATH' to an HTML bar
+    # Convert 'Percent from Price ATH' to bar
     if 'Percent from Price ATH' in df.columns:
         df['Percent from Price ATH'] = df['Percent from Price ATH'].apply(create_percent_bar)
 
     # Convert final DataFrame to HTML
-    # No blurring here - that will be handled by the client JS
     html_table = df.to_html(
         index=False,
         classes='crypto-table display',
         border=0,
-        escape=False,   # so the bar HTML is not escaped
+        escape=False,  # so the bar HTML isn't escaped
         table_id='cryptoTable'
     )
     return html_table
 
-def generate_html_page(table_html):
+def generate_html_page(table_html, last_updated_str):
     """
     Returns the complete HTML page, including:
-      - A password box
-      - Table initially with:
-          - 1) row #21 and onward blurred
-          - 2) no user sorting allowed
-        All done in JS. After correct password, everything is unblurred & sorting is enabled.
+      - A password prompt: "enter password to view all coins"
+      - A scrollable container (~21 rows visible)
+      - Column sorting disabled until unlocked
+      - Rows #22+ blurred until unlock
+      - A 'Data last updated: ...' note at the bottom
     """
     styles = """
     <style>
@@ -139,6 +168,7 @@ def generate_html_page(table_html):
             font-family: Arial, sans-serif;
             margin: 20px;
         }
+        /* Password prompt */
         .password-section {
             margin-bottom: 30px;
             text-align: center;
@@ -163,9 +193,13 @@ def generate_html_page(table_html):
         .password-section button:hover {
             background-color: #777;
         }
+        
+        /* Table container with scrolling */
         .crypto-table-container {
             margin: 0 auto;
             width: 90%;
+            max-height: 600px; /* approximate for ~21 rows visible */
+            overflow-y: auto;
         }
         .crypto-table {
             width: 100%;
@@ -176,7 +210,7 @@ def generate_html_page(table_html):
         .crypto-table th, .crypto-table td {
             border: 1px solid #444;
             padding: 12px 15px;
-            text-align: center;
+            text-align: center; /* center columns' names & data */
         }
         .crypto-table th {
             background-color: #333;
@@ -190,11 +224,13 @@ def generate_html_page(table_html):
         .crypto-table tr:hover {
             background-color: #555;
         }
-        /* Our blur class */
+        
+        /* Row blur */
         .blurred-row {
             filter: blur(5px);
             transition: filter 0.3s ease;
         }
+        
         /* Percentage bar container */
         .percentage-bar-container {
             position: relative;
@@ -203,17 +239,17 @@ def generate_html_page(table_html):
             width: 100px;
             margin: 0 auto;
             border-radius: 3px;
-            overflow: hidden;
+            overflow: visible; /* ensure we see the text fully */
         }
         .percentage-bar {
             height: 100%;
-            text-align: center;
             color: white;
             border-radius: 3px;
             line-height: 20px;
             font-size: 12px;
         }
-        /* Overriding DataTables elements to keep text white */
+
+        /* Overriding DataTables elements to keep text white (when we re-enable sorting) */
         .dataTables_wrapper .dataTables_filter input,
         .dataTables_wrapper .dataTables_length select,
         .dataTables_wrapper .dataTables_info,
@@ -223,6 +259,13 @@ def generate_html_page(table_html):
         .dataTables_wrapper .dataTables_filter label,
         .dataTables_wrapper .dataTables_length label {
             color: #f2f2f2;
+        }
+        
+        /* Last-updated note */
+        .last-updated {
+            text-align: center;
+            margin-top: 20px;
+            font-style: italic;
         }
     </style>
     """
@@ -236,34 +279,31 @@ def generate_html_page(table_html):
     <script src="https://cdn.datatables.net/1.13.4/js/jquery.dataTables.min.js"></script>
 
     <script>
-        // We'll manage two DataTables states:
-        // 1) ordering = false before unlock
-        // 2) ordering = true after unlock
         var table;
         var isUnlocked = false;
 
+        // Blur row #22 onward if locked
         function blurRowsIfLocked() {
             if (!isUnlocked) {
-                // Blur row #21 and onward
                 var rows = $('#cryptoTable tbody tr');
                 rows.removeClass('blurred-row');
-                for (var i = 20; i < rows.length; i++) {
+                // First 21 rows unblurred, row index 21 => 22nd row
+                for (var i = 21; i < rows.length; i++) {
                     $(rows[i]).addClass('blurred-row');
                 }
             }
         }
 
+        // Password check
         function unlockRows() {
             var password = document.getElementById('crypto-password').value;
             if (password === 'cryptoath') {
                 isUnlocked = true;
-                // Unblur all rows
+                // Unblur everything
                 $('#cryptoTable tbody tr').removeClass('blurred-row');
-
-                // Destroy the old table (with no ordering)
+                // Destroy old table
                 table.destroy();
-
-                // Re-initialize DataTable WITH ordering enabled
+                // Re-init table with ordering enabled
                 table = $('#cryptoTable').DataTable({
                     paging: false,
                     info: false,
@@ -272,12 +312,12 @@ def generate_html_page(table_html):
                     order: []
                 });
             } else {
-                alert('Incorrect Password. Please try again.');
+                alert('Incorrect password. Please try again.');
             }
         }
 
         $(document).ready(function() {
-            // Initialize DataTable with ordering disabled
+            // Start with ordering disabled
             table = $('#cryptoTable').DataTable({
                 paging: false,
                 info: false,
@@ -285,13 +325,11 @@ def generate_html_page(table_html):
                 searching: false,
                 order: []
             });
-
-            // On each draw (including initial), blur if locked
+            // After each draw, blur if locked
             table.on('draw', function() {
                 blurRowsIfLocked();
             });
-
-            // Initially blur (in case there's no "draw" event)
+            // Initial blur
             blurRowsIfLocked();
         });
     </script>
@@ -306,10 +344,9 @@ def generate_html_page(table_html):
       {styles}
     </head>
     <body>
-      <h2 style="text-align:center;">Cryptocurrency Prices</h2>
-
+      <!-- No title, as requested -->
       <div class="password-section">
-        <label for="crypto-password">Enter Password to View All Rows & Enable Sorting:</label><br>
+        <label for="crypto-password">enter password to view all coins</label><br>
         <input type="password" id="crypto-password" placeholder="Enter password">
         <button onclick="unlockRows()">Unlock</button>
       </div>
@@ -317,6 +354,9 @@ def generate_html_page(table_html):
       <div class="crypto-table-container">
         {table_html}
       </div>
+
+      <!-- Short sentence under the table about last updated time -->
+      <p class="last-updated">Data last updated: {last_updated_str}</p>
 
       {scripts}
     </body>
@@ -326,18 +366,27 @@ def generate_html_page(table_html):
 
 def generate_crypto_table_html():
     """
-    Main function to:
-      1) Fetch DataFrame from Google Sheets
-      2) Keep only desired columns, format them, generate 'Percent from ATH' bars
-      3) Sort by Market Cap if present
-      4) Convert to HTML (no blur done here)
-      5) Build final page with JS-driven blur & locked sorting
-      6) Save to 'crypto_table.html'
+    Main function that:
+      1) Fetches data from Google Sheets
+      2) Filters & formats columns, including a right-aligned percentage bar
+      3) Sorts by Market Cap if present
+      4) Creates an HTML table
+      5) Blurs rows #22+ and disables sorting until correct password is entered
+      6) Adds a last-updated line
+      7) Saves to 'crypto_table.html'
     """
     df = fetch_data_from_google_sheets()
-    table_html = generate_html_table(df)
-    full_html = generate_html_page(table_html)
 
+    # Generate the table HTML
+    table_html = generate_html_table(df)
+    
+    # Extract last updated info
+    last_updated_str = extract_last_updated_info(df)
+
+    # Build final page with password lock, blur logic, scrolling, etc.
+    full_html = generate_html_page(table_html, last_updated_str)
+
+    # Write to file
     with open("crypto_table.html", "w", encoding="utf-8") as f:
         f.write(full_html)
 
