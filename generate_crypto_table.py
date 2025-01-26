@@ -67,37 +67,28 @@ def format_values(df):
 
 def create_percent_bar(percent_str):
     """
-    Converts 'Percent from Price ATH' value into an inline HTML "progress bar"
-    where the red portion starts from the right, and the minus-percent text is
-    visible in the middle of the gray bar.
+    Converts 'Percent from Price ATH' value into an inline HTML progress bar
+    where the minus-percent text is always visible, anchored to the right.
+    Ensures no extra line breaks end up in the final cell.
     """
     if not percent_str or percent_str == "N/A":
         return "N/A"
     
     try:
-        # Convert to float; if negative, use abs for magnitude
-        val = abs(float(percent_str))
-        # If you want to cap at 100, uncomment:
-        # val = min(val, 100.0)
+        val = abs(float(percent_str))  # if negative, use abs for magnitude
+        # Optional: val = min(val, 100.0)  # cap at 100 if you like
 
-        # We create a container (gray) and absolutely position the red bar
-        # from the right. The text is displayed above the bar (z-index: 2),
-        # ensuring it doesn't get clipped or hidden.
-        bar_html = f"""
-        <div style="position: relative; background-color: #555; height: 20px; width: 100px;
-                    margin: 0 auto; border-radius: 3px; overflow: hidden;">
-          <!-- Red bar anchored to the right -->
-          <div style="position: absolute; right: 0; top: 0; bottom: 0; 
-                      width: {val}%; background-color: red; border-radius: 3px;">
-          </div>
-          <!-- Centered text layer -->
-          <div style="position: relative; text-align: center; z-index: 2; 
-                      line-height: 20px; color: #fff; font-size: 12px;">
-            -{val:.2f}%
-          </div>
-        </div>
-        """
-        return bar_html.strip()
+        # Make this a single line of HTML (no embedded \n)
+        bar_html = (
+            f'<div style="position: relative; background-color: #555; height: 20px; width: 100px; '
+            'margin: 0 auto; border-radius: 3px; overflow: hidden;">'
+            f'<div style="position: absolute; right: 0; top: 0; bottom: 0; width: {val}%; background-color: red; '
+            'border-radius: 3px;"></div>'
+            f'<div style="position: relative; text-align: center; z-index: 2; line-height: 20px; color: #fff; '
+            f'font-size: 12px;">-{val:.2f}%</div>'
+            '</div>'
+        )
+        return bar_html
     except:
         return str(percent_str)
 
