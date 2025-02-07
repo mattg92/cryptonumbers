@@ -113,7 +113,7 @@
         
         /* Last-updated note */
         .last-updated {
-            text-align: center;
+            text-align: left;
             margin-top: 20px;
             font-style: italic;
         }
@@ -2157,61 +2157,63 @@
     <script src="https://cdn.datatables.net/1.13.4/js/jquery.dataTables.min.js"></script>
 
     <script>
-        var table;
-        var isUnlocked = false;
+    var table;
+    var isUnlocked = false;
 
-        // Blur row #22 onward if locked
-        function blurRowsIfLocked() {
-            if (!isUnlocked) {
-                var rows = $('#cryptoTable tbody tr');
-                rows.removeClass('blurred-row');
-                // First 21 rows unblurred, row index 21 => 22nd row
-                for (var i = 21; i < rows.length; i++) {
-                    $(rows[i]).addClass('blurred-row');
-                }
+    // Blur row #22 onward if locked
+    function blurRowsIfLocked() {
+        if (!isUnlocked) {
+            var rows = $('#cryptoTable tbody tr');
+            rows.removeClass('blurred-row');
+            // First 21 rows unblurred, row index 21 => 22nd row
+            for (var i = 21; i < rows.length; i++) {
+                $(rows[i]).addClass('blurred-row');
             }
         }
+    }
 
-        // Password check
-        function unlockRows() {
-            var password = document.getElementById('crypto-password').value;
-            if (password === 'cryptoath') {
-                isUnlocked = true;
-                // Unblur everything
-                $('#cryptoTable tbody tr').removeClass('blurred-row');
-                // Destroy old table
-                table.destroy();
-                // Re-init table with ordering enabled
-                table = $('#cryptoTable').DataTable({
-                    paging: true,
-                    pageLength: 50, // Set pagination to display 50 rows per page
-                    info: false,
-                    ordering: true,
-                    searching: false,
-                    order: []
-                });
-            } else {
-                alert('Incorrect password. Please try again.');
-            }
-        }
-
-        $(document).ready(function() {
-            // Start with ordering and pagination disabled
+    // Password check
+    function unlockRows() {
+        var password = document.getElementById('crypto-password').value;
+        if (password === 'cryptoath') {
+            isUnlocked = true;
+            // Unblur everything
+            $('#cryptoTable tbody tr').removeClass('blurred-row');
+            // Destroy old table
+            table.destroy();
+            // Re-init table with ordering enabled
             table = $('#cryptoTable').DataTable({
                 paging: true,
                 pageLength: 50, // Set pagination to display 50 rows per page
                 info: false,
-                ordering: false,
+                ordering: true,
                 searching: false,
+                dom: '<"top"p>rt<"bottom"p><"clear">',
                 order: []
             });
-            // After each draw, blur if locked
-            table.on('draw', function() {
-                blurRowsIfLocked();
-            });
-            // Initial blur
+        } else {
+            alert('Incorrect password. Please try again.');
+        }
+    }
+
+    $(document).ready(function() {
+        // Start with ordering and pagination disabled
+        table = $('#cryptoTable').DataTable({
+            paging: true,
+            pageLength: 50, // Set pagination to display 50 rows per page
+            info: false,
+            ordering: false,
+            searching: false,
+            dom: '<"top"p>rt<"bottom"p><"clear">',
+            order: []
+        });
+        // After each draw, blur if locked
+        table.on('draw', function() {
             blurRowsIfLocked();
         });
+        // Initial blur
+        blurRowsIfLocked();
+    });
     </script>
     
     </body>
