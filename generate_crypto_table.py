@@ -275,6 +275,8 @@ def generate_html_page(table_html, last_updated_str):
         
         /* Last-updated note */
         .last-updated {
+            margin: 0 auto;
+            width: 90%;
             text-align: left;
             margin-top: 20px;
             font-style: italic;
@@ -374,8 +376,10 @@ def generate_html_page(table_html, last_updated_str):
       </div>
 
       <!-- Short sentence under the table about last updated time -->
-      <p class="last-updated">Data last updated: {last_updated_str}</p>
-
+      <div class="last-updated-container">
+        <p class="last-updated">Data last updated: {last_updated_str}</p>
+      </div>
+      
       {scripts}
     </body>
     </html>
