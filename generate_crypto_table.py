@@ -68,7 +68,7 @@ def format_values(df):
 def create_percent_bar(percent_str):
     """
     Converts 'Percent from Price ATH' value into a horizontal bar, anchored to
-    the right with a minus sign. The percentage text is pinned on the left side
+    the right with a minus sign. The percentage text is pinned on the right side
     within the gray bar, ensuring it's always visible.
     """
     if not percent_str or percent_str == "N/A":
@@ -76,8 +76,6 @@ def create_percent_bar(percent_str):
 
     try:
         val = abs(float(percent_str))  # e.g., 31.85 for -31.85
-        # If you'd like to cap at 100, uncomment:
-        # val = min(val, 100.0)
 
         # Single-line HTML to avoid literal \n characters
         bar_html = (
@@ -87,8 +85,8 @@ def create_percent_bar(percent_str):
               f'width: {val}%; background-color: red; border-radius: 3px;">'
               '</div>'
               '<!-- Text overlay -->'
-              '<div style="position: relative; z-index: 2; color: #fff; font-size: 12px; '
-              'line-height: 20px; padding-left: 5px; text-align: left;">'
+              '<div style="position: absolute; right: 5px; z-index: 2; color: #fff; font-size: 12px; '
+              'line-height: 20px; padding-right: 5px; text-align: right; width: 100%;">'
                 f'-{val:.2f}%'
               '</div>'
             '</div>'
@@ -319,7 +317,8 @@ def generate_html_page(table_html, last_updated_str):
                 table.destroy();
                 // Re-init table with ordering enabled
                 table = $('#cryptoTable').DataTable({
-                    paging: false,
+                    paging: true,
+                    pageLength: 50, // Set pagination to display 50 rows per page
                     info: false,
                     ordering: true,
                     searching: false,
@@ -331,9 +330,10 @@ def generate_html_page(table_html, last_updated_str):
         }
 
         $(document).ready(function() {
-            // Start with ordering disabled
+            // Start with ordering and pagination disabled
             table = $('#cryptoTable').DataTable({
-                paging: false,
+                paging: true,
+                pageLength: 50, // Set pagination to display 50 rows per page
                 info: false,
                 ordering: false,
                 searching: false,
