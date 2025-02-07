@@ -299,9 +299,13 @@ def generate_html_page(table_html, last_updated_str):
         if (!isUnlocked) {
             var rows = $('#cryptoTable tbody tr');
             rows.removeClass('blurred-row');
-            // First 21 rows unblurred, row index 21 => 22nd row
-            for (var i = 21; i < rows.length; i++) {
-                $(rows[i]).addClass('blurred-row');
+            var startIndex = table.page.info().start;
+            var endIndex = table.page.info().end;
+            // Blur rows based on their global index
+            for (var i = 0; i < rows.length; i++) {
+                if ((startIndex + i) >= 20) {
+                    $(rows[i]).addClass('blurred-row');
+                }
             }
         }
     }
@@ -322,7 +326,6 @@ def generate_html_page(table_html, last_updated_str):
                 info: false,
                 ordering: true,
                 searching: false,
-                dom: '<"top"p>rt<"bottom"p><"clear">',
                 order: []
             });
         } else {
@@ -338,7 +341,6 @@ def generate_html_page(table_html, last_updated_str):
             info: false,
             ordering: false,
             searching: false,
-            dom: '<"top"p>rt<"bottom"p><"clear">',
             order: []
         });
         // After each draw, blur if locked
@@ -348,7 +350,7 @@ def generate_html_page(table_html, last_updated_str):
         // Initial blur
         blurRowsIfLocked();
     });
-    </script>
+</script>
     """
 
     html = f"""
