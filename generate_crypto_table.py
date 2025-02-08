@@ -367,6 +367,27 @@ def generate_html_page(table_html, last_updated_str):
 </script>
     """
 
+    payment_button = """
+    <div style="
+      margin: 0;
+      padding: 0;
+      background-color: black;          /* Black background */
+      display: flex;                    /* Use flex layout */
+      justify-content: center;          /* Center horizontally */
+      align-items: center;              /* Center vertically */
+    ">
+    <script async
+      src="https://js.stripe.com/v3/buy-button.js">
+    </script>
+
+    <stripe-buy-button
+      buy-button-id="buy_btn_1Qq2PUJvGMcfwVNwxYcpXYO5"
+      publishable-key="pk_live_51QbqIqJvGMcfwVNwBsQBWMde6xONddZgKckygtGXmVeXbcQKlHh2bX5qv0aNANEbKVrWmNlqR1oTgpuLlHLv2jj300Ll3zFPI9"
+    >
+    </stripe-buy-button>
+    </div>
+    """
+
     html = f"""
     <!DOCTYPE html>
     <html lang="en">
@@ -382,6 +403,8 @@ def generate_html_page(table_html, last_updated_str):
         <input type="password" id="crypto-password" placeholder="Enter password">
         <button onclick="unlockRows()">Unlock</button>
       </div>
+
+      {payment_button}
 
       <div class="crypto-table-container">
         {table_html}
