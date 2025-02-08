@@ -36,26 +36,34 @@ def format_ath_date(x):
     except:
         return "N/A"
 
+def format_price(x):
+    """
+    Rounds Current Price (USD) and ATH Price (USD) to two decimal places if the value is 
+    higher than or equal to 1 dollar, and rounds to six decimal places if the price is lower than 1 dollar.
+    """
+    if pd.isnull(x):
+        return "N/A"
+    try:
+        value = float(x)
+        if value >= 1:
+            return f"${value:,.2f}"
+        else:
+            return f"${value:,.6f}"
+    except:
+        return str(x)
+
 def format_values(df):
     """
     Formats numerical columns:
-      - Current Price (USD) & ATH Price (USD): 5 decimals
+      - Current Price (USD) & ATH Price (USD): 2 decimals if >= $1, 6 decimals if < $1
       - Multiply to Price ATH: 2 decimals
       - Converts 'ATH Date' to YYYY-MM-DD
     """
-    def format_price_5dec(x):
-        if pd.isnull(x):
-            return "N/A"
-        try:
-            return f"${float(x):,.5f}"
-        except:
-            return str(x)
-    
     # Format numeric columns if they exist
     if 'Current Price (USD)' in df.columns:
-        df['Current Price (USD)'] = df['Current Price (USD)'].apply(format_price_5dec)
+        df['Current Price (USD)'] = df['Current Price (USD)'].apply(format_price)
     if 'ATH Price (USD)' in df.columns:
-        df['ATH Price (USD)'] = df['ATH Price (USD)'].apply(format_price_5dec)
+        df['ATH Price (USD)'] = df['ATH Price (USD)'].apply(format_price)
     if 'Multiply to Price ATH' in df.columns:
         df['Multiply to Price ATH'] = df['Multiply to Price ATH'].apply(
             lambda x: f"{float(x):.2f}" if pd.notnull(x) else "N/A"
@@ -64,6 +72,7 @@ def format_values(df):
         df['ATH Date'] = df['ATH Date'].apply(format_ath_date)
     
     return df
+    
 
 def create_percent_bar(percent_str):
     """
