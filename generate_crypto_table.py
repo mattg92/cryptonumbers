@@ -80,7 +80,7 @@ def create_percent_bar(percent_str):
         # Single-line HTML to avoid literal \n characters
         bar_html = (
             '<div style="position: relative; width: 100px; height: 20px; '
-            'background-color: #555; border-radius: 3px; overflow: hidden;">'
+            'background-color: #555; border-radius: 3px; overflow: hidden; margin: 0 auto; display: block;">'
               f'<div style="position: absolute; right: 0; top: 0; bottom: 0; '
               f'width: {val}%; background-color: red; border-radius: 3px;">'
               '</div>'
@@ -324,7 +324,7 @@ def generate_html_page(table_html, last_updated_str):
             // Re-init table with ordering enabled
             table = $('#cryptoTable').DataTable({
                 paging: true,
-                pageLength: 50, // Set pagination to display 50 rows per page
+                pageLength: 30, // Set pagination to display 30 rows per page
                 info: false,
                 ordering: true,
                 searching: false,
