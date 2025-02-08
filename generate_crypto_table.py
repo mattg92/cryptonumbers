@@ -399,7 +399,7 @@ def generate_html_page(table_html, last_updated_str):
     <body>
       <!-- No title, as requested -->
       <div class="password-section">
-        <label for="crypto-password">enter password to view all coins</label><br>
+        <label for="crypto-password">Enter password to view all coins</label><br>
         <input type="password" id="crypto-password" placeholder="Enter password">
         <button onclick="unlockRows()">Unlock</button>
       </div>
