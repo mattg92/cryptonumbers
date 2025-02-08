@@ -130,6 +130,7 @@ def generate_html_table(df):
     # The columns we actually want in the final table:
     required_cols = [
         'Name',
+        'Rank',
         'Current Price (USD)',
         'ATH Price (USD)',
         'ATH Date',
@@ -349,7 +350,7 @@ def generate_html_page(table_html, last_updated_str):
         // Start with ordering and pagination disabled
         table = $('#cryptoTable').DataTable({
             paging: true,
-            pageLength: 50, // Set pagination to display 50 rows per page
+            pageLength: 30, // Set pagination to display 50 rows per page
             info: false,
             ordering: false,
             searching: false,
@@ -388,7 +389,7 @@ def generate_html_page(table_html, last_updated_str):
 
       <!-- Short sentence under the table about last updated time -->
       <div class="last-updated-container">
-        <p class="last-updated">Data last updated: {last_updated_str}</p>
+        <p class="last-updated">Data last updated: {last_updated_str} UTC</p>
       </div>
       
       {scripts}
