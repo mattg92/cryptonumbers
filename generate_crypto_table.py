@@ -344,6 +344,7 @@ def generate_html_page(table_html, last_updated_str):
             info: false,
             ordering: false,
             searching: false,
+            dom: '<"top"p>rt<"bottom"p><"clear">',
             order: []
         });
         // After each draw, blur if locked
