@@ -52,12 +52,25 @@ def format_price(x):
     except:
         return str(x)
 
+def format_market_cap(x):
+    """
+    Formats Market Cap (USD) with commas and dollar sign.
+    """
+    if pd.isnull(x):
+        return "N/A"
+    try:
+        value = float(x)
+        return f"${value:,.0f}"
+    except:
+        return str(x)
+
 def format_values(df):
     """
     Formats numerical columns:
       - Current Price (USD) & ATH Price (USD): 2 decimals if >= $1, 6 decimals if < $1
       - Multiply to Price ATH: 2 decimals
       - Converts 'ATH Date' to YYYY-MM-DD
+      - Market Cap (USD): formatted with commas and dollar sign
     """
     # Format numeric columns if they exist
     if 'Current Price (USD)' in df.columns:
@@ -70,6 +83,8 @@ def format_values(df):
         )
     if 'ATH Date' in df.columns:
         df['ATH Date'] = df['ATH Date'].apply(format_ath_date)
+    if 'Market Cap (USD)' in df.columns:
+        df['Market Cap (USD)'] = df['Market Cap (USD)'].apply(format_market_cap)
     
     return df
     
@@ -171,10 +186,8 @@ def generate_html_table(df):
 def generate_html_page(table_html, last_updated_str):
     """
     Returns the complete HTML page, including:
-      - A password prompt: "enter password to view all coins"
       - A scrollable container (~21 rows visible)
-      - Column sorting disabled until unlocked
-      - Rows #22+ blurred until unlock
+      - Column sorting enabled
       - A 'Data last updated: ...' note at the bottom
     """
     styles = """
@@ -184,31 +197,6 @@ def generate_html_page(table_html, last_updated_str):
             color: #f2f2f2;
             font-family: Arial, sans-serif;
             margin: 20px;
-        }
-        /* Password prompt */
-        .password-section {
-            margin-bottom: 30px;
-            text-align: center;
-        }
-        .password-section input {
-            padding: 10px;
-            width: 220px;
-            border: 1px solid #444;
-            border-radius: 4px;
-            background-color: #333;
-            color: #f2f2f2;
-        }
-        .password-section button {
-            padding: 10px 20px;
-            margin-left: 10px;
-            border: none;
-            border-radius: 4px;
-            background-color: #555;
-            color: #f2f2f2;
-            cursor: pointer;
-        }
-        .password-section button:hover {
-            background-color: #777;
         }
         
         /* Table container with scrolling */
@@ -246,12 +234,6 @@ def generate_html_page(table_html, last_updated_str):
         }
         .crypto-table tr:hover {
             background-color: #555;
-        }
-        
-        /* Row blur */
-        .blurred-row {
-            filter: blur(5px);
-            transition: filter 0.3s ease;
         }
         
         /* Percentage bar container */
@@ -304,69 +286,20 @@ def generate_html_page(table_html, last_updated_str):
     <script src="https://cdn.datatables.net/1.13.4/js/jquery.dataTables.min.js"></script>
 
     <script>
-    var table;
-    var isUnlocked = false;
-
-    // Blur row #22 onward if locked
-    function blurRowsIfLocked() {
-        if (!isUnlocked) {
-            var rows = $('#cryptoTable tbody tr');
-            rows.removeClass('blurred-row');
-            var startIndex = table.page.info().start;
-            var endIndex = table.page.info().end;
-            // Blur rows based on their global index
-            for (var i = 0; i < rows.length; i++) {
-                if ((startIndex + i) >= 20) {
-                    $(rows[i]).addClass('blurred-row');
-                }
-            }
-        }
-    }
-
-    // Password check
-    function unlockRows() {
-        var password = document.getElementById('crypto-password').value;
-        if (password === 'cryptoath') {
-            isUnlocked = true;
-            // Unblur everything
-            $('#cryptoTable tbody tr').removeClass('blurred-row');
-            // Destroy old table
-            table.destroy();
-            // Re-init table with ordering enabled
-            table = $('#cryptoTable').DataTable({
-                paging: true,
-                pageLength: 30, // Set pagination to display 30 rows per page
-                info: false,
-                ordering: true,
-                searching: false,
-                dom: '<"top"p>rt<"bottom"p><"clear">',
-                order: []
-            });
-        } else {
-            alert('Incorrect password. Please try again.');
-        }
-    }
-
     $(document).ready(function() {
-        // Start with ordering and pagination disabled
-        table = $('#cryptoTable').DataTable({
+        // Initialize table with ordering enabled
+        var table = $('#cryptoTable').DataTable({
             paging: true,
-            pageLength: 30, // Set pagination to display 50 rows per page
+            pageLength: 30, // Set pagination to display 30 rows per page
             info: false,
-            ordering: false,
+            ordering: true,
             searching: false,
             dom: '<"top"p>rt<"bottom"p><"clear">',
             order: []
         });
-        // After each draw, blur if locked
-        table.on('draw', function() {
-            blurRowsIfLocked();
-        });
-        // Initial blur
-        blurRowsIfLocked();
     });
 </script>
-    """    
+    """
 
     html = f"""
     <!DOCTYPE html>
@@ -377,7 +310,6 @@ def generate_html_page(table_html, last_updated_str):
       {styles}
     </head>
     <body>
-
       <div class="crypto-table-container">
         {table_html}
       </div>
