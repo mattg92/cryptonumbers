@@ -135,7 +135,8 @@ def generate_html_table(df):
         'ATH Price (USD)',
         'ATH Date',
         'Percent from Price ATH',
-        'Multiply to Price ATH'
+        'Multiply to Price ATH',
+        'Market Cap (USD)'
     ]
     
     # If 'Market Cap (USD)' is present, we can sort by it descending
@@ -366,27 +367,28 @@ def generate_html_page(table_html, last_updated_str):
     });
 </script>
     """
+    
+    #payment_button = """
+    #<div style="
+    #  margin: 0;
+    #  padding: 0;
+    #  background-color: black;          /* Black background */
+    #  display: flex;                    /* Use flex layout */
+    #  justify-content: center;          /* Center horizontally */
+    #  align-items: center;              /* Center vertically */
+    #">
+    #<script async
+    #  src="https://js.stripe.com/v3/buy-button.js">
+    #</script>
 
-    payment_button = """
-    <div style="
-      margin: 0;
-      padding: 0;
-      background-color: black;          /* Black background */
-      display: flex;                    /* Use flex layout */
-      justify-content: center;          /* Center horizontally */
-      align-items: center;              /* Center vertically */
-    ">
-    <script async
-      src="https://js.stripe.com/v3/buy-button.js">
-    </script>
-
-    <stripe-buy-button
-      buy-button-id="buy_btn_1Qq2PUJvGMcfwVNwxYcpXYO5"
-      publishable-key="pk_live_51QbqIqJvGMcfwVNwBsQBWMde6xONddZgKckygtGXmVeXbcQKlHh2bX5qv0aNANEbKVrWmNlqR1oTgpuLlHLv2jj300Ll3zFPI9"
-    >
-    </stripe-buy-button>
-    </div>
-    """
+    #<stripe-buy-button
+    #  buy-button-id="buy_btn_1Qq2PUJvGMcfwVNwxYcpXYO5"
+    #  publishable-key="pk_live_51QbqIqJvGMcfwVNwBsQBWMde6xONddZgKckygtGXmVeXbcQKlHh2bX5qv0aNANEbKVrWmNlqR1oTgpuLlHLv2jj300Ll3zFPI9"
+    #>
+    #</stripe-buy-button>
+    #</div>
+    #"""
+    
 
     html = f"""
     <!DOCTYPE html>
@@ -398,13 +400,13 @@ def generate_html_page(table_html, last_updated_str):
     </head>
     <body>
       <!-- No title, as requested -->
-      <div class="password-section">
-        <label for="crypto-password">Enter password to view all coins</label><br>
-        <input type="password" id="crypto-password" placeholder="Enter password">
-        <button onclick="unlockRows()">Unlock</button>
-      </div>
+      #<div class="password-section">
+      #  <label for="crypto-password">Enter password to view all coins</label><br>
+      #  <input type="password" id="crypto-password" placeholder="Enter password">
+      #  <button onclick="unlockRows()">Unlock</button>
+      #</div>
 
-      {payment_button}
+      #{payment_button}
 
       <div class="crypto-table-container">
         {table_html}
