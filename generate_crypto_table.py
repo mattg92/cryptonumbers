@@ -268,7 +268,132 @@ def generate_html_page(table_html, last_updated_str):
         }
 
         /* Filter icon */
-        . ▋
+        .filter-icon {
+            cursor: pointer;
+            position: absolute;
+            top: 50%;
+            right: 5px;
+            transform: translateY(-50%);
+            width: 16px;
+            height: 16px;
+            background-image: url('data:image/svg+xml;base64,PHN2ZyBmaWxsPSIjZmZmZmZmIiBoZWlnaHQ9IjI0IiB2aWV3Qm94PSIwIDAgMjQgMjQiIHdpZHRoPSIyNCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KICAgIDxwYXRoIGQ9Ik0xMC4yNSA4bDMuNzUgNC4xNUwxOCA4aC02Ljc1TTUgN2g0LjI1TDExIDNsMS43NSAyTDE0LjkxIDdIMTVWMThsLTQgM3YtOUg1VjdaIi8+Cjwvc3ZnPg==');
+            background-size: cover;
+        }
+
+        /* Filter pop-up */
+        .filter-popup {
+            display: none;
+            position: absolute;
+            top: 100%;
+            left: 50%;
+            transform: translateX(-50%);
+            background-color: #333;
+            padding: 10px;
+            border: 1px solid #444;
+            border-radius: 5px;
+            z-index: 10;
+        }
+        .filter-popup input {
+            padding: 5px;
+            width: 80px;
+            margin: 5px 0;
+        }
+        .filter-popup button {
+            padding: 5px 10px;
+            background-color: #555;
+            color: #f2f2f2;
+            border: none;
+            border-radius: 3px;
+            cursor: pointer;
+        }
+        .filter-popup button:hover {
+            background-color: #777;
+        }
+    </style>
+    """
+
+    scripts = """
+    <!-- jQuery -->
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <!-- DataTables -->
+    <link rel="stylesheet" type="text/css"
+          href="https://cdn.datatables.net/1.13.4/css/jquery.dataTables.min.css"/>
+    <script src="https://cdn.datatables.net/1.13.4/js/jquery.dataTables.min.js"></script>
+
+    <script>
+    $(document).ready(function() {
+        // Initialize table with ordering enabled
+        var table = $('#cryptoTable').DataTable({
+            paging: true,
+            pageLength: 30, // Set pagination to display 30 rows per page
+            info: false,
+            ordering: true,
+            searching: true,
+            dom: '<"top"p>rt<"bottom"p><"clear">',
+            order: [],
+            initComplete: function () {
+                // Add filter icons
+                $('#cryptoTable thead th').each(function () {
+                    var title = $(this).text();
+                    $(this).append('<div class="filter-icon" data-column="' + title + '"></div>');
+                    $(this).append('<div class="filter-popup" data-column="' + title + '"><input type="text" class="from" placeholder="From" /><input type="text" class="to" placeholder="To" /><button class="apply-filter">Apply</button></div>');
+                });
+
+                // Show/hide filter pop-up
+                $('.filter-icon').on('click', function () {
+                    var column = $(this).data('column');
+                    $('.filter-popup').hide();
+                    $(this).siblings('.filter-popup[data-column="' + column + '"]').toggle();
+                });
+
+                // Apply filter
+                $('.apply-filter').on('click', function () {
+                    var column = $(this).parent().data('column');
+                    var from = $(this).siblings('.from').val();
+                    var to = $(this).siblings('.to').val();
+                    var search = '';
+                    if (from && to) {
+                        search = from + ' - ' + to;
+                    } else if (from) {
+                        search = '>=' + from;
+                    } else if (to) {
+                        search = '<=' + to;
+                    }
+                    var columnIndex = $('#cryptoTable thead th').filter(function() {
+                        return $(this).text() === column;
+                    }).index();
+                    table.column(columnIndex).search(search).draw();
+                    $(this).parent().hide();
+                });
+            }
+        });
+    });
+    </script>
+    """
+
+    html = f"""
+    <!DOCTYPE html>
+    <html lang="en">
+    <head>
+      <meta charset="UTF-8">
+      <title>Crypto Data Table</title>
+      {styles}
+    </head>
+    <body>
+      <div class="crypto-table-container">
+        {table_html}
+      </div>
+
+      <!-- Short sentence under the table about last updated time -->
+      <div class="last-updated-container">
+        <p class="last-updated">Data last updated: {last_updated_str} UTC</p>
+      </div>
+      
+      {scripts}
+    </body>
+    </html>
+    """
+    return html
 
 def generate_crypto_table_html():
     """
