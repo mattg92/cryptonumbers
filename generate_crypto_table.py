@@ -183,11 +183,12 @@ def generate_html_table(df):
     )
     return html_table
 
-def generate_html_page(table_html, last_updated_str):
+def generate_html_page(table_html, last_updated_str, ath_date_min, ath_date_max):
     """
     Returns the complete HTML page, including:
       - A top filter section with a Name filter and an "Other filters" button
       - A popup section for additional filters (with "from" and "to" fields for remaining columns)
+         * For the ATH Date column, date picker inputs are provided with min/max set.
       - A scrollable table container and last-updated note at the bottom
       - Column sorting enabled with DataTables
     """
@@ -287,7 +288,7 @@ def generate_html_page(table_html, last_updated_str):
     </style>
     """
 
-    scripts = """
+    scripts = f"""
     <!-- jQuery -->
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <!-- DataTables -->
@@ -296,6 +297,10 @@ def generate_html_page(table_html, last_updated_str):
     <script src="https://cdn.datatables.net/1.13.4/js/jquery.dataTables.min.js"></script>
 
     <script>
+    // Set date range variables for ATH Date filter
+    var athDateMin = "{ath_date_min}";
+    var athDateMax = "{ath_date_max}";
+
     $(document).ready(function() {
         // Initialize DataTable
         var table = $('#cryptoTable').DataTable({
@@ -317,13 +322,23 @@ def generate_html_page(table_html, last_updated_str):
         $('#cryptoTable thead th').each(function(index) {
             var title = $(this).text().trim();
             if (title !== "Name") {
-                $('#otherFiltersContent').append(
-                    '<div class="filter-group" data-column="'+title+'" style="margin-bottom: 10px;">' +
-                    '<label>'+title+': </label> ' +
-                    'From: <input type="text" class="from"> ' +
-                    'To: <input type="text" class="to">' +
-                    '</div>'
-                );
+                if(title === "ATH Date"){
+                    $('#otherFiltersContent').append(
+                        '<div class="filter-group" data-column="'+title+'" style="margin-bottom: 10px;">' +
+                        '<label>'+title+': </label> ' +
+                        'From: <input type="date" class="from" min="'+athDateMin+'" max="'+athDateMax+'"> ' +
+                        'To: <input type="date" class="to" min="'+athDateMin+'" max="'+athDateMax+'">' +
+                        '</div>'
+                    );
+                } else {
+                    $('#otherFiltersContent').append(
+                        '<div class="filter-group" data-column="'+title+'" style="margin-bottom: 10px;">' +
+                        '<label>'+title+': </label> ' +
+                        'From: <input type="text" class="from"> ' +
+                        'To: <input type="text" class="to">' +
+                        '</div>'
+                    );
+                }
             }
         });
 
@@ -356,26 +371,44 @@ def generate_html_page(table_html, last_updated_str):
                     // Remove HTML tags if any (e.g., from the percent bar)
                     cellVal = cellVal.replace(/<[^>]*>?/gm, '');
                     
-                    // Attempt to parse a number from the cell value
-                    var cellNum = parseFloat(cellVal.replace(/[^0-9\\.-]+/g, ''));
-                    var isNumeric = !isNaN(cellNum);
-                    
-                    if (isNumeric) {
-                        var fromNum = parseFloat(fromVal);
-                        var toNum = parseFloat(toVal);
-                        if (!isNaN(fromNum) && cellNum < fromNum) {
+                    if(columnName === "ATH Date"){
+                        // For ATH Date filtering, if cell is "N/A", it fails the filter if any date is provided.
+                        if(cellVal === "N/A"){
                             pass = false;
-                        }
-                        if (!isNaN(toNum) && cellNum > toNum) {
-                            pass = false;
+                        } else {
+                            if(fromVal){
+                                if(new Date(cellVal) < new Date(fromVal)){
+                                    pass = false;
+                                }
+                            }
+                            if(toVal){
+                                if(new Date(cellVal) > new Date(toVal)){
+                                    pass = false;
+                                }
+                            }
                         }
                     } else {
-                        // For non-numeric values, use lexicographical filtering (case-insensitive)
-                        if (fromVal && cellVal.toLowerCase() < fromVal.toLowerCase()) {
-                            pass = false;
-                        }
-                        if (toVal && cellVal.toLowerCase() > toVal.toLowerCase()) {
-                            pass = false;
+                        // Attempt to parse a number from the cell value
+                        var cellNum = parseFloat(cellVal.replace(/[^0-9\\.-]+/g, ''));
+                        var isNumeric = !isNaN(cellNum);
+                        
+                        if (isNumeric) {
+                            var fromNum = parseFloat(fromVal);
+                            var toNum = parseFloat(toVal);
+                            if (!isNaN(fromNum) && cellNum < fromNum) {
+                                pass = false;
+                            }
+                            if (!isNaN(toNum) && cellNum > toNum) {
+                                pass = false;
+                            }
+                        } else {
+                            // For non-numeric values, use lexicographical filtering (case-insensitive)
+                            if (fromVal && cellVal.toLowerCase() < fromVal.toLowerCase()) {
+                                pass = false;
+                            }
+                            if (toVal && cellVal.toLowerCase() > toVal.toLowerCase()) {
+                                pass = false;
+                            }
                         }
                     }
                 });
@@ -386,7 +419,6 @@ def generate_html_page(table_html, last_updated_str):
     </script>
     """
 
-    # Build final HTML with filter controls on top and the other filters popup.
     html = f"""
     <!DOCTYPE html>
     <html lang="en">
@@ -435,11 +467,22 @@ def generate_crypto_table_html():
       2) Filters & formats columns, including a right-aligned percentage bar
       3) Sorts by Market Cap if present
       4) Creates an HTML table
-      5) Adds a dynamic Name filter and a popup for other filters (with numeric filtering)
+      5) Adds a dynamic Name filter and a popup for other filters (with numeric and date filtering)
       6) Adds a last-updated line
       7) Saves to 'crypto_table.html'
     """
     df = fetch_data_from_google_sheets()
+
+    # Compute ATH Date range if column exists
+    ath_date_min = ""
+    ath_date_max = ""
+    if "ATH Date" in df.columns:
+        # Convert to datetime and filter out invalid dates
+        df_dates = pd.to_datetime(df["ATH Date"], errors='coerce', utc=True)
+        valid_dates = df_dates.dropna()
+        if not valid_dates.empty:
+            ath_date_min = valid_dates.min().strftime("%Y-%m-%d")
+            ath_date_max = valid_dates.max().strftime("%Y-%m-%d")
 
     # Generate the table HTML
     table_html = generate_html_table(df)
@@ -448,7 +491,7 @@ def generate_crypto_table_html():
     last_updated_str = extract_last_updated_info(df)
 
     # Build final page with filters, table, and last-updated info
-    full_html = generate_html_page(table_html, last_updated_str)
+    full_html = generate_html_page(table_html, last_updated_str, ath_date_min, ath_date_max)
 
     # Write to file
     with open("crypto_table.html", "w", encoding="utf-8") as f:
