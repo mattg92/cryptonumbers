@@ -6,26 +6,26 @@
       <title>Crypto Data Table</title>
       
     <style>
-        body {{
+        body {
             background-color: black;
             color: #f2f2f2;
             font-family: Arial, sans-serif;
             margin: 20px;
-        }}
+        }
         
         /* Filter controls */
-        #filterControls {{
+        #filterControls {
             margin-bottom: 10px;
             text-align: center;
-        }}
-        #filterControls input, #filterControls button {{
+        }
+        #filterControls input, #filterControls button {
             padding: 8px;
             font-size: 14px;
             margin: 0 5px;
-        }}
+        }
         
         /* Popup for other filters */
-        #otherFiltersPopup {{
+        #otherFiltersPopup {
             display: none;
             position: fixed;
             top: 20%;
@@ -36,17 +36,17 @@
             border: 1px solid #444;
             border-radius: 5px;
             z-index: 1000;
-        }}
-        #otherFiltersPopup h4 {{
+        }
+        #otherFiltersPopup h4 {
             margin-top: 0;
             text-align: center;
-        }}
-        #otherFiltersPopup input {{
+        }
+        #otherFiltersPopup input {
             padding: 5px;
             width: 80px;
             margin: 0 5px;
-        }}
-        #otherFiltersPopup button {{
+        }
+        #otherFiltersPopup button {
             padding: 5px 10px;
             background-color: #555;
             color: #f2f2f2;
@@ -54,49 +54,49 @@
             border-radius: 3px;
             cursor: pointer;
             margin: 5px;
-        }}
-        #otherFiltersPopup button:hover {{
+        }
+        #otherFiltersPopup button:hover {
             background-color: #777;
-        }}
+        }
         
         /* Table container with scrolling */
-        .crypto-table-container {{
+        .crypto-table-container {
             margin: 0 auto;
             width: 90%;
-            max-height: 800px;
+            max-height: 800px; /* approximate for ~21 rows visible */
             overflow-y: auto;
-        }}
-        .crypto-table {{
+        }
+        .crypto-table {
             width: 100%;
             border-collapse: collapse;
             margin: 0 auto;
             min-width: 600px;
-        }}
-        .crypto-table th, .crypto-table td {{
+        }
+        .crypto-table th, .crypto-table td {
             border: 1px solid #444;
             padding: 12px 15px;
             text-align: center;
             position: relative;
-        }}
-        .crypto-table thead th {{
+        }
+        .crypto-table thead th {
             text-align: center !important;
             background-color: #333;
-        }}
-        .crypto-table tr:nth-child(even) {{
+        }
+        .crypto-table tr:nth-child(even) {
             background-color: #1a1a1a;
-        }}
-        .crypto-table tr:nth-child(odd) {{
+        }
+        .crypto-table tr:nth-child(odd) {
             background-color: #2a2a2a;
-        }}
-        .crypto-table tr:hover {{
+        }
+        .crypto-table tr:hover {
             background-color: #555;
-        }}
+        }
         
         /* Last updated text */
-        .last-updated-container {{
+        .last-updated-container {
             text-align: center;
             margin-top: 10px;
-        }}
+        }
     </style>
     
     </head>
@@ -12861,15 +12861,11 @@
     <script src="https://cdn.datatables.net/1.13.4/js/jquery.dataTables.min.js"></script>
 
     <script>
-    // Set date range variables for ATH Date filter
-    var athDateMin = "2017-06-25";
-    var athDateMax = "2025-03-16";
-
     $(document).ready(function() {
         // Initialize DataTable
         var table = $('#cryptoTable').DataTable({
             paging: true,
-            pageLength: 30,
+            pageLength: 30, // Display 30 rows per page
             info: false,
             ordering: true,
             searching: true,
@@ -12877,32 +12873,22 @@
             order: []
         });
 
-        // Name filter for the "Name" column (assumed first column)
+        // Name filter: dynamically filter "Name" column (assumed to be the first column)
         $("#nameFilter").on("keyup", function() {
             table.column(0).search(this.value).draw();
         });
 
-        // Populate other filters popup (for all columns except "Name")
+        // Populate the other filters popup with inputs for each column except "Name"
         $('#cryptoTable thead th').each(function(index) {
             var title = $(this).text().trim();
             if (title !== "Name") {
-                if(title === "ATH Date") {
-                    $('#otherFiltersContent').append(
-                        '<div class="filter-group" data-column="'+title+'" style="margin-bottom: 10px;">' +
-                        '<label>'+title+': </label> ' +
-                        'From: <input type="date" class="from" min="'+athDateMin+'" max="'+athDateMax+'"> ' +
-                        'To: <input type="date" class="to" min="'+athDateMin+'" max="'+athDateMax+'">' +
-                        '</div>'
-                    );
-                } else {
-                    $('#otherFiltersContent').append(
-                        '<div class="filter-group" data-column="'+title+'" style="margin-bottom: 10px;">' +
-                        '<label>'+title+': </label> ' +
-                        'From: <input type="text" class="from"> ' +
-                        'To: <input type="text" class="to">' +
-                        '</div>'
-                    );
-                }
+                $('#otherFiltersContent').append(
+                    '<div class="filter-group" data-column="'+title+'" style="margin-bottom: 10px;">' +
+                    '<label>'+title+': </label> ' +
+                    'From: <input type="text" class="from"> ' +
+                    'To: <input type="text" class="to">' +
+                    '</div>'
+                );
             }
         });
 
@@ -12925,49 +12911,36 @@
                 var pass = true;
                 $("#otherFiltersContent .filter-group").each(function() {
                     var columnName = $(this).data("column");
+                    // Get the column index by matching header text
                     var colIndex = $('#cryptoTable thead th').filter(function(){
                         return $(this).text().trim() === columnName;
                     }).index();
                     var fromVal = $(this).find('.from').val();
                     var toVal = $(this).find('.to').val();
                     var cellVal = data[colIndex] || "";
+                    // Remove HTML tags if any (e.g., from the percent bar)
                     cellVal = cellVal.replace(/<[^>]*>?/gm, '');
                     
-                    if(columnName === "ATH Date") {
-                        if(cellVal === "N/A") {
+                    // Attempt to parse a number from the cell value
+                    var cellNum = parseFloat(cellVal.replace(/[^0-9\.-]+/g, ''));
+                    var isNumeric = !isNaN(cellNum);
+                    
+                    if (isNumeric) {
+                        var fromNum = parseFloat(fromVal);
+                        var toNum = parseFloat(toVal);
+                        if (!isNaN(fromNum) && cellNum < fromNum) {
                             pass = false;
-                        } else {
-                            if(fromVal) {
-                                if(new Date(cellVal) < new Date(fromVal)) {
-                                    pass = false;
-                                }
-                            }
-                            if(toVal) {
-                                if(new Date(cellVal) > new Date(toVal)) {
-                                    pass = false;
-                                }
-                            }
+                        }
+                        if (!isNaN(toNum) && cellNum > toNum) {
+                            pass = false;
                         }
                     } else {
-                        var cellNum = parseFloat(cellVal.replace(/[^0-9\.-]+/g, ''));
-                        var isNumeric = !isNaN(cellNum);
-                        
-                        if (isNumeric) {
-                            var fromNum = parseFloat(fromVal);
-                            var toNum = parseFloat(toVal);
-                            if (!isNaN(fromNum) && cellNum < fromNum) {
-                                pass = false;
-                            }
-                            if (!isNaN(toNum) && cellNum > toNum) {
-                                pass = false;
-                            }
-                        } else {
-                            if (fromVal && cellVal.toLowerCase() < fromVal.toLowerCase()) {
-                                pass = false;
-                            }
-                            if (toVal && cellVal.toLowerCase() > toVal.toLowerCase()) {
-                                pass = false;
-                            }
+                        // For non-numeric values, use lexicographical filtering (case-insensitive)
+                        if (fromVal && cellVal.toLowerCase() < fromVal.toLowerCase()) {
+                            pass = false;
+                        }
+                        if (toVal && cellVal.toLowerCase() > toVal.toLowerCase()) {
+                            pass = false;
                         }
                     }
                 });
