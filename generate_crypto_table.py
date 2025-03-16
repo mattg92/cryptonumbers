@@ -216,13 +216,14 @@ def generate_html_page(table_html, last_updated_str):
             border: 1px solid #444;
             padding: 12px 15px;
             text-align: center; /* center columns' names & data */
+            position: relative;
         }
 
         /* If DataTables overrides the header, use this: */
         .crypto-table thead th {
             text-align: center !important;
         }
-    
+
         .crypto-table th {
             background-color: #333;
         }
@@ -266,33 +267,46 @@ def generate_html_page(table_html, last_updated_str):
             color: #f2f2f2;
         }
 
-        /* Filter section */
-        .filter-section {
+        /* Filter icon */
+        .filter-icon {
+            cursor: pointer;
+            position: absolute;
+            top: 50%;
+            right: 5px;
+            transform: translateY(-50%);
+            width: 16px;
+            height: 16px;
+            background-image: url('data:image/svg+xml;base64,...'); /* Replace with actual icon data */
+            background-size: cover;
+        }
+
+        /* Filter pop-up */
+        .filter-popup {
             display: none;
+            position: absolute;
+            top: 100%;
+            left: 50%;
+            transform: translateX(-50%);
             background-color: #333;
-            padding: 20px;
+            padding: 10px;
             border: 1px solid #444;
             border-radius: 5px;
-            margin: 20px 0;
+            z-index: 10;
         }
-        .filter-input {
+        .filter-popup input {
+            padding: 5px;
+            width: 80px;
             margin: 5px 0;
         }
-        .filter-input input {
-            padding: 5px;
-            width: 100px;
-        }
-        .filter-button {
-            margin: 0 auto;
-            display: block;
-            padding: 10px;
+        .filter-popup button {
+            padding: 5px 10px;
             background-color: #555;
             color: #f2f2f2;
             border: none;
-            border-radius: 5px;
+            border-radius: 3px;
             cursor: pointer;
         }
-        .filter-button:hover {
+        .filter-popup button:hover {
             background-color: #777;
         }
     </style>
@@ -318,7 +332,43 @@ def generate_html_page(table_html, last_updated_str):
             dom: '<"top"p>rt<"bottom"p><"clear">',
             order: [],
             initComplete: function () {
-                // Add filter row
+                // Add filter icons
+                $('#cryptoTable thead th').each(function () {
+                    var title = $(this).text();
+                    if (title !== 'Name') {
+                        $(this).append('<div class="filter-icon" data-column="' + title + '"></div>');
+                        $(this).append('<div class="filter-popup" data-column="' + title + '"><input type="text" class="from" placeholder="From" /><input type="text" class="to" placeholder="To" /><button class="apply-filter">Apply</button></div>');
+                    }
+                });
+
+                // Show/hide filter pop-up
+                $('.filter-icon').on('click', function () {
+                    var column = $(this).data('column');
+                    $('.filter-popup').hide();
+                    $(this).siblings('.filter-popup[data-column="' + column + '"]').toggle();
+                });
+
+                // Apply filter
+                $('.apply-filter').on('click', function () {
+                    var column = $(this).parent().data('column');
+                    var from = $(this).siblings('.from').val();
+                    var to = $(this).siblings('.to').val();
+                    var search = '';
+                    if (from && to) {
+                        search = from + ' - ' + to;
+                    } else if (from) {
+                        search = '>=' + from;
+                    } else if (to) {
+                        search = '<=' + to;
+                    }
+                    var columnIndex = $('#cryptoTable thead th').filter(function() {
+                        return $(this).text() === column;
+                    }).index();
+                    table.column(columnIndex).search(search).draw();
+                    $(this).parent().hide();
+                });
+
+                // Add filter row for 'Name' column
                 $('#cryptoTable thead tr').clone(true).appendTo( '#cryptoTable thead' );
                 $('#cryptoTable thead tr:eq(1) th').each( function (i) {
                     if (i === 0) {
@@ -339,42 +389,6 @@ def generate_html_page(table_html, last_updated_str):
                 });
             }
         });
-
-        // Toggle filter section
-        $('#filter-button').on('click', function() {
-            $('.filter-section').toggle();
-        });
-
-        // Apply filter button
-        $('#apply-filters').on('click', function() {
-            var filters = {};
-            $('.filter-input').each(function() {
-                var column = $(this).data('column');
-                var from = $(this).find('.from').val();
-                var to = $(this).find('.to').val();
-                filters[column] = { from: from, to: to };
-            });
-
-            table.columns().every(function() {
-                var column = this;
-                var index = column.index();
-                if (filters[index]) {
-                    var from = filters[index].from;
-                    var to = filters[index].to;
-                    var search = '';
-                    if (from && to) {
-                        search = from + ' - ' + to;
-                    } else if (from) {
-                        search = '>=' + from;
-                    } else if (to) {
-                        search = '<=' + to;
-                    }
-                    column.search(search).draw();
-                }
-            });
-
-            $('.filter-section').hide();
-        });
     });
     </script>
     """
@@ -389,22 +403,7 @@ def generate_html_page(table_html, last_updated_str):
     </head>
     <body>
       <div class="crypto-table-container">
-        <button id="filter-button" class="filter-button">Show/Hide Filters</button>
         {table_html}
-        <div class="filter-section">
-          <div class="filter-input" data-column="3">
-            <label>Current Price (USD): </label>
-            <input type="text" class="from" placeholder="From" />
-            <input type="text" class="to" placeholder="To" />
-          </div>
-          <div class="filter-input" data-column="4">
-            <label>ATH Price (USD): </label>
-            <input type="text" class="from" placeholder="From" />
-            <input type="text" class="to" placeholder="To" />
-          </div>
-          <!-- Add more filters for other columns as needed -->
-          <button id="apply-filters" class="filter-button">Apply Filters</button>
-        </div>
       </div>
 
       <!-- Short sentence under the table about last updated time -->
