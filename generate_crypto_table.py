@@ -226,6 +226,9 @@ def generate_html_page(table_html, last_updated_str):
 
         .crypto-table th {
             background-color: #333;
+            display: flex;
+            justify-content: center;
+            align-items: center;
         }
         .crypto-table tr:nth-child(even) {
             background-color: #1a1a1a;
@@ -270,10 +273,7 @@ def generate_html_page(table_html, last_updated_str):
         /* Filter icon */
         .filter-icon {
             cursor: pointer;
-            position: absolute;
-            top: 50%;
-            right: 5px;
-            transform: translateY(-50%);
+            margin-left: 8px;
             width: 16px;
             height: 16px;
             background-image: url('data:image/svg+xml;base64,PHN2ZyBmaWxsPSIjZmZmZmZmIiBoZWlnaHQ9IjI0IiB2aWV3Qm94PSIwIDAgMjQgMjQiIHdpZHRoPSIyNCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KICAgIDxwYXRoIGQ9Ik0xMC4yNSA4bDMuNzUgNC4xNUwxOCA4aC02Ljc1TTUgN2g0LjI1TDExIDNsMS43NSAyTDE0LjkxIDdIMTVWMThsLTQgM3YtOUg1VjdaIi8+Cjwvc3ZnPg==');
@@ -328,15 +328,17 @@ def generate_html_page(table_html, last_updated_str):
             pageLength: 30, // Set pagination to display 30 rows per page
             info: false,
             ordering: true,
-            searching: true,
+            searching: false,
             dom: '<"top"p>rt<"bottom"p><"clear">',
             order: [],
             initComplete: function () {
                 // Add filter icons
                 $('#cryptoTable thead th').each(function () {
                     var title = $(this).text();
-                    $(this).append('<div class="filter-icon" data-column="' + title + '"></div>');
-                    $(this).append('<div class="filter-popup" data-column="' + title + '"><input type="text" class="from" placeholder="From" /><input type="text" class="to" placeholder="To" /><button class="apply-filter">Apply</button></div>');
+                    if (title !== 'Name') {
+                        $(this).append('<div class="filter-icon" data-column="' + title + '"></div>');
+                        $(this).append('<div class="filter-popup" data-column="' + title + '"><input type="text" class="from" placeholder="From" /><input type="text" class="to" placeholder="To" /><button class="apply-filter">Apply</button></div>');
+                    }
                 });
 
                 // Show/hide filter pop-up
