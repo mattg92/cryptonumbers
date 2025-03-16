@@ -90,7 +90,7 @@
             transform: translateY(-50%);
             width: 16px;
             height: 16px;
-            background-image: url('data:image/svg+xml;base64,...'); /* Replace with actual icon data */
+            background-image: url('data:image/svg+xml;base64,PHN2ZyBmaWxsPSIjZmZmZmZmIiBoZWlnaHQ9IjI0IiB2aWV3Qm94PSIwIDAgMjQgMjQiIHdpZHRoPSIyNCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KICAgIDxwYXRoIGQ9Ik0xMC4yNSA4bDMuNzUgNC4xNUwxOCA4aC02Ljc1TTUgN2g0LjI1TDExIDNsMS43NSAyTDE0LjkxIDdIMTVWMThsLTQgM3YtOUg1VjdaIi8+Cjwvc3ZnPg==');
             background-size: cover;
         }
 
@@ -12554,10 +12554,8 @@
                 // Add filter icons
                 $('#cryptoTable thead th').each(function () {
                     var title = $(this).text();
-                    if (title !== 'Name') {
-                        $(this).append('<div class="filter-icon" data-column="' + title + '"></div>');
-                        $(this).append('<div class="filter-popup" data-column="' + title + '"><input type="text" class="from" placeholder="From" /><input type="text" class="to" placeholder="To" /><button class="apply-filter">Apply</button></div>');
-                    }
+                    $(this).append('<div class="filter-icon" data-column="' + title + '"></div>');
+                    $(this).append('<div class="filter-popup" data-column="' + title + '"><input type="text" class="from" placeholder="From" /><input type="text" class="to" placeholder="To" /><button class="apply-filter">Apply</button></div>');
                 });
 
                 // Show/hide filter pop-up
@@ -12585,26 +12583,6 @@
                     }).index();
                     table.column(columnIndex).search(search).draw();
                     $(this).parent().hide();
-                });
-
-                // Add filter row for 'Name' column
-                $('#cryptoTable thead tr').clone(true).appendTo( '#cryptoTable thead' );
-                $('#cryptoTable thead tr:eq(1) th').each( function (i) {
-                    if (i === 0) {
-                        var title = $(this).text();
-                        $(this).html( '<input type="text" placeholder="Search '+title+'" />' );
-            
-                        $( 'input', this ).on( 'keyup change clear', function () {
-                            if ( table.column(i).search() !== this.value ) {
-                                table
-                                    .column(i)
-                                    .search( this.value )
-                                    .draw();
-                            }
-                        });
-                    } else {
-                        $(this).html('');
-                    }
                 });
             }
         });
