@@ -46,9 +46,9 @@ def format_price(x):
     try:
         value = float(x)
         if value >= 1:
-            return f"${value:,.2f}"
+            return "${:,.2f}".format(value)
         else:
-            return f"${value:,.6f}"
+            return "${:,.6f}".format(value)
     except:
         return str(x)
 
@@ -60,7 +60,7 @@ def format_market_cap(x):
         return "N/A"
     try:
         value = float(x)
-        return f"${value:,.0f}"
+        return "${:,.0f}".format(value)
     except:
         return str(x)
 
@@ -72,14 +72,13 @@ def format_values(df):
       - Converts 'ATH Date' to YYYY-MM-DD
       - Market Cap (USD): formatted with commas and dollar sign
     """
-    # Format numeric columns if they exist
     if 'Current Price (USD)' in df.columns:
         df['Current Price (USD)'] = df['Current Price (USD)'].apply(format_price)
     if 'ATH Price (USD)' in df.columns:
         df['ATH Price (USD)'] = df['ATH Price (USD)'].apply(format_price)
     if 'Multiply to Price ATH' in df.columns:
         df['Multiply to Price ATH'] = df['Multiply to Price ATH'].apply(
-            lambda x: f"{float(x):.2f}" if pd.notnull(x) else "N/A"
+            lambda x: "{:.2f}".format(float(x)) if pd.notnull(x) else "N/A"
         )
     if 'ATH Date' in df.columns:
         df['ATH Date'] = df['ATH Date'].apply(format_ath_date)
@@ -87,7 +86,6 @@ def format_values(df):
         df['Market Cap (USD)'] = df['Market Cap (USD)'].apply(format_market_cap)
     
     return df
-    
 
 def create_percent_bar(percent_str):
     """
@@ -99,26 +97,23 @@ def create_percent_bar(percent_str):
         return "N/A"
 
     try:
-        val = abs(float(percent_str))  # e.g., 31.85 for -31.85
-
-        # Single-line HTML to avoid literal \n characters
+        val = abs(float(percent_str))
         bar_html = (
-            '<div style="position: relative; width: 100px; height: 20px; '
-            'background-color: #555; border-radius: 3px; overflow: hidden; margin: 0 auto; display: block;">'
-              f'<div style="position: absolute; right: 0; top: 0; bottom: 0; '
-              f'width: {val}%; background-color: red; border-radius: 3px;">'
-              '</div>'
-              '<!-- Text overlay -->'
-              '<div style="position: absolute; right: 5px; z-index: 2; color: #fff; font-size: 12px; '
-              'line-height: 20px; padding-right: 5px; text-align: right; width: 100%;">'
-                f'-{val:.2f}%'
-              '</div>'
+            '<div style="position: relative; width: 100px; height: 20px; background-color: #555; '
+            'border-radius: 3px; overflow: hidden; margin: 0 auto; display: block;">'
+                '<div style="position: absolute; right: 0; top: 0; bottom: 0; width: {0}%; '
+                'background-color: red; border-radius: 3px;">'
+                '</div>'
+                '<!-- Text overlay -->'
+                '<div style="position: absolute; right: 5px; z-index: 2; color: #fff; font-size: 12px; '
+                'line-height: 20px; padding-right: 5px; text-align: right; width: 100%;">'
+                    '-{1:.2f}%'
+                '</div>'
             '</div>'
-        )
+        ).format(val, val)
         return bar_html
     except:
         return str(percent_str)
-
 
 def fetch_data_from_google_sheets():
     """Fetch data from the specified Google Sheet and return a DataFrame."""
@@ -135,14 +130,13 @@ def fetch_data_from_google_sheets():
 def generate_html_table(df):
     """
     1) Keep only the required columns:
-        ['Name','Current Price (USD)','ATH Price (USD)',
-         'ATH Date','Percent from Price ATH','Multiply to Price ATH','Market Cap (USD)', 'Rank']
+       ['Name','Current Price (USD)','ATH Price (USD)',
+        'ATH Date','Percent from Price ATH','Multiply to Price ATH','Market Cap (USD)', 'Rank']
     2) Format numeric columns, parse 'ATH Date'
     3) Convert 'Percent from Price ATH' to an HTML bar
     4) Sort by 'Market Cap (USD)' descending if that column exists
-    5) Return HTML (no blur or disabling sorting here - all in JS)
+    5) Return HTML
     """
-    # The columns we actually want in the final table:
     required_cols = [
         'Name',
         'Rank',
@@ -154,66 +148,59 @@ def generate_html_table(df):
         'Market Cap (USD)'
     ]
     
-    # If 'Market Cap (USD)' is present, we can sort by it descending
     if 'Market Cap (USD)' in df.columns:
         df['Market Cap (USD)'] = pd.to_numeric(df['Market Cap (USD)'], errors='coerce')
         df.sort_values('Market Cap (USD)', ascending=False, inplace=True)
     
-    # Filter to only the required columns if they exist
     existing_cols = [col for col in required_cols if col in df.columns]
     if not existing_cols:
         return "<p>No matching columns found in the sheet.</p>"
     
     df = df[existing_cols].copy()
-    
-    # Apply formatting (numbers, ATH date)
     df = format_values(df)
     
-    # Convert 'Percent from Price ATH' to bar
     if 'Percent from Price ATH' in df.columns:
         df['Percent from Price ATH'] = df['Percent from Price ATH'].apply(create_percent_bar)
-
-    # Convert final DataFrame to HTML
+    
     html_table = df.to_html(
         index=False,
         classes='crypto-table display',
         border=0,
-        escape=False,  # so the bar HTML isn't escaped
+        escape=False,
         table_id='cryptoTable'
     )
     return html_table
 
 def generate_html_page(table_html, last_updated_str, ath_date_min, ath_date_max):
     """
-    Returns the complete HTML page, including:
-      - A top filter section with a Name filter and an "Other filters" button
-      - A popup section for additional filters (with "from" and "to" fields for remaining columns)
-         * For the ATH Date column, date picker inputs are provided with min/max set.
-      - A scrollable table container and last-updated note at the bottom
+    Returns the complete HTML page with:
+      - A top filter section (Name filter + "Other filters" button)
+      - A popup for additional filters (with date pickers for ATH Date)
+      - A scrollable table container and last-updated note
       - Column sorting enabled with DataTables
     """
     styles = """
     <style>
-        body {
+        body {{
             background-color: black;
             color: #f2f2f2;
             font-family: Arial, sans-serif;
             margin: 20px;
-        }
+        }}
         
         /* Filter controls */
-        #filterControls {
+        #filterControls {{
             margin-bottom: 10px;
             text-align: center;
-        }
-        #filterControls input, #filterControls button {
+        }}
+        #filterControls input, #filterControls button {{
             padding: 8px;
             font-size: 14px;
             margin: 0 5px;
-        }
+        }}
         
         /* Popup for other filters */
-        #otherFiltersPopup {
+        #otherFiltersPopup {{
             display: none;
             position: fixed;
             top: 20%;
@@ -224,17 +211,17 @@ def generate_html_page(table_html, last_updated_str, ath_date_min, ath_date_max)
             border: 1px solid #444;
             border-radius: 5px;
             z-index: 1000;
-        }
-        #otherFiltersPopup h4 {
+        }}
+        #otherFiltersPopup h4 {{
             margin-top: 0;
             text-align: center;
-        }
-        #otherFiltersPopup input {
+        }}
+        #otherFiltersPopup input {{
             padding: 5px;
             width: 80px;
             margin: 0 5px;
-        }
-        #otherFiltersPopup button {
+        }}
+        #otherFiltersPopup button {{
             padding: 5px 10px;
             background-color: #555;
             color: #f2f2f2;
@@ -242,53 +229,53 @@ def generate_html_page(table_html, last_updated_str, ath_date_min, ath_date_max)
             border-radius: 3px;
             cursor: pointer;
             margin: 5px;
-        }
-        #otherFiltersPopup button:hover {
+        }}
+        #otherFiltersPopup button:hover {{
             background-color: #777;
-        }
+        }}
         
         /* Table container with scrolling */
-        .crypto-table-container {
+        .crypto-table-container {{
             margin: 0 auto;
             width: 90%;
-            max-height: 800px; /* approximate for ~21 rows visible */
+            max-height: 800px;
             overflow-y: auto;
-        }
-        .crypto-table {
+        }}
+        .crypto-table {{
             width: 100%;
             border-collapse: collapse;
             margin: 0 auto;
             min-width: 600px;
-        }
-        .crypto-table th, .crypto-table td {
+        }}
+        .crypto-table th, .crypto-table td {{
             border: 1px solid #444;
             padding: 12px 15px;
             text-align: center;
             position: relative;
-        }
-        .crypto-table thead th {
+        }}
+        .crypto-table thead th {{
             text-align: center !important;
             background-color: #333;
-        }
-        .crypto-table tr:nth-child(even) {
+        }}
+        .crypto-table tr:nth-child(even) {{
             background-color: #1a1a1a;
-        }
-        .crypto-table tr:nth-child(odd) {
+        }}
+        .crypto-table tr:nth-child(odd) {{
             background-color: #2a2a2a;
-        }
-        .crypto-table tr:hover {
+        }}
+        .crypto-table tr:hover {{
             background-color: #555;
-        }
+        }}
         
         /* Last updated text */
-        .last-updated-container {
+        .last-updated-container {{
             text-align: center;
             margin-top: 10px;
-        }
+        }}
     </style>
     """
 
-    scripts = f"""
+    scripts = """
     <!-- jQuery -->
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <!-- DataTables -->
@@ -298,31 +285,31 @@ def generate_html_page(table_html, last_updated_str, ath_date_min, ath_date_max)
 
     <script>
     // Set date range variables for ATH Date filter
-    var athDateMin = "{ath_date_min}";
-    var athDateMax = "{ath_date_max}";
+    var athDateMin = "{0}";
+    var athDateMax = "{1}";
 
-    $(document).ready(function() {
+    $(document).ready(function() {{
         // Initialize DataTable
-        var table = $('#cryptoTable').DataTable({
+        var table = $('#cryptoTable').DataTable({{
             paging: true,
-            pageLength: 30, // Display 30 rows per page
+            pageLength: 30,
             info: false,
             ordering: true,
             searching: true,
             dom: '<"top"p>rt<"bottom"p><"clear">',
             order: []
-        });
+        }});
 
-        // Name filter: dynamically filter "Name" column (assumed to be the first column)
-        $("#nameFilter").on("keyup", function() {
+        // Name filter for the "Name" column (assumed first column)
+        $("#nameFilter").on("keyup", function() {{
             table.column(0).search(this.value).draw();
-        });
+        }});
 
-        // Populate the other filters popup with inputs for each column except "Name"
-        $('#cryptoTable thead th').each(function(index) {
+        // Populate other filters popup (for all columns except "Name")
+        $('#cryptoTable thead th').each(function(index) {{
             var title = $(this).text().trim();
-            if (title !== "Name") {
-                if(title === "ATH Date"){
+            if (title !== "Name") {{
+                if(title === "ATH Date") {{
                     $('#otherFiltersContent').append(
                         '<div class="filter-group" data-column="'+title+'" style="margin-bottom: 10px;">' +
                         '<label>'+title+': </label> ' +
@@ -330,7 +317,7 @@ def generate_html_page(table_html, last_updated_str, ath_date_min, ath_date_max)
                         'To: <input type="date" class="to" min="'+athDateMin+'" max="'+athDateMax+'">' +
                         '</div>'
                     );
-                } else {
+                }} else {{
                     $('#otherFiltersContent').append(
                         '<div class="filter-group" data-column="'+title+'" style="margin-bottom: 10px;">' +
                         '<label>'+title+': </label> ' +
@@ -338,88 +325,83 @@ def generate_html_page(table_html, last_updated_str, ath_date_min, ath_date_max)
                         'To: <input type="text" class="to">' +
                         '</div>'
                     );
-                }
-            }
-        });
+                }}
+            }}
+        }});
 
         // Toggle other filters popup
-        $("#otherFiltersBtn").on("click", function() {
+        $("#otherFiltersBtn").on("click", function() {{
             $("#otherFiltersPopup").toggle();
-        });
+        }});
 
-        $("#applyOtherFilters").on("click", function(){
+        $("#applyOtherFilters").on("click", function(){{
             table.draw();
             $("#otherFiltersPopup").hide();
-        });
-        $("#closeOtherFilters").on("click", function(){
+        }});
+        $("#closeOtherFilters").on("click", function(){{
             $("#otherFiltersPopup").hide();
-        });
+        }});
 
         // Custom filtering function for other filters
         $.fn.dataTable.ext.search.push(
-            function(settings, data, dataIndex) {
+            function(settings, data, dataIndex) {{
                 var pass = true;
-                $("#otherFiltersContent .filter-group").each(function() {
+                $("#otherFiltersContent .filter-group").each(function() {{
                     var columnName = $(this).data("column");
-                    // Get the column index by matching header text
-                    var colIndex = $('#cryptoTable thead th').filter(function(){
+                    var colIndex = $('#cryptoTable thead th').filter(function(){{
                         return $(this).text().trim() === columnName;
-                    }).index();
+                    }}).index();
                     var fromVal = $(this).find('.from').val();
                     var toVal = $(this).find('.to').val();
                     var cellVal = data[colIndex] || "";
-                    // Remove HTML tags if any (e.g., from the percent bar)
                     cellVal = cellVal.replace(/<[^>]*>?/gm, '');
                     
-                    if(columnName === "ATH Date"){
-                        // For ATH Date filtering, if cell is "N/A", it fails the filter if any date is provided.
-                        if(cellVal === "N/A"){
+                    if(columnName === "ATH Date") {{
+                        if(cellVal === "N/A") {{
                             pass = false;
-                        } else {
-                            if(fromVal){
-                                if(new Date(cellVal) < new Date(fromVal)){
+                        }} else {{
+                            if(fromVal) {{
+                                if(new Date(cellVal) < new Date(fromVal)) {{
                                     pass = false;
-                                }
-                            }
-                            if(toVal){
-                                if(new Date(cellVal) > new Date(toVal)){
+                                }}
+                            }}
+                            if(toVal) {{
+                                if(new Date(cellVal) > new Date(toVal)) {{
                                     pass = false;
-                                }
-                            }
-                        }
-                    } else {
-                        // Attempt to parse a number from the cell value
+                                }}
+                            }}
+                        }}
+                    }} else {{
                         var cellNum = parseFloat(cellVal.replace(/[^0-9\\.-]+/g, ''));
                         var isNumeric = !isNaN(cellNum);
                         
-                        if (isNumeric) {
+                        if (isNumeric) {{
                             var fromNum = parseFloat(fromVal);
                             var toNum = parseFloat(toVal);
-                            if (!isNaN(fromNum) && cellNum < fromNum) {
+                            if (!isNaN(fromNum) && cellNum < fromNum) {{
                                 pass = false;
-                            }
-                            if (!isNaN(toNum) && cellNum > toNum) {
+                            }}
+                            if (!isNaN(toNum) && cellNum > toNum) {{
                                 pass = false;
-                            }
-                        } else {
-                            // For non-numeric values, use lexicographical filtering (case-insensitive)
-                            if (fromVal && cellVal.toLowerCase() < fromVal.toLowerCase()) {
+                            }}
+                        }} else {{
+                            if (fromVal && cellVal.toLowerCase() < fromVal.toLowerCase()) {{
                                 pass = false;
-                            }
-                            if (toVal && cellVal.toLowerCase() > toVal.toLowerCase()) {
+                            }}
+                            if (toVal && cellVal.toLowerCase() > toVal.toLowerCase()) {{
                                 pass = false;
-                            }
-                        }
-                    }
-                });
+                            }}
+                        }}
+                    }}
+                }});
                 return pass;
-            }
+            }}
         );
-    });
+    }});
     </script>
-    """
+    """.format(ath_date_min, ath_date_max)
 
-    html = f"""
+    html = """
     <!DOCTYPE html>
     <html lang="en">
     <head>
@@ -457,7 +439,7 @@ def generate_html_page(table_html, last_updated_str, ath_date_min, ath_date_max)
       {scripts}
     </body>
     </html>
-    """
+    """.format(styles=styles, table_html=table_html, last_updated_str=last_updated_str, scripts=scripts)
     return html
 
 def generate_crypto_table_html():
@@ -467,33 +449,25 @@ def generate_crypto_table_html():
       2) Filters & formats columns, including a right-aligned percentage bar
       3) Sorts by Market Cap if present
       4) Creates an HTML table
-      5) Adds a dynamic Name filter and a popup for other filters (with numeric and date filtering)
+      5) Adds dynamic Name filter and a popup for other filters (with numeric and date filtering)
       6) Adds a last-updated line
       7) Saves to 'crypto_table.html'
     """
     df = fetch_data_from_google_sheets()
 
-    # Compute ATH Date range if column exists
     ath_date_min = ""
     ath_date_max = ""
     if "ATH Date" in df.columns:
-        # Convert to datetime and filter out invalid dates
         df_dates = pd.to_datetime(df["ATH Date"], errors='coerce', utc=True)
         valid_dates = df_dates.dropna()
         if not valid_dates.empty:
             ath_date_min = valid_dates.min().strftime("%Y-%m-%d")
             ath_date_max = valid_dates.max().strftime("%Y-%m-%d")
 
-    # Generate the table HTML
     table_html = generate_html_table(df)
-    
-    # Extract last updated info
     last_updated_str = extract_last_updated_info(df)
-
-    # Build final page with filters, table, and last-updated info
     full_html = generate_html_page(table_html, last_updated_str, ath_date_min, ath_date_max)
 
-    # Write to file
     with open("crypto_table.html", "w", encoding="utf-8") as f:
         f.write(full_html)
 
@@ -503,7 +477,7 @@ def main():
     try:
         generate_crypto_table_html()
     except Exception as e:
-        print(f"Error: {e}")
+        print("Error: {}".format(e))
         exit(1)
 
 if __name__ == "__main__":
