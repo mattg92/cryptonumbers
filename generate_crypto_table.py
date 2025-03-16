@@ -274,6 +274,36 @@ def generate_html_page(table_html, last_updated_str):
             margin-top: 20px;
             font-style: italic;
         }
+        
+        /* Filter section */
+        .filter-section {
+            display: none;
+            background-color: #333;
+            padding: 20px;
+            border: 1px solid #444;
+            border-radius: 5px;
+            margin: 20px 0;
+        }
+        .filter-input {
+            margin: 5px 0;
+        }
+        .filter-input input {
+            padding: 5px;
+            width: 100px;
+        }
+        .filter-button {
+            margin: 0 auto;
+            display: block;
+            padding: 10px;
+            background-color: #555;
+            color: #f2f2f2;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+        .filter-button:hover {
+            background-color: #777;
+        }
     </style>
     """
 
@@ -293,12 +323,62 @@ def generate_html_page(table_html, last_updated_str):
             pageLength: 30, // Set pagination to display 30 rows per page
             info: false,
             ordering: true,
-            searching: false,
+            searching: true,
             dom: '<"top"p>rt<"bottom"p><"clear">',
-            order: []
+            order: [],
+            initComplete: function () {
+                this.api().columns().every(function () {
+                    var column = this;
+                    if (column.index() === 0) {
+                        var input = $('<input type="text" placeholder="Search Name" />')
+                            .appendTo($(column.footer()).empty())
+                            .on('keyup change clear', function () {
+                                if (column.search() !== this.value) {
+                                    column.search(this.value).draw();
+                                }
+                            });
+                    }
+                });
+            }
+        });
+
+        // Toggle filter section
+        $('#filter-button').on('click', function() {
+            $('.filter-section').toggle();
+        });
+
+        // Apply filter button
+        $('#apply-filters').on('click', function() {
+            var filters = {};
+            $('.filter-input').each(function() {
+                var column = $(this).data('column');
+                var from = $(this).find('.from').val();
+                var to = $(this).find('.to').val();
+                filters[column] = { from: from, to: to };
+            });
+
+            table.columns().every(function() {
+                var column = this;
+                var index = column.index();
+                if (filters[index]) {
+                    var from = filters[index].from;
+                    var to = filters[index].to;
+                    var search = '';
+                    if (from && to) {
+                        search = from + ' - ' + to;
+                    } else if (from) {
+                        search = '>=' + from;
+                    } else if (to) {
+                        search = '<=' + to;
+                    }
+                    column.search(search).draw();
+                }
+            });
+
+            $('.filter-section').hide();
         });
     });
-</script>
+    </script>
     """
 
     html = f"""
@@ -311,7 +391,22 @@ def generate_html_page(table_html, last_updated_str):
     </head>
     <body>
       <div class="crypto-table-container">
+        <button id="filter-button" class="filter-button">Show/Hide Filters</button>
         {table_html}
+        <div class="filter-section">
+          <div class="filter-input" data-column="1">
+            <label>Current Price (USD): </label>
+            <input type="text" class="from" placeholder="From" />
+            <input type="text" class="to" placeholder="To" />
+          </div>
+          <div class="filter-input" data-column="2">
+            <label>ATH Price (USD): </label>
+            <input type="text" class="from" placeholder="From" />
+            <input type="text" class="to" placeholder="To" />
+          </div>
+          <!-- Add more filters for other columns as needed -->
+          <button id="apply-filters" class="filter-button">Apply Filters</button>
+        </div>
       </div>
 
       <!-- Short sentence under the table about last updated time -->
