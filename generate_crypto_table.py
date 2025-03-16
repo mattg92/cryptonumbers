@@ -265,16 +265,7 @@ def generate_html_page(table_html, last_updated_str):
         .dataTables_wrapper .dataTables_length label {
             color: #f2f2f2;
         }
-        
-        /* Last-updated note */
-        .last-updated {
-            margin: 0 auto;
-            width: 90%;
-            text-align: left;
-            margin-top: 20px;
-            font-style: italic;
-        }
-        
+
         /* Filter section */
         .filter-section {
             display: none;
@@ -327,16 +318,23 @@ def generate_html_page(table_html, last_updated_str):
             dom: '<"top"p>rt<"bottom"p><"clear">',
             order: [],
             initComplete: function () {
-                this.api().columns().every(function () {
-                    var column = this;
-                    if (column.index() === 0) {
-                        var input = $('<input type="text" placeholder="Search Name" />')
-                            .appendTo($(column.footer()).empty())
-                            .on('keyup change clear', function () {
-                                if (column.search() !== this.value) {
-                                    column.search(this.value).draw();
-                                }
-                            });
+                // Add filter row
+                $('#cryptoTable thead tr').clone(true).appendTo( '#cryptoTable thead' );
+                $('#cryptoTable thead tr:eq(1) th').each( function (i) {
+                    if (i === 0) {
+                        var title = $(this).text();
+                        $(this).html( '<input type="text" placeholder="Search '+title+'" />' );
+            
+                        $( 'input', this ).on( 'keyup change clear', function () {
+                            if ( table.column(i).search() !== this.value ) {
+                                table
+                                    .column(i)
+                                    .search( this.value )
+                                    .draw();
+                            }
+                        });
+                    } else {
+                        $(this).html('');
                     }
                 });
             }
@@ -394,12 +392,12 @@ def generate_html_page(table_html, last_updated_str):
         <button id="filter-button" class="filter-button">Show/Hide Filters</button>
         {table_html}
         <div class="filter-section">
-          <div class="filter-input" data-column="1">
+          <div class="filter-input" data-column="3">
             <label>Current Price (USD): </label>
             <input type="text" class="from" placeholder="From" />
             <input type="text" class="to" placeholder="To" />
           </div>
-          <div class="filter-input" data-column="2">
+          <div class="filter-input" data-column="4">
             <label>ATH Price (USD): </label>
             <input type="text" class="from" placeholder="From" />
             <input type="text" class="to" placeholder="To" />
