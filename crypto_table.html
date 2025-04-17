@@ -13472,14 +13472,6 @@
             return pass;
         });
     });
-    // Tab switching logic
-    function openTab(evt, tabName) {
-        $('.tabcontent').hide();
-        $('#' + tabName).show();
-        $('.tab button').removeClass('active');
-        $(evt.currentTarget).addClass('active');
-    }
-
     /* 1) Hide all tab contents by default */
       .tabcontent {
         display: none;
