@@ -50,7 +50,7 @@
       </div>
       <!-- Tabs -->
       <div class="tab">
-        <button id="tab1Btn" onclick="openTab(event,'mainTab')">Coin Price</button>
+        <button id="tab1Btn" class="active" onclick="openTab(event,'mainTab')">Coin Price</button>
         <button id="tab2Btn" onclick="openTab(event,'mcTab')">Market Cap</button>
       </div>
       <!-- Main Tab -->
@@ -13479,6 +13479,16 @@
         $('.tab button').removeClass('active');
         $(evt.currentTarget).addClass('active');
     }
+
+    /* 1) Hide all tab contents by default */
+      .tabcontent {
+        display: none;
+      }
+
+      /* 2) Show the main (Coin Price) tab on load */
+      #mainTab {
+        display: block;
+      }
     </script>
     
     </body>
