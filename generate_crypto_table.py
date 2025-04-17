@@ -309,7 +309,7 @@ def generate_crypto_table_html():
     full_html = generate_html_page(main_html, mc_html, last_updated)
     with open("crypto_table.html", "w", encoding="utf-8") as f:
         f.write(full_html)
-    print("HTML table generated with two tabs: crypto_table.html")("HTML table generated with two tabs: crypto_table.html")
+    print("HTML table generated with two tabs: crypto_table.html")
 
 
 def main():
