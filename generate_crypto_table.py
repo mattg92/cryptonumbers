@@ -297,14 +297,6 @@ def generate_html_page(main_html, mc_html, last_updated_str):
             return pass;
         });
     });
-    // Tab switching logic
-    function openTab(evt, tabName) {
-        $('.tabcontent').hide();
-        $('#' + tabName).show();
-        $('.tab button').removeClass('active');
-        $(evt.currentTarget).addClass('active');
-    }
-
     /* 1) Hide all tab contents by default */
       .tabcontent {
         display: none;
