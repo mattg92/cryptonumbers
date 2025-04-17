@@ -189,7 +189,7 @@ def generate_mc_table_html(df):
     # Market Cap tab: filter only coins with ATH MC
     required_cols = [
         'Name','Rank','Current Price (USD)','Market Cap (USD)',
-        'ATH MC (USD)','Percent from MC ATH','Multiply to MC ATH'
+        'Market Cap ATH (USD)','Percent from MC ATH','Multiply to MC ATH'
     ]
     if 'Market Cap (USD)' in df.columns:
         df['Market Cap (USD)'] = pd.to_numeric(df['Market Cap (USD)'], errors='coerce')
@@ -199,8 +199,8 @@ def generate_mc_table_html(df):
         return "<p>No market cap columns found.</p>"
     df_mc = df[existing].copy()
     # ensure ATH MC is numeric for filtering
-    df_mc['ATH MC (USD)'] = pd.to_numeric(df_mc['ATH MC (USD)'], errors='coerce')
-    df_mc = df_mc[df_mc['ATH MC (USD)'].notnull() & (df_mc['ATH MC (USD)'] > 0)]
+    df_mc['Market Cap ATH (USD)'] = pd.to_numeric(df_mc['Market Cap ATH (USD)'], errors='coerce')
+    df_mc = df_mc[df_mc['Market Cap ATH (USD)'].notnull() & (df_mc['Market Cap ATH (USD)'] > 0)]
     df_mc = format_values(df_mc)
     return df_mc.to_html(
         index=False, classes='crypto-table display', border=0,
