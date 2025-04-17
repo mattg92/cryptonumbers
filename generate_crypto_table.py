@@ -186,22 +186,19 @@ def generate_html_table(df):
     return html_table
 
 def generate_mc_table_html(df):
-    # Market Cap tab: filter only coins with ATH MC
     required_cols = [
         'Name','Rank','Current Price (USD)','Market Cap (USD)',
-        'Market Cap ATH (USD)','Percent from MC ATH','Multiply to MC ATH'
+        'ATH MC (USD)','Percent from MC ATH','Multiply to MC ATH'
     ]
     if 'Market Cap (USD)' in df.columns:
         df['Market Cap (USD)'] = pd.to_numeric(df['Market Cap (USD)'], errors='coerce')
         df.sort_values('Market Cap (USD)', ascending=False, inplace=True)
-    existing = [c for c in required_cols if c in df.columns]
-    if not existing:
-        return "<p>No market cap columns found.</p>"
-    df_mc = df[existing].copy()
-    # ensure ATH MC is numeric for filtering
-    df_mc['Market Cap ATH (USD)'] = pd.to_numeric(df_mc['Market Cap ATH (USD)'], errors='coerce')
-    df_mc = df_mc[df_mc['Market Cap ATH (USD)'].notnull() & (df_mc['Market Cap ATH (USD)'] > 0)]
+    df_mc = df[[c for c in required_cols if c in df.columns]].copy()
+    df_mc['ATH MC (USD)'] = pd.to_numeric(df_mc['ATH MC (USD)'], errors='coerce')
+    df_mc = df_mc[df_mc['ATH MC (USD)'] > 0]
     df_mc = format_values(df_mc)
+    if 'Percent from MC ATH' in df_mc.columns:
+        df_mc['Percent from MC ATH'] = df_mc['Percent from MC ATH'].apply(create_percent_bar)
     return df_mc.to_html(
         index=False, classes='crypto-table display', border=0,
         escape=False, table_id='mcCryptoTable'
@@ -209,20 +206,29 @@ def generate_mc_table_html(df):
 
 
 def generate_html_page(main_html, mc_html, last_updated_str):
+    # Use original styles including filter controls and other filters popup
     styles = """
     <style>
-      body { background-color: black; color: #f2f2f2; font-family: Arial, sans-serif; margin: 20px; }
-      .tab { overflow: hidden; text-align: center; margin-bottom: 10px; }
-      .tab button { background-color: #333; color: white; padding: 10px 20px; margin: 0 5px; border: none; cursor: pointer; }
-      .tab button.active { background-color: #555; }
-      .tabcontent { display: none; }
-      .crypto-table-container { margin: 0 auto; width: 90%; max-height: 800px; overflow-y: auto; }
-      .crypto-table th, .crypto-table td { border: 1px solid #444; padding: 12px 15px; text-align: center; }
-      .crypto-table thead th { background-color: #333; }
-      .crypto-table tr:nth-child(even) { background-color: #1a1a1a; }
-      .crypto-table tr:nth-child(odd)  { background-color: #2a2a2a; }
-      .crypto-table tr:hover { background-color: #555; }
-      .last-updated-container { text-align: center; margin-top: 10px; }
+        body { background-color: black; color: #f2f2f2; font-family: Arial, sans-serif; margin: 20px; }
+        /* Filter controls */
+        #filterControls { margin-bottom: 10px; text-align: center; }
+        #filterControls input, #filterControls button { padding: 8px; font-size: 14px; margin: 0 5px; }
+        /* Popup for other filters */
+        #otherFiltersPopup { display: none; position: fixed; top: 20%; left: 50%; transform: translateX(-50%); background-color: #333; padding: 20px; border: 1px solid #444; border-radius: 5px; z-index: 1000; }
+        #otherFiltersPopup h4 { margin-top: 0; text-align: center; }
+        #otherFiltersPopup input { padding: 5px; width: 80px; margin: 0 5px; }
+        #otherFiltersPopup button { padding: 5px 10px; background-color: #555; color: #f2f2f2; border: none; border-radius: 3px; cursor: pointer; margin: 5px; }
+        #otherFiltersPopup button:hover { background-color: #777; }
+        /* Table container with scrolling */
+        .crypto-table-container { margin: 0 auto; width: 90%; max-height: 800px; overflow-y: auto; }
+        .crypto-table { width: 100%; border-collapse: collapse; margin: 0 auto; min-width: 600px; }
+        .crypto-table th, .crypto-table td { border: 1px solid #444; padding: 12px 15px; text-align: center; position: relative; }
+        .crypto-table thead th { text-align: center !important; background-color: #333; }
+        .crypto-table tr:nth-child(even) { background-color: #1a1a1a; }
+        .crypto-table tr:nth-child(odd) { background-color: #2a2a2a; }
+        .crypto-table tr:hover { background-color: #555; }
+        /* Last updated text */
+        .last-updated-container { text-align: center; margin-top: 10px; }
     </style>
     """
     scripts = """
@@ -230,36 +236,109 @@ def generate_html_page(main_html, mc_html, last_updated_str):
     <link rel="stylesheet" href="https://cdn.datatables.net/1.13.4/css/jquery.dataTables.min.css"/>
     <script src="https://cdn.datatables.net/1.13.4/js/jquery.dataTables.min.js"></script>
     <script>
-      function openTab(evt, tabName) {
+    $(document).ready(function() {
+        // Shared filter controls for both tabs
+        $('#cryptoTable, #mcCryptoTable').each(function() {
+            var tableId = $(this).attr('id');
+            $(this).DataTable({ paging:true, pageLength:30, info:false, ordering:true, searching:true, dom:'<"top"p>rt<"bottom"p><"clear">', order:[] });
+        });
+        // Name filter applies to both tables
+        $('#nameFilter').on('keyup', function() {
+            var val = this.value;
+            $('#cryptoTable').DataTable().column(0).search(val).draw();
+            $('#mcCryptoTable').DataTable().column(0).search(val).draw();
+        });
+        // Populate other filters popup using headers from both tables
+        ['cryptoTable','mcCryptoTable'].forEach(function(id) {
+            $('#' + id + ' thead th').each(function() {
+                var title = $(this).text().trim();
+                if(title !== 'Name') {
+                    $('#otherFiltersContent').append(
+                        '<div class="filter-group" data-column="' + title + '" style="margin-bottom: 10px;">'
+                        + '<label>' + title + ':</label> '
+                        + 'From: <input type="text" class="from"> '
+                        + 'To: <input type="text" class="to">'
+                        + '</div>'
+                    );
+                }
+            });
+        });
+        // Toggle other filters popup
+        $('#otherFiltersBtn').on('click', function(){ $('#otherFiltersPopup').toggle(); });
+        $('#applyOtherFilters').on('click', function(){
+            $('#cryptoTable').DataTable().draw();
+            $('#mcCryptoTable').DataTable().draw();
+            $('#otherFiltersPopup').hide();
+        });
+        $('#closeOtherFilters').on('click', function(){ $('#otherFiltersPopup').hide(); });
+        // Custom filtering
+        $.fn.dataTable.ext.search.push(function(settings,data,dataIndex){
+            var pass = true;
+            $('.filter-group').each(function(){
+                var columnName = $(this).data('column');
+                var colIndex = $('#cryptoTable thead th').filter(function(){return $(this).text().trim()===columnName;}).index();
+                var fromVal = $(this).find('.from').val();
+                var toVal   = $(this).find('.to').val();
+                var cellVal = data[colIndex]||'';
+                cellVal = cellVal.replace(/<[^>]*>?/gm,'');
+                var num = parseFloat(cellVal.replace(/[^0-9\.-]+/g,''));
+                if(!isNaN(num)){
+                    if(fromVal && num < parseFloat(fromVal)) pass=false;
+                    if(toVal   && num > parseFloat(toVal))   pass=false;
+                } else {
+                    if(fromVal && cellVal.toLowerCase()<fromVal.toLowerCase()) pass=false;
+                    if(toVal   && cellVal.toLowerCase()>toVal.toLowerCase())     pass=false;
+                }
+            });
+            return pass;
+        });
+    });
+    // Tab switching logic
+    function openTab(evt, tabName) {
         $('.tabcontent').hide();
         $('#' + tabName).show();
         $('.tab button').removeClass('active');
         $(evt.currentTarget).addClass('active');
-      }
-      $(document).ready(function() {
-        openTab({ currentTarget: $('#tab1Btn')[0] }, 'mainTab');
-        $('#cryptoTable').DataTable({ paging:true, pageLength:30, info:false, ordering:true, searching:true });
-        $('#mcCryptoTable').DataTable({ paging:true, pageLength:30, info:false, ordering:true, searching:true });
-        $('#nameFilter').on('keyup', function(){ $('#cryptoTable').DataTable().column(0).search(this.value).draw(); });
-      });
+    }
     </script>
     """
     html = f"""
     <!DOCTYPE html>
     <html lang=\"en\">
-    <head><meta charset=\"UTF-8\"><title>Crypto Data Table</title>{styles}</head>
+    <head>
+      <meta charset=\"UTF-8\">
+      <title>Crypto Data Table</title>
+      {styles}
+    </head>
     <body>
+      <!-- Shared Filter Controls -->
+      <div id=\"filterControls\">
+          <input type=\"text\" id=\"nameFilter\" placeholder=\"Filter by coin name\">
+          <button id=\"otherFiltersBtn\">Other filters</button>
+      </div>
+      <!-- Other Filters Popup -->
+      <div id=\"otherFiltersPopup\">
+          <h4>Other Filters</h4>
+          <div id=\"otherFiltersContent\"></div>
+          <div style=\"text-align: center; margin-top: 10px;\">
+            <button id=\"applyOtherFilters\">Apply</button>
+            <button id=\"closeOtherFilters\">Close</button>
+          </div>
+      </div>
+      <!-- Tabs -->
       <div class=\"tab\">
         <button id=\"tab1Btn\" onclick=\"openTab(event,'mainTab')\">All Data</button>
         <button id=\"tab2Btn\" onclick=\"openTab(event,'mcTab')\">Market Cap</button>
       </div>
+      <!-- Main Tab -->
       <div id=\"mainTab\" class=\"tabcontent\">
-        <div id=\"filterControls\"><input type=\"text\" id=\"nameFilter\" placeholder=\"Filter by coin name\"></div>
         <div class=\"crypto-table-container\">{main_html}</div>
       </div>
+      <!-- Market Cap Tab -->
       <div id=\"mcTab\" class=\"tabcontent\">
         <div class=\"crypto-table-container\">{mc_html}</div>
       </div>
+      <!-- Last Updated -->
       <div class=\"last-updated-container\"><p>Data last updated: {last_updated_str} UTC</p></div>
       {scripts}
     </body>
