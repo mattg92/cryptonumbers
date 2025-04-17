@@ -7,6 +7,15 @@
       
     <style>
         body { background-color: black; color: #f2f2f2; font-family: Arial, sans-serif; margin: 20px; }
+        /* 1) Hide all tab contents by default */
+          .tabcontent {
+            display: none;
+          }
+
+          /* 2) Show the main (Coin Price) tab on load */
+          #mainTab {
+            display: block;
+          }
         /* Filter controls */
         #filterControls { margin-bottom: 10px; text-align: center; }
         #filterControls input, #filterControls button { padding: 8px; font-size: 14px; margin: 0 5px; }
@@ -31,6 +40,7 @@
         /* Last updated text */
         .last-updated-container { text-align: center; margin-top: 10px; }
     </style>
+    
     
     </head>
     <body>
@@ -13472,15 +13482,7 @@
             return pass;
         });
     });
-    /* 1) Hide all tab contents by default */
-      .tabcontent {
-        display: none;
-      }
 
-      /* 2) Show the main (Coin Price) tab on load */
-      #mainTab {
-        display: block;
-      }
     </script>
     
     </body>
