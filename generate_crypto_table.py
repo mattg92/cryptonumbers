@@ -186,67 +186,43 @@ def generate_html_table(df):
     return html_table
 
 def generate_mc_table_html(df):
-    """
-    Generates the Market Cap HTML table:
-      1) Keep only the required columns:
-         ['Name','Rank','Current Price (USD)',
-          'Market Cap (USD)','Market Cap ATH (USD)',
-          'Percent from MC ATH','Multiply to MC ATH']
-      2) Sort by 'Market Cap (USD)' descending if present
-      3) Filter rows where 'ATH MC (USD)' exists and is non-zero
-      4) Format numeric and date columns
-      5) Return HTML
-    """
+    # Market Cap tab: filter only coins with ATH MC
     required_cols = [
-        'Name',
-        'Rank',
-        'Current Price (USD)',
-        'Market Cap (USD)',
-        'Market Cap ATH (USD)',
-        'Percent from MC ATH',
-        'Multiply to MC ATH'
+        'Name','Rank','Current Price (USD)','Market Cap (USD)',
+        'ATH MC (USD)','Percent from MC ATH','Multiply to MC ATH'
     ]
-    # Sort by current market cap
     if 'Market Cap (USD)' in df.columns:
         df['Market Cap (USD)'] = pd.to_numeric(df['Market Cap (USD)'], errors='coerce')
         df.sort_values('Market Cap (USD)', ascending=False, inplace=True)
-
-    # Select only existing required columns
-    existing_cols = [c for c in required_cols if c in df.columns]
-    if not existing_cols:
-        return "<p>No market cap columns found in the sheet.</p>"
-
-    df_mc = df[existing_cols].copy()
-    # Only include rows with a valid ATH MC
-    df_mc = df_mc[df_mc['Market Cap ATH (USD)'].notnull()]
-    df_mc = df_mc[df_mc['Market Cap ATH (USD)'] != 0]
-
-    # Apply formatting
+    existing = [c for c in required_cols if c in df.columns]
+    if not existing:
+        return "<p>No market cap columns found.</p>"
+    df_mc = df[existing].copy()
+    # ensure ATH MC is numeric for filtering
+    df_mc['ATH MC (USD)'] = pd.to_numeric(df_mc['ATH MC (USD)'], errors='coerce')
+    df_mc = df_mc[df_mc['ATH MC (USD)'].notnull() & (df_mc['ATH MC (USD)'] > 0)]
     df_mc = format_values(df_mc)
-
-    # Convert to HTML
     return df_mc.to_html(
-        index=False,
-        classes='crypto-table display',
-        border=0,
-        escape=False,
-        table_id='mcCryptoTable'
-)
+        index=False, classes='crypto-table display', border=0,
+        escape=False, table_id='mcCryptoTable'
+    )
 
 
-# --- Build HTML with tabs ---
 def generate_html_page(main_html, mc_html, last_updated_str):
-    """
-    Returns the complete HTML page with two tabs: main data and market cap data.
-    """
     styles = """
     <style>
-    body { background-color: black; color: #f2f2f2; font-family: Arial, sans-serif; margin: 20px; }
-    .tab { overflow: hidden; text-align: center; margin-bottom: 10px; }
-    .tab button { background-color: #333; color: white; padding: 10px 20px; margin: 0 5px; border: none; cursor: pointer; }
-    .tab button.active { background-color: #555; }
-    .tabcontent { display: none; }
-    .crypto-table-container { margin: 0 auto; width: 90%; max-height: 800px; overflow-y: auto; }
+      body { background-color: black; color: #f2f2f2; font-family: Arial, sans-serif; margin: 20px; }
+      .tab { overflow: hidden; text-align: center; margin-bottom: 10px; }
+      .tab button { background-color: #333; color: white; padding: 10px 20px; margin: 0 5px; border: none; cursor: pointer; }
+      .tab button.active { background-color: #555; }
+      .tabcontent { display: none; }
+      .crypto-table-container { margin: 0 auto; width: 90%; max-height: 800px; overflow-y: auto; }
+      .crypto-table th, .crypto-table td { border: 1px solid #444; padding: 12px 15px; text-align: center; }
+      .crypto-table thead th { background-color: #333; }
+      .crypto-table tr:nth-child(even) { background-color: #1a1a1a; }
+      .crypto-table tr:nth-child(odd)  { background-color: #2a2a2a; }
+      .crypto-table tr:hover { background-color: #555; }
+      .last-updated-container { text-align: center; margin-top: 10px; }
     </style>
     """
     scripts = """
@@ -254,21 +230,18 @@ def generate_html_page(main_html, mc_html, last_updated_str):
     <link rel="stylesheet" href="https://cdn.datatables.net/1.13.4/css/jquery.dataTables.min.css"/>
     <script src="https://cdn.datatables.net/1.13.4/js/jquery.dataTables.min.js"></script>
     <script>
-    function openTab(evt, tabName) {
-      $('.tabcontent').hide();
-      $('#' + tabName).show();
-      $('.tab button').removeClass('active');
-      $(evt.currentTarget).addClass('active');
-    }
-    $(document).ready(function() {
-      // show main tab by default
-      openTab({ currentTarget: $('#tab1Btn')[0] }, 'mainTab');
-      // initialize DataTables
-      $('#mainTable').DataTable({ paging: true, pageLength: 30, info: false, ordering: true, searching: true });
-      $('#mcCryptoTable').DataTable({ paging: true, pageLength: 30, info: false, ordering: true, searching: true });
-      // name filter for main table
-      $('#nameFilter').on('keyup', function() { $('#mainTable').DataTable().column(0).search(this.value).draw(); });
-    });
+      function openTab(evt, tabName) {
+        $('.tabcontent').hide();
+        $('#' + tabName).show();
+        $('.tab button').removeClass('active');
+        $(evt.currentTarget).addClass('active');
+      }
+      $(document).ready(function() {
+        openTab({ currentTarget: $('#tab1Btn')[0] }, 'mainTab');
+        $('#cryptoTable').DataTable({ paging:true, pageLength:30, info:false, ordering:true, searching:true });
+        $('#mcCryptoTable').DataTable({ paging:true, pageLength:30, info:false, ordering:true, searching:true });
+        $('#nameFilter').on('keyup', function(){ $('#cryptoTable').DataTable().column(0).search(this.value).draw(); });
+      });
     </script>
     """
     html = f"""
@@ -278,7 +251,7 @@ def generate_html_page(main_html, mc_html, last_updated_str):
     <body>
       <div class=\"tab\">
         <button id=\"tab1Btn\" onclick=\"openTab(event,'mainTab')\">All Data</button>
-        <button id=\"tab2Btn\" onclick=\"openTab(event,'mcTab')\">Market Cap Data</button>
+        <button id=\"tab2Btn\" onclick=\"openTab(event,'mcTab')\">Market Cap</button>
       </div>
       <div id=\"mainTab\" class=\"tabcontent\">
         <div id=\"filterControls\"><input type=\"text\" id=\"nameFilter\" placeholder=\"Filter by coin name\"></div>
@@ -294,14 +267,8 @@ def generate_html_page(main_html, mc_html, last_updated_str):
     """
     return html
 
-# --- Main runner ---
+
 def generate_crypto_table_html():
-    """
-    Main function that:
-      1) Fetches data
-      2) Builds HTML for both tables
-      3) Renders and saves the HTML page with tabs
-    """
     df = fetch_data_from_google_sheets()
     main_html = generate_html_table(df)
     mc_html   = generate_mc_table_html(df)
