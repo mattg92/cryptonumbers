@@ -250,65 +250,90 @@ def generate_html_page(main_html, mc_html, last_updated_str):
     <link rel="stylesheet" href="https://cdn.datatables.net/1.13.4/css/jquery.dataTables.min.css"/>
     <script src="https://cdn.datatables.net/1.13.4/js/jquery.dataTables.min.js"></script>
     <script>
-    $(document).ready(function() {
-        // Shared filter controls for both tabs
-        $('#cryptoTable, #mcCryptoTable').each(function() {
-            var tableId = $(this).attr('id');
-            $(this).DataTable({ paging:true, pageLength:30, info:false, ordering:true, searching:true, dom:'<"top"p>rt<"bottom"p><"clear">', order:[] });
-        });
-        // Name filter applies to both tables
-        $('#nameFilter').on('keyup', function() {
-            var val = this.value;
-            $('#cryptoTable').DataTable().column(0).search(val).draw();
-            $('#mcCryptoTable').DataTable().column(0).search(val).draw();
-        });
-        // Populate other filters popup using headers from both tables
-        ['cryptoTable','mcCryptoTable'].forEach(function(id) {
-            $('#' + id + ' thead th').each(function() {
-                var title = $(this).text().trim();
-                if(title !== 'Name') {
-                    $('#otherFiltersContent').append(
-                        '<div class="filter-group" data-column="' + title + '" style="margin-bottom: 10px;">'
-                        + '<label>' + title + ':</label> '
-                        + 'From: <input type="text" class="from"> '
-                        + 'To: <input type="text" class="to">'
-                        + '</div>'
-                    );
-                }
-            });
-        });
-        // Toggle other filters popup
-        $('#otherFiltersBtn').on('click', function(){ $('#otherFiltersPopup').toggle(); });
-        $('#applyOtherFilters').on('click', function(){
-            $('#cryptoTable').DataTable().draw();
-            $('#mcCryptoTable').DataTable().draw();
-            $('#otherFiltersPopup').hide();
-        });
-        $('#closeOtherFilters').on('click', function(){ $('#otherFiltersPopup').hide(); });
-        // Custom filtering
-        $.fn.dataTable.ext.search.push(function(settings,data,dataIndex){
-            var pass = true;
-            $('.filter-group').each(function(){
-                var columnName = $(this).data('column');
-                var colIndex = $('#cryptoTable thead th').filter(function(){return $(this).text().trim()===columnName;}).index();
-                var fromVal = $(this).find('.from').val();
-                var toVal   = $(this).find('.to').val();
-                var cellVal = data[colIndex]||'';
-                cellVal = cellVal.replace(/<[^>]*>?/gm,'');
-                var num = parseFloat(cellVal.replace(/[^0-9\.-]+/g,''));
-                if(!isNaN(num)){
-                    if(fromVal && num < parseFloat(fromVal)) pass=false;
-                    if(toVal   && num > parseFloat(toVal))   pass=false;
-                } else {
-                    if(fromVal && cellVal.toLowerCase()<fromVal.toLowerCase()) pass=false;
-                    if(toVal   && cellVal.toLowerCase()>toVal.toLowerCase())     pass=false;
-                }
-            });
-            return pass;
+$(document).ready(function() {
+    // 1) Initialize both tables with paging, searching, etc.
+    $('#cryptoTable, #mcCryptoTable').each(function() {
+        $(this).DataTable({
+            paging:      true,
+            pageLength:  30,
+            info:        false,
+            ordering:    true,
+            searching:   true,
+            dom:         '<"top"p>rt<"bottom"p><"clear">',
+            order:       []
         });
     });
 
-    </script>
+    // 2) Name filter (text input filters column 0 on both tables)
+    $('#nameFilter').on('keyup', function() {
+        var val = this.value;
+        $('#cryptoTable').DataTable().column(0).search(val).draw();
+        $('#mcCryptoTable').DataTable().column(0).search(val).draw();
+    });
+
+    // 3) Build the “other filters” popup dynamically
+    ['cryptoTable','mcCryptoTable'].forEach(function(id) {
+        $('#' + id + ' thead th').each(function() {
+            var title = $(this).text().trim();
+            if (title !== 'Name') {
+                $('#otherFiltersContent').append(
+                  '<div class="filter-group" data-column="' + title + '" style="margin-bottom:10px;">' +
+                    '<label>' + title + ':</label> ' +
+                    'From: <input type="text" class="from"> ' +
+                    'To: <input type="text" class="to">' +
+                  '</div>'
+                );
+            }
+        });
+    });
+
+    // 4) Show/hide the popup
+    $('#otherFiltersBtn').click(function() {
+        $('#otherFiltersPopup').toggle();
+    });
+    $('#applyOtherFilters').click(function() {
+        $('#cryptoTable').DataTable().draw();
+        $('#mcCryptoTable').DataTable().draw();
+        $('#otherFiltersPopup').hide();
+    });
+    $('#closeOtherFilters').click(function(){
+        $('#otherFiltersPopup').hide();
+    });
+
+    // 5) Custom filtering logic
+    $.fn.dataTable.ext.search.push(function(settings, data, dataIndex){
+        var pass = true;
+        $('.filter-group').each(function(){
+            var columnName = $(this).data('column');
+            var colIndex   = $('#cryptoTable thead th')
+                                .filter(function(){ return $(this).text().trim() === columnName; })
+                                .index();
+            var fromVal    = $(this).find('.from').val();
+            var toVal      = $(this).find('.to').val();
+            var cellVal    = data[colIndex] || '';
+            cellVal        = cellVal.replace(/<[^>]*>?/gm,'');
+            var num        = parseFloat(cellVal.replace(/[^0-9\.-]+/g,''));
+            
+            if (!isNaN(num)) {
+                if (fromVal && num < parseFloat(fromVal)) pass = false;
+                if (toVal   && num > parseFloat(toVal))   pass = false;
+            } else {
+                if (fromVal && cellVal.toLowerCase() < fromVal) pass = false;
+                if (toVal   && cellVal.toLowerCase() > toVal)   pass = false;
+            }
+        });
+        return pass;
+    });
+});
+
+// Tab‐switcher stays here too
+function openTab(evt, tabName) {
+    $('.tabcontent').hide();
+    $('#' + tabName).show();
+    $('.tab button').removeClass('active');
+    $(evt.currentTarget).addClass('active');
+}
+</script>
     """
     html = f"""
     <!DOCTYPE html>
