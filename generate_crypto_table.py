@@ -210,6 +210,15 @@ def generate_html_page(main_html, mc_html, last_updated_str):
     styles = """
     <style>
         body { background-color: black; color: #f2f2f2; font-family: Arial, sans-serif; margin: 20px; }
+        /* 1) Hide all tab contents by default */
+          .tabcontent {
+            display: none;
+          }
+
+          /* 2) Show the main (Coin Price) tab on load */
+          #mainTab {
+            display: block;
+          }
         /* Filter controls */
         #filterControls { margin-bottom: 10px; text-align: center; }
         #filterControls input, #filterControls button { padding: 8px; font-size: 14px; margin: 0 5px; }
@@ -234,6 +243,7 @@ def generate_html_page(main_html, mc_html, last_updated_str):
         /* Last updated text */
         .last-updated-container { text-align: center; margin-top: 10px; }
     </style>
+    
     """
     scripts = """
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
@@ -297,15 +307,7 @@ def generate_html_page(main_html, mc_html, last_updated_str):
             return pass;
         });
     });
-    /* 1) Hide all tab contents by default */
-      .tabcontent {
-        display: none;
-      }
 
-      /* 2) Show the main (Coin Price) tab on load */
-      #mainTab {
-        display: block;
-      }
     </script>
     """
     html = f"""
