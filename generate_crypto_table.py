@@ -85,6 +85,8 @@ def format_values(df):
         df['ATH Date'] = df['ATH Date'].apply(format_ath_date)
     if 'Market Cap (USD)' in df.columns:
         df['Market Cap (USD)'] = df['Market Cap (USD)'].apply(format_market_cap)
+    if 'Market Cap ATH (USD)' in df.columns:
+        df['Market Cap ATH (USD)'] = df['Market Cap ATH (USD)'].apply(format_market_cap)    
     
     return df
     
@@ -183,278 +185,132 @@ def generate_html_table(df):
     )
     return html_table
 
-def generate_html_page(table_html, last_updated_str):
+def generate_mc_table_html(df):
     """
-    Returns the complete HTML page, including:
-      - A top filter section with a Name filter and an "Other filters" button
-      - A popup section for additional filters (with "from" and "to" fields for remaining columns)
-      - A scrollable table container and last-updated note at the bottom
-      - Column sorting enabled with DataTables
+    Generates the Market Cap HTML table:
+      1) Keep only the required columns:
+         ['Name','Rank','Current Price (USD)',
+          'Market Cap (USD)','Market Cap ATH (USD)',
+          'Percent from MC ATH','Multiply to MC ATH']
+      2) Sort by 'Market Cap (USD)' descending if present
+      3) Filter rows where 'ATH MC (USD)' exists and is non-zero
+      4) Format numeric and date columns
+      5) Return HTML
+    """
+    required_cols = [
+        'Name',
+        'Rank',
+        'Current Price (USD)',
+        'Market Cap (USD)',
+        'Market Cap ATH (USD)',
+        'Percent from MC ATH',
+        'Multiply to MC ATH'
+    ]
+    # Sort by current market cap
+    if 'Market Cap (USD)' in df.columns:
+        df['Market Cap (USD)'] = pd.to_numeric(df['Market Cap (USD)'], errors='coerce')
+        df.sort_values('Market Cap (USD)', ascending=False, inplace=True)
+
+    # Select only existing required columns
+    existing_cols = [c for c in required_cols if c in df.columns]
+    if not existing_cols:
+        return "<p>No market cap columns found in the sheet.</p>"
+
+    df_mc = df[existing_cols].copy()
+    # Only include rows with a valid ATH MC
+    df_mc = df_mc[df_mc['Market Cap ATH (USD)'].notnull()]
+    df_mc = df_mc[df_mc['Market Cap ATH (USD)'] != 0]
+
+    # Apply formatting
+    df_mc = format_values(df_mc)
+
+    # Convert to HTML
+    return df_mc.to_html(
+        index=False,
+        classes='crypto-table display',
+        border=0,
+        escape=False,
+        table_id='mcCryptoTable'
+)
+
+
+# --- Build HTML with tabs ---
+def generate_html_page(main_html, mc_html, last_updated_str):
+    """
+    Returns the complete HTML page with two tabs: main data and market cap data.
     """
     styles = """
     <style>
-        body {
-            background-color: black;
-            color: #f2f2f2;
-            font-family: Arial, sans-serif;
-            margin: 20px;
-        }
-        
-        /* Filter controls */
-        #filterControls {
-            margin-bottom: 10px;
-            text-align: center;
-        }
-        #filterControls input, #filterControls button {
-            padding: 8px;
-            font-size: 14px;
-            margin: 0 5px;
-        }
-        
-        /* Popup for other filters */
-        #otherFiltersPopup {
-            display: none;
-            position: fixed;
-            top: 20%;
-            left: 50%;
-            transform: translateX(-50%);
-            background-color: #333;
-            padding: 20px;
-            border: 1px solid #444;
-            border-radius: 5px;
-            z-index: 1000;
-        }
-        #otherFiltersPopup h4 {
-            margin-top: 0;
-            text-align: center;
-        }
-        #otherFiltersPopup input {
-            padding: 5px;
-            width: 80px;
-            margin: 0 5px;
-        }
-        #otherFiltersPopup button {
-            padding: 5px 10px;
-            background-color: #555;
-            color: #f2f2f2;
-            border: none;
-            border-radius: 3px;
-            cursor: pointer;
-            margin: 5px;
-        }
-        #otherFiltersPopup button:hover {
-            background-color: #777;
-        }
-        
-        /* Table container with scrolling */
-        .crypto-table-container {
-            margin: 0 auto;
-            width: 90%;
-            max-height: 800px; /* approximate for ~21 rows visible */
-            overflow-y: auto;
-        }
-        .crypto-table {
-            width: 100%;
-            border-collapse: collapse;
-            margin: 0 auto;
-            min-width: 600px;
-        }
-        .crypto-table th, .crypto-table td {
-            border: 1px solid #444;
-            padding: 12px 15px;
-            text-align: center;
-            position: relative;
-        }
-        .crypto-table thead th {
-            text-align: center !important;
-            background-color: #333;
-        }
-        .crypto-table tr:nth-child(even) {
-            background-color: #1a1a1a;
-        }
-        .crypto-table tr:nth-child(odd) {
-            background-color: #2a2a2a;
-        }
-        .crypto-table tr:hover {
-            background-color: #555;
-        }
-        
-        /* Last updated text */
-        .last-updated-container {
-            text-align: center;
-            margin-top: 10px;
-        }
+    body { background-color: black; color: #f2f2f2; font-family: Arial, sans-serif; margin: 20px; }
+    .tab { overflow: hidden; text-align: center; margin-bottom: 10px; }
+    .tab button { background-color: #333; color: white; padding: 10px 20px; margin: 0 5px; border: none; cursor: pointer; }
+    .tab button.active { background-color: #555; }
+    .tabcontent { display: none; }
+    .crypto-table-container { margin: 0 auto; width: 90%; max-height: 800px; overflow-y: auto; }
     </style>
     """
-
     scripts = """
-    <!-- jQuery -->
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-    <!-- DataTables -->
-    <link rel="stylesheet" type="text/css"
-          href="https://cdn.datatables.net/1.13.4/css/jquery.dataTables.min.css"/>
+    <link rel="stylesheet" href="https://cdn.datatables.net/1.13.4/css/jquery.dataTables.min.css"/>
     <script src="https://cdn.datatables.net/1.13.4/js/jquery.dataTables.min.js"></script>
-
     <script>
+    function openTab(evt, tabName) {
+      $('.tabcontent').hide();
+      $('#' + tabName).show();
+      $('.tab button').removeClass('active');
+      $(evt.currentTarget).addClass('active');
+    }
     $(document).ready(function() {
-        // Initialize DataTable
-        var table = $('#cryptoTable').DataTable({
-            paging: true,
-            pageLength: 30, // Display 30 rows per page
-            info: false,
-            ordering: true,
-            searching: true,
-            dom: '<"top"p>rt<"bottom"p><"clear">',
-            order: []
-        });
-
-        // Name filter: dynamically filter "Name" column (assumed to be the first column)
-        $("#nameFilter").on("keyup", function() {
-            table.column(0).search(this.value).draw();
-        });
-
-        // Populate the other filters popup with inputs for each column except "Name"
-        $('#cryptoTable thead th').each(function(index) {
-            var title = $(this).text().trim();
-            if (title !== "Name") {
-                $('#otherFiltersContent').append(
-                    '<div class="filter-group" data-column="'+title+'" style="margin-bottom: 10px;">' +
-                    '<label>'+title+': </label> ' +
-                    'From: <input type="text" class="from"> ' +
-                    'To: <input type="text" class="to">' +
-                    '</div>'
-                );
-            }
-        });
-
-        // Toggle other filters popup
-        $("#otherFiltersBtn").on("click", function() {
-            $("#otherFiltersPopup").toggle();
-        });
-
-        $("#applyOtherFilters").on("click", function(){
-            table.draw();
-            $("#otherFiltersPopup").hide();
-        });
-        $("#closeOtherFilters").on("click", function(){
-            $("#otherFiltersPopup").hide();
-        });
-
-        // Custom filtering function for other filters
-        $.fn.dataTable.ext.search.push(
-            function(settings, data, dataIndex) {
-                var pass = true;
-                $("#otherFiltersContent .filter-group").each(function() {
-                    var columnName = $(this).data("column");
-                    // Get the column index by matching header text
-                    var colIndex = $('#cryptoTable thead th').filter(function(){
-                        return $(this).text().trim() === columnName;
-                    }).index();
-                    var fromVal = $(this).find('.from').val();
-                    var toVal = $(this).find('.to').val();
-                    var cellVal = data[colIndex] || "";
-                    // Remove HTML tags if any (e.g., from the percent bar)
-                    cellVal = cellVal.replace(/<[^>]*>?/gm, '');
-                    
-                    // Attempt to parse a number from the cell value
-                    var cellNum = parseFloat(cellVal.replace(/[^0-9\\.-]+/g, ''));
-                    var isNumeric = !isNaN(cellNum);
-                    
-                    if (isNumeric) {
-                        var fromNum = parseFloat(fromVal);
-                        var toNum = parseFloat(toVal);
-                        if (!isNaN(fromNum) && cellNum < fromNum) {
-                            pass = false;
-                        }
-                        if (!isNaN(toNum) && cellNum > toNum) {
-                            pass = false;
-                        }
-                    } else {
-                        // For non-numeric values, use lexicographical filtering (case-insensitive)
-                        if (fromVal && cellVal.toLowerCase() < fromVal.toLowerCase()) {
-                            pass = false;
-                        }
-                        if (toVal && cellVal.toLowerCase() > toVal.toLowerCase()) {
-                            pass = false;
-                        }
-                    }
-                });
-                return pass;
-            }
-        );
+      // show main tab by default
+      openTab({ currentTarget: $('#tab1Btn')[0] }, 'mainTab');
+      // initialize DataTables
+      $('#mainTable').DataTable({ paging: true, pageLength: 30, info: false, ordering: true, searching: true });
+      $('#mcCryptoTable').DataTable({ paging: true, pageLength: 30, info: false, ordering: true, searching: true });
+      // name filter for main table
+      $('#nameFilter').on('keyup', function() { $('#mainTable').DataTable().column(0).search(this.value).draw(); });
     });
     </script>
     """
-
-    # Build final HTML with filter controls on top and the other filters popup.
     html = f"""
     <!DOCTYPE html>
-    <html lang="en">
-    <head>
-      <meta charset="UTF-8">
-      <title>Crypto Data Table</title>
-      {styles}
-    </head>
+    <html lang=\"en\">
+    <head><meta charset=\"UTF-8\"><title>Crypto Data Table</title>{styles}</head>
     <body>
-      <!-- Filter Controls -->
-      <div id="filterControls">
-          <input type="text" id="nameFilter" placeholder="Filter by coin name">
-          <button id="otherFiltersBtn">Other filters</button>
+      <div class=\"tab\">
+        <button id=\"tab1Btn\" onclick=\"openTab(event,'mainTab')\">All Data</button>
+        <button id=\"tab2Btn\" onclick=\"openTab(event,'mcTab')\">Market Cap Data</button>
       </div>
-
-      <!-- Popup for Other Filters -->
-      <div id="otherFiltersPopup">
-          <h4>Other Filters</h4>
-          <div id="otherFiltersContent"></div>
-          <div style="text-align: center; margin-top: 10px;">
-            <button id="applyOtherFilters">Apply</button>
-            <button id="closeOtherFilters">Close</button>
-          </div>
+      <div id=\"mainTab\" class=\"tabcontent\">
+        <div id=\"filterControls\"><input type=\"text\" id=\"nameFilter\" placeholder=\"Filter by coin name\"></div>
+        <div class=\"crypto-table-container\">{main_html}</div>
       </div>
-
-      <!-- Table Container -->
-      <div class="crypto-table-container">
-        {table_html}
+      <div id=\"mcTab\" class=\"tabcontent\">
+        <div class=\"crypto-table-container\">{mc_html}</div>
       </div>
-
-      <!-- Last Updated -->
-      <div class="last-updated-container">
-        <p class="last-updated">Data last updated: {last_updated_str} UTC</p>
-      </div>
-      
+      <div class=\"last-updated-container\"><p>Data last updated: {last_updated_str} UTC</p></div>
       {scripts}
     </body>
     </html>
     """
     return html
 
+# --- Main runner ---
 def generate_crypto_table_html():
     """
     Main function that:
-      1) Fetches data from Google Sheets
-      2) Filters & formats columns, including a right-aligned percentage bar
-      3) Sorts by Market Cap if present
-      4) Creates an HTML table
-      5) Adds a dynamic Name filter and a popup for other filters (with numeric filtering)
-      6) Adds a last-updated line
-      7) Saves to 'crypto_table.html'
+      1) Fetches data
+      2) Builds HTML for both tables
+      3) Renders and saves the HTML page with tabs
     """
     df = fetch_data_from_google_sheets()
-
-    # Generate the table HTML
-    table_html = generate_html_table(df)
-    
-    # Extract last updated info
-    last_updated_str = extract_last_updated_info(df)
-
-    # Build final page with filters, table, and last-updated info
-    full_html = generate_html_page(table_html, last_updated_str)
-
-    # Write to file
+    main_html = generate_html_table(df)
+    mc_html   = generate_mc_table_html(df)
+    last_updated = extract_last_updated_info(df)
+    full_html = generate_html_page(main_html, mc_html, last_updated)
     with open("crypto_table.html", "w", encoding="utf-8") as f:
         f.write(full_html)
+    print("HTML table generated with two tabs: crypto_table.html")("HTML table generated with two tabs: crypto_table.html")
 
-    print("HTML table generated and saved to crypto_table.html")
 
 def main():
     try:
