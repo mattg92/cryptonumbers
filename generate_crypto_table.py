@@ -213,6 +213,10 @@ def generate_html_page(main_html, mc_html, last_updated_str):
         /* Filter controls */
         #filterControls { margin-bottom: 10px; text-align: center; }
         #filterControls input, #filterControls button { padding: 8px; font-size: 14px; margin: 0 5px; }
+        /* Tab controls styled like filter controls */
+        .tab { margin-bottom: 10px; text-align: center; }
+        .tab button { padding: 8px; font-size: 14px; margin: 0 5px; }
+        .tab button.active { background-color: #555; }
         /* Popup for other filters */
         #otherFiltersPopup { display: none; position: fixed; top: 20%; left: 50%; transform: translateX(-50%); background-color: #333; padding: 20px; border: 1px solid #444; border-radius: 5px; z-index: 1000; }
         #otherFiltersPopup h4 { margin-top: 0; text-align: center; }
@@ -327,7 +331,7 @@ def generate_html_page(main_html, mc_html, last_updated_str):
       </div>
       <!-- Tabs -->
       <div class=\"tab\">
-        <button id=\"tab1Btn\" onclick=\"openTab(event,'mainTab')\">All Data</button>
+        <button id=\"tab1Btn\" onclick=\"openTab(event,'mainTab')\">Coin Price</button>
         <button id=\"tab2Btn\" onclick=\"openTab(event,'mcTab')\">Market Cap</button>
       </div>
       <!-- Main Tab -->
