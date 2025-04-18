@@ -13450,7 +13450,7 @@ $(document).ready(function() {
         });
     });
 
-    // 2) Name filter (text input filters column 0 on both tables)
+    // 2) Name filter (text input filters column 0 on both tables)
     $('#nameFilter').on('keyup', function() {
         var val = this.value;
         $('#cryptoTable').DataTable().column(0).search(val).draw();
@@ -13458,18 +13458,25 @@ $(document).ready(function() {
     });
 
     // 3) Build the “other filters” popup dynamically
+    const addedFilters = new Set(); // Track added filters to prevent duplicates
     ['cryptoTable','mcCryptoTable'].forEach(function(id) {
         $('#' + id + ' thead th').each(function() {
             var title = $(this).text().trim();
-            if (title !== 'Name') {
-                $('#otherFiltersContent').append(
-                  '<div class="filter-group" data-column="' + title + '" style="margin-bottom:10px;">' +
-                    '<label>' + title + ':</label> ' +
-                    'From: <input type="text" class="from"> ' +
-                    'To: <input type="text" class="to">' +
-                  '</div>'
-                );
+
+            // Skip duplicate filters and "ATH Date"
+            if (addedFilters.has(title) || title === 'ATH Date') {
+                return;
             }
+            addedFilters.add(title);
+
+            // Add filter input group for valid columns
+            $('#otherFiltersContent').append(
+              '<div class="filter-group" data-column="' + title + '" style="margin-bottom:10px;">' +
+                '<label>' + title + ':</label> ' +
+                'From: <input type="text" class="from"> ' +
+                'To: <input type="text" class="to">' +
+              '</div>'
+            );
         });
     });
 
@@ -13488,17 +13495,19 @@ $(document).ready(function() {
 
     // 5) Custom filtering logic
     $.fn.dataTable.ext.search.push(function(settings, data, dataIndex){
+        var tableId = settings.nTable.id; // Get the active table ID
         var pass = true;
+
         $('.filter-group').each(function(){
             var columnName = $(this).data('column');
-            var colIndex   = $('#cryptoTable thead th')
+            var colIndex   = $('#' + tableId + ' thead th')
                                 .filter(function(){ return $(this).text().trim() === columnName; })
                                 .index();
             var fromVal    = $(this).find('.from').val();
             var toVal      = $(this).find('.to').val();
             var cellVal    = data[colIndex] || '';
-            cellVal        = cellVal.replace(/<[^>]*>?/gm,'');
-            var num        = parseFloat(cellVal.replace(/[^0-9\.-]+/g,''));
+            cellVal        = cellVal.replace(/<[^>]*>?/gm,''); // Remove HTML tags
+            var num        = parseFloat(cellVal.replace(/[^0-9\.-]+/g,'')); // Parse as number
             
             if (!isNaN(num)) {
                 if (fromVal && num < parseFloat(fromVal)) pass = false;
@@ -13508,6 +13517,7 @@ $(document).ready(function() {
                 if (toVal   && cellVal.toLowerCase() > toVal)   pass = false;
             }
         });
+
         return pass;
     });
 });
